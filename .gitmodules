@@ -1,0 +1,3 @@
+[submodule "commonJs"]
+	path = commonJs
+	url = git@github.com:lhypoi/commonJs.git
