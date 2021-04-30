@@ -1,0 +1,3 @@
+[submodule "src/assets/commonJs"]
+	path = src/assets/commonJs
+	url = https://github.com/lhypoi/commonJs.git
