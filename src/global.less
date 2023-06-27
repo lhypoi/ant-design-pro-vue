@@ -99,3 +99,28 @@ ol {
     }
   }
 }
+
+.ant-layout {
+  background: #F9F9F9;
+
+  .ant-layout-content {
+    display: flex;
+    flex-direction: column;
+
+    .ant-pro-basicLayout-children-content-wrap {
+      flex: auto;
+      display: flex;
+      flex-direction: column;
+
+      .ant-pro-grid-content {
+        flex: auto;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  .ant-layout-footer {
+    display: none;
+  }
+}
