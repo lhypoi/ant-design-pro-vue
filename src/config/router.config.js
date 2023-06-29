@@ -375,6 +375,13 @@ export const constantRouterMap = [
   },
 
   {
+    path: '/user/register-pre',
+    name: 'registerPre',
+    component: () => import('@/views/user/link/RegisterPre'),
+    hidden: true
+  },
+
+  {
     path: '/404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
