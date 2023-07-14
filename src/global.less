@@ -103,6 +103,50 @@ ol {
 .ant-layout {
   background: #F9F9F9;
 
+  .ant-layout-header {
+    height: 64px;
+
+    .ant-pro-top-nav-header {
+      height: 100%;
+      box-shadow: none;
+
+      .ant-pro-top-nav-header-main {
+        height: 100%;
+
+        .ant-pro-top-nav-header-left {
+          flex: auto;
+
+          .ant-pro-top-nav-header-logo {
+            width: auto;
+            height: 100%;
+          }          
+        }
+
+        .ant-pro-top-nav-header-menu {
+          flex: 0 !important;
+
+          .ant-menu {
+            display: flex;
+            justify-content: flex-end;
+          }
+        }
+      }
+    }
+
+    // 移动端
+    .ant-pro-global-header {
+      display: flex;
+
+      .ant-pro-global-header-trigger {
+        margin-left: -24px;
+      }
+
+      .ant-pro-global-header-content {
+        flex: auto;
+      }      
+    }
+  }
+
   .ant-layout-content {
     display: flex;
     flex-direction: column;
@@ -122,5 +166,63 @@ ol {
 
   .ant-layout-footer {
     display: none;
+  }
+}
+
+// 修正 antd 样式对 tailwind 的影响
+.anticon svg {
+  display: block;
+}
+
+// 定制 antd input 的边框样式
+.ant-input {
+  border: none !important;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+// 定制 antd select 的边框样式
+.ant-select-selection {
+  border: none !important;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+// 浏览器自动填充时，取消代理背景色
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.65);
+  transition: background-color 5000s ease-in-out 0s;
+  box-shadow: inset 0 0 20px 20px #23232329;
+}
+
+.moveR-enter-active{
+  animation: moveR1 .5s ease-out;
+}
+
+.moveR-leave-active{
+  animation: moveR2  ease-out;
+}
+
+@keyframes moveR1{
+  from{
+    transform: translateX(100%);
+  }
+
+  to{
+    transform: translateX(0px);
+  }
+}
+
+@keyframes moveR2{
+  from{
+    transform: translateX(0px);
+  }
+
+  to{
+    transform: translateX(-100%);
   }
 }

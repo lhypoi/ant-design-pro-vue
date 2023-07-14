@@ -20,20 +20,22 @@
           我们推荐使用这种方式进行 LOGO 和 title 自定义
     -->
     <template v-slot:menuHeaderRender>
-      <div>
+      <!-- <div>
         <img src="@/assets/logo.svg" />
         <h1>{{ title }}</h1>
-      </div>
+      </div> -->
+      <LeftContent />
     </template>
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
           增加 Header 左侧内容区自定义
     -->
     <template v-slot:headerContentRender>
-      <div>
+      <!-- <div>
         <a-tooltip title="刷新页面">
           <a-icon type="reload" style="font-size: 18px;cursor: pointer;" @click="() => { $message.info('只是一个DEMO') }" />
         </a-tooltip>
-      </div>
+      </div> -->
+      <LeftContent />
     </template>
 
     <setting-drawer v-if="isDev" :settings="settings" @change="handleSettingChange">
@@ -60,6 +62,7 @@ import { CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mu
 
 import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
+import LeftContent from '@/components/GlobalHeader/custom/LeftContent'
 import GlobalFooter from '@/components/GlobalFooter'
 import Ads from '@/components/Other/CarbonAds'
 
@@ -68,6 +71,7 @@ export default {
   components: {
     SettingDrawer,
     RightContent,
+    LeftContent,
     GlobalFooter,
     Ads
   },
