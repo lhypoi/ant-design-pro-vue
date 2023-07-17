@@ -11,6 +11,7 @@ import {
 } from '@/store/mutation-types'
 // import { printANSI } from '@/utils/screenLog'
 import defaultSettings from '@/config/defaultSettings'
+import { asyncRouterMap } from '@/config/router.config'
 
 export default function Initializer () {
   // printANSI() // 请自行移除该行.  please remove this line
@@ -25,6 +26,7 @@ export default function Initializer () {
   store.commit(TOGGLE_COLOR, storage.get(TOGGLE_COLOR, defaultSettings.primaryColor))
   store.commit(TOGGLE_MULTI_TAB, storage.get(TOGGLE_MULTI_TAB, defaultSettings.multiTab))
   store.commit('SET_TOKEN', storage.get(ACCESS_TOKEN))
+  store.commit('SET_ROUTERS', asyncRouterMap)
 
   store.dispatch('setLang', storage.get(APP_LANGUAGE, 'en-US'))
   // last step
