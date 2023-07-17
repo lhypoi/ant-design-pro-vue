@@ -1,9 +1,9 @@
 <template>
   <div class="h-full flex items-center">
-    <div class="w-20 h-10 bg-slate-400">
-
+    <div class="text-2xl cursor-pointer" :class="isHome ? 'text-white' : 'text-gray-400'" @click="toHome">
+      mBiobank
     </div>
-    <div
+    <!-- <div
       class="flex-auto ml-4 sm:ml-8 mr-2 sm:mr-16 flex items-center h-9 rounded-full border border-solid border-zinc-200 bg-neutral-50 hover:ring-1 hover:ring-indigo-500 px-6"
     >
       <div class="flex cursor-pointer">
@@ -37,7 +37,7 @@
           {{ d.text }}
         </a-select-option>
       </a-select>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -53,7 +53,15 @@ export default {
       fetching: false
     }
   },
+  computed: {
+    isHome() {
+      return this.$route.name === 'Home'
+    }
+  },
   methods: {
+    toHome() {
+      this.$router.push({ name: 'Home' })
+    },
     fetchUser(value) {
       console.log('fetching user', value)
       this.lastFetchId += 1

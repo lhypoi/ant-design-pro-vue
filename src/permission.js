@@ -10,9 +10,9 @@ import { i18nRender } from '@/locales'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const allowList = ['login', 'register', 'registerResult', 'registerPre', 'tRegister'] // no redirect allowList
+const allowList = ['login', 'register', 'registerResult', 'registerPre', 'tRegister', 'Home'] // no redirect allowList
 const loginRoutePath = '/user/login'
-const defaultRoutePath = '/dashboard/workplace'
+const defaultRoutePath = '/home'
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar

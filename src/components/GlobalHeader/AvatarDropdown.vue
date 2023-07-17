@@ -1,8 +1,8 @@
 <template>
   <a-dropdown v-if="currentUser && currentUser.name" placement="bottomRight">
     <span class="ant-pro-account-avatar">
-      <a-avatar size="small" src="@/assets/avatar.png" class="antd-pro-global-header-index-avatar" />
-      <!-- <span>{{ currentUser.name }}</span> -->
+      <a-avatar size="small" :src="avatarImg" class="antd-pro-global-header-index-avatar" />
+      <span class="text-white">{{ currentUser.name }}</span>
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
@@ -40,6 +40,11 @@ export default {
     menu: {
       type: Boolean,
       default: true
+    }
+  },
+  data() {
+    return {
+      avatarImg: require('@/assets/missing-face.png')
     }
   },
   methods: {

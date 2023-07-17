@@ -52,7 +52,7 @@ export default {
       this.currentUser = {
         name: 'Serati Ma'
       }
-    }, 1500)
+    }, 0)
   }
 }
 </script>

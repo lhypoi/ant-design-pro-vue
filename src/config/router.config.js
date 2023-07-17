@@ -2,10 +2,10 @@
 import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
 // import { bxAnaalyse } from '@/core/icons'
 
-// const RouteView = {
-//   name: 'RouteView',
-//   render: h => h('router-view')
-// }
+const RouteView = {
+  name: 'RouteView',
+  render: h => h('router-view')
+}
 
 export const asyncRouterMap = [
   {
@@ -13,29 +13,103 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: 'menu.home' },
-    redirect: '/dashboard/workplace',
+    redirect: '/home',
     children: [
-      // task
+      // znd/home
       {
-        path: '/task/TaskSquare',
-        name: 'TaskSquare',
-        component: () => import('@/views/task/TaskSquare'),
-        meta: { title: '任务广场', icon: 'appstore' }
+        path: '/home',
+        name: 'Home',
+        component: () => import('@/views/znd/Home'),
+        hidden: true
       },
-      // task2
+      // znd/info
       {
-        path: '/task/TaskSquare2',
-        name: 'TaskSquare2',
-        component: () => import('@/views/task/TaskSquare'),
-        meta: { title: '个人中心', icon: 'user' }
+        path: '/info',
+        name: 'Info',
+        component: () => import('@/views/znd/Info'),
+        meta: { title: 'INFO', icon: 'bulb' }
       },
-      // task3
+      // znd/license
       {
-        path: '/task/TaskSquare3',
-        name: 'TaskSquare3',
-        component: () => import('@/views/task/TaskSquare'),
-        meta: { title: '我的订单', icon: 'profile' }
+        path: '/license',
+        name: 'License',
+        component: () => import('@/views/znd/License'),
+        meta: { title: 'LICENSE', icon: 'database' }
+      },
+      // znd/help
+      {
+        path: '/help',
+        name: 'Help',
+        redirect: '/help/imputation',
+        component: RouteView,
+        meta: { title: 'HELP', icon: 'calendar' },
+        children: [
+          // znd/help/imputation
+          {
+            path: '/help/imputation',
+            name: 'HelpImputation',
+            component: () => import('@/views/znd/HelpImputation'),
+            meta: { title: 'IMPUTATION', icon: 'credit-card' }
+          },
+          // znd/help/imputation
+          {
+            path: '/help/bsp',
+            name: 'HelpBSP',
+            component: () => import('@/views/znd/HelpBSP'),
+            meta: { title: 'BSP', icon: 'container' }
+          }
+        ]
+      },
+      // znd/download
+      {
+        path: '/download',
+        name: 'Download',
+        component: () => import('@/views/znd/Download'),
+        // component: () => import('@/views/list/TableList'),
+        meta: { title: 'DOWNLOAD', icon: 'cloud-download' }
+      },
+      // znd/imputation
+      {
+        path: '/imputation',
+        name: 'Imputation',
+        component: () => import('@/views/znd/Imputation'),
+        meta: { title: 'IMPUTATION', icon: 'cloud-upload' }
+      },
+       // znd/BSP
+      {
+        path: '/BSP',
+        name: 'BSP',
+        component: () => import('@/views/znd/BSP'),
+        meta: { title: 'BSP', icon: 'download' }
+      },
+       // znd/register
+      {
+        path: '/register',
+        name: 'Register',
+        component: () => import('@/views/znd/Register'),
+        meta: { title: 'Register', icon: 'download' }
       }
+      // // task
+      // {
+      //   path: '/task/TaskSquare',
+      //   name: 'TaskSquare',
+      //   component: () => import('@/views/task/TaskSquare'),
+      //   meta: { title: '任务广场', icon: 'appstore' }
+      // },
+      // // task2
+      // {
+      //   path: '/task/TaskSquare2',
+      //   name: 'TaskSquare2',
+      //   component: () => import('@/views/task/TaskSquare'),
+      //   meta: { title: '个人中心', icon: 'user' }
+      // },
+      // // task3
+      // {
+      //   path: '/task/TaskSquare3',
+      //   name: 'TaskSquare3',
+      //   component: () => import('@/views/task/TaskSquare'),
+      //   meta: { title: '我的订单', icon: 'profile' }
+      // }
       // dashboard
       // {
       //   path: '/dashboard',

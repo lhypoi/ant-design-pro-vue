@@ -114,7 +114,8 @@ ol {
         height: 100%;
 
         .ant-pro-top-nav-header-left {
-          flex: auto;
+          flex: 0;
+          padding-right: 40px;
 
           .ant-pro-top-nav-header-logo {
             width: auto;
@@ -123,11 +124,11 @@ ol {
         }
 
         .ant-pro-top-nav-header-menu {
-          flex: 0 !important;
+          flex: auto !important;
 
           .ant-menu {
             display: flex;
-            justify-content: flex-end;
+            justify-content: flex-start;
           }
         }
       }
@@ -171,22 +172,24 @@ ol {
 
 // 修正 antd 样式对 tailwind 的影响
 .anticon svg {
-  display: block;
+  display: block !important;
 }
 
+// TODO: 这里的表单各类字段边框隐藏定制，页面级类？
+// 但如果内部组件需要反转，怎么恢复？
 // 定制 antd input 的边框样式
-.ant-input {
-  border: none !important;
-  background: transparent;
-  box-shadow: none !important;
-}
+// .ant-input {
+//   border: none !important;
+//   background: transparent;
+//   box-shadow: none !important;
+// }
 
 // 定制 antd select 的边框样式
-.ant-select-selection {
-  border: none !important;
-  background: transparent;
-  box-shadow: none !important;
-}
+// .ant-select-selection {
+//   border: none !important;
+//   background: transparent;
+//   box-shadow: none !important;
+// }
 
 // 浏览器自动填充时，取消代理背景色
 input:-webkit-autofill,
