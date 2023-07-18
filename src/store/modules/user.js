@@ -99,6 +99,10 @@ const user = {
       })
     }
 
+  },
+
+  getters: {
+    hasLogin: state => !!(state.roles && state.roles.length)
   }
 }
 

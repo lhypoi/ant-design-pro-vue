@@ -87,7 +87,8 @@ export const asyncRouterMap = [
         path: '/register',
         name: 'Register',
         component: () => import('@/views/znd/Register'),
-        meta: { title: 'Register', icon: 'download' }
+        meta: { title: 'Register' },
+        hidden: true
       }
       // // task
       // {

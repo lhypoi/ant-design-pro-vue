@@ -1,5 +1,5 @@
 <template>
-  <a-dropdown v-if="currentUser && currentUser.name" placement="bottomRight">
+  <a-dropdown v-if="hasLogin" placement="bottomRight">
     <span class="ant-pro-account-avatar">
       <a-avatar size="small" :src="avatarImg" class="antd-pro-global-header-index-avatar" />
       <span class="text-white">{{ currentUser.name }}</span>
@@ -22,21 +22,21 @@
       </a-menu>
     </template>
   </a-dropdown>
-  <span v-else>
-    <a-spin size="small" :style="{ marginLeft: 8, marginRight: 8 }" />
+  <span v-else style="display: block; background: transparent;">
+    <div class="h-full flex flex-row items-center">
+      <div class="text-base text-gray-400 cursor-pointer hover:text-white pr-4">Log In</div>
+      <div class="text-base text-gray-400 cursor-pointer hover:text-white" @click="handleToRegister">Sign Up</div>
+    </div>
   </span>
 </template>
 
 <script>
 import { Modal } from 'ant-design-vue'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'AvatarDropdown',
   props: {
-    currentUser: {
-      type: Object,
-      default: () => null
-    },
     menu: {
       type: Boolean,
       default: true
@@ -46,6 +46,15 @@ export default {
     return {
       avatarImg: require('@/assets/missing-face.png')
     }
+  },
+  computed: {
+    ...mapState({
+      userInfo: state => state.user.info
+    }),
+    ...mapGetters(['hasLogin'])
+  },
+  mounted() {
+    console.log(this.userInfo, this.hasLogin)
   },
   methods: {
     handleToCenter () {
@@ -68,6 +77,9 @@ export default {
         },
         onCancel () {}
       })
+    },
+    handleToRegister() {
+      this.$router.push({ name: 'Register' })
     }
   }
 }
