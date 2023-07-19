@@ -1,4 +1,5 @@
 @import '~ant-design-vue/es/style/themes/default.less';
+@import './tailwind.less';
 
 html,
 body,
@@ -169,6 +170,10 @@ ol {
 // 修正 antd 样式对 tailwind 的影响
 .anticon svg {
   display: block !important;
+}
+
+.ant-btn-primary {
+  background-color: #1890ff;
 }
 
 // TODO: 这里的表单各类字段边框隐藏定制，页面级类？
