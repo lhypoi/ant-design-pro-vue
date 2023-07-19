@@ -24,7 +24,7 @@
   </a-dropdown>
   <span v-else style="display: block; background: transparent;">
     <div class="h-full flex flex-row items-center">
-      <div class="text-base text-gray-400 cursor-pointer hover:text-white pr-4">Log In</div>
+      <div class="text-base text-gray-400 cursor-pointer hover:text-white pr-4" @click="handleToLogin">Log In</div>
       <div class="text-base text-gray-400 cursor-pointer hover:text-white" @click="handleToRegister">Sign Up</div>
     </div>
   </span>
@@ -80,6 +80,9 @@ export default {
     },
     handleToRegister() {
       this.$router.push({ name: 'Register' })
+    },
+    handleToLogin() {
+      this.$router.push({ name: 'Login' })
     }
   }
 }

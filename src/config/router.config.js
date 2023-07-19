@@ -97,6 +97,14 @@ export const asyncRouterMap = [
         component: () => import('@/views/znd/PublicEmailDomains'),
         meta: { title: 'Public Email Domains' },
         hidden: true
+      },
+       // znd/login
+      {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/znd/Login'),
+        meta: { title: 'Login' },
+        hidden: true
       }
       // // task
       // {

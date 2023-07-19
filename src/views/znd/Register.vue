@@ -2,7 +2,7 @@
   <div class="Register flex-auto flex flex-col bg-white rounded-3xl p-8 pt-16">
     <a-form-model
       class="form"
-      ref="ruleForm"
+      ref="registerForm"
       :model="formData"
       :rules="formRules"
       :label-col="formColConfig.label"
@@ -50,7 +50,7 @@
             :loading="emailVerification.sending"
             @click="sendMailCode"
           >Send Code</a-button>
-          <div class="absolute left-full whitespace-nowrap pl-6">
+          <div class="absolute left-full whitespace-nowrap pl-6 text-blue-500 hover:underline">
             <router-link :to="{ name: 'PublicEmailDomains' }" target="_blank">
               List of illegal email domains
             </router-link>
@@ -65,7 +65,7 @@
         />
       </a-form-model-item>
       <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
-        <a-button type="primary" class="submit mt-2" size="large" @click="onSubmit">
+        <a-button type="primary" class="submit mt-2" size="large" :loading="submitting" @click="onSubmit">
           Submit
         </a-button>
       </a-form-model-item>
@@ -75,7 +75,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { sendMailCode } from '@/api/cau'
+import { sendMailCode, signup } from '@/api/cau'
 
 const regexConfig = {
   username: /^[a-z][a-z0-9_]{5,11}$/,
@@ -184,7 +184,8 @@ export default {
       emailVerification: {
         canSend: false,
         sending: false
-      }
+      },
+      submitting: false
     }
   },
   computed: {
@@ -210,24 +211,11 @@ export default {
         this.emailVerification.canSend = valid
       }
     },
-    onSubmit() {
-      this.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          alert('submit!')
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
-    resetForm() {
-      this.$refs.ruleForm.resetFields()
-    },
     async sendMailCode() {
       this.emailVerification.sending = true
       try {
         const res = await sendMailCode({
-          email: '904579880@qq.com'
+          email: this.formData.email
         })
         if (res && res.body === 1) {
           this.$message.success('send success')
@@ -237,6 +225,36 @@ export default {
         console.log(error)
       }
       this.emailVerification.sending = false
+    },
+    onSubmit() {
+      this.$refs.registerForm.validate(async valid => {
+        if (valid) {
+          this.submitting = true
+          try {
+            const res = await signup({
+              email: this.formData.email,
+              username: this.formData.username,
+              password: this.formData.password,
+              code: this.formData.code
+            })
+            if (res && res.header && res.header.resCode === '0000') {
+              this.$success({
+                title: 'Register success',
+                okText: 'To Login',
+                onOk: () => {
+                  this.$router.push({ name: 'Login' })
+                }
+              })
+            } else {
+              this.$message.error(res.header.resMessage || 'register fail')
+            }
+          } catch (error) {
+            this.$message.error('register fail')
+            console.log(error)
+          }
+          this.submitting = false
+        }
+      })
     }
   }
 }
