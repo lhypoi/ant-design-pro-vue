@@ -93,3 +93,16 @@ export function scorePassword (pass) {
 
   return parseInt(score)
 }
+
+export function downloadFile(url, fileName) {
+  window.open(url, '_blank')
+  // var x = new XMLHttpRequest()
+  // x.open('GET', url, true)
+  // x.responseType = 'blob'
+  // x.onload = function(e) {
+  //   var url = window.URL.createObjectURL(x.response)
+  //   var newWindow = window.open(url, '_blank')
+  //   newWindow.document.title = fileName
+  // }
+  // x.send()
+}
