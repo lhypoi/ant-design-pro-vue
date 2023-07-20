@@ -37,7 +37,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { signin } from '@/api/cau'
 
 const regexConfig = {
   email: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
@@ -114,18 +113,15 @@ export default {
         if (valid) {
           this.submitting = true
           try {
-            const res = await signin({
+            await this.$store.dispatch('Login', {
               email: this.formData.email,
               password: this.formData.password
             })
-            if (res && res.header && res.header.resCode === '0000') {
-              this.$message.success('login success')
-              this.$router.push({ name: 'Home' })
-            } else {
-              this.$message.error(res.header.resMessage || 'login fail')
-            }
+            await this.$store.dispatch('GetInfo')
+            this.$message.success('login success')
+            this.$router.push({ name: 'Home' })
           } catch (error) {
-            this.$message.error('login fail')
+            this.$message.error(error.message)
             console.log(error)
           }
           this.submitting = false
