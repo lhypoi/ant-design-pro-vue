@@ -117,7 +117,6 @@ export default {
               email: this.formData.email,
               password: this.formData.password
             })
-            await this.$store.dispatch('GetInfo')
             this.$message.success('login success')
             this.$router.push({ name: 'Home' })
           } catch (error) {
