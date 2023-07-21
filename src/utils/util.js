@@ -95,14 +95,15 @@ export function scorePassword (pass) {
 }
 
 export function downloadFile(url, fileName) {
-  window.open(url, '_blank')
-  // var x = new XMLHttpRequest()
-  // x.open('GET', url, true)
-  // x.responseType = 'blob'
-  // x.onload = function(e) {
-  //   var url = window.URL.createObjectURL(x.response)
-  //   var newWindow = window.open(url, '_blank')
-  //   newWindow.document.title = fileName
-  // }
-  // x.send()
+  var x = new XMLHttpRequest()
+  x.open('GET', url, true)
+  x.responseType = 'blob'
+  x.onload = function(e) {
+      var url = window.URL.createObjectURL(x.response)
+      var a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      a.click()
+  }
+  x.send()
 }
