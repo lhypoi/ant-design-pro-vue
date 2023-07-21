@@ -105,6 +105,14 @@ export const asyncRouterMap = [
         component: () => import('@/views/znd/Login'),
         meta: { title: 'Login' },
         hidden: true
+      },
+      // znd/profile
+      {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('@/views/znd/Profile'),
+        meta: { title: 'Profile' },
+        hidden: true
       }
       // // task
       // {

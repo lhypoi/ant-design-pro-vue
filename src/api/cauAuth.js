@@ -57,3 +57,17 @@ export function getDownloadUrl (parameter) {
     }
   })
 }
+
+export function getUserTaskList (parameter) {
+  return request({
+    url,
+    method: 'post',
+    data: {
+      body: parameter,
+      header: {
+        serviceCode: 'getUserTaskList',
+        reqTime: (new Date()).toISOString()
+      }
+    }
+  })
+}

@@ -22,7 +22,7 @@ const allowList = [
   'Register',
   'PublicEmailDomains',
   'License',
-  'Download',
+  // 'Download',
   'Login'
 ] // no redirect allowList
 const loginRoutePath = '/login'
