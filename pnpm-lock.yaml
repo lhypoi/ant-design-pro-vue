@@ -23,6 +23,9 @@ dependencies:
   core-js:
     specifier: ^3.21.1
     version: 3.24.1
+  cryptography:
+    specifier: ^1.2.3
+    version: 1.2.3
   enquire.js:
     specifier: ^2.1.6
     version: 2.1.6
@@ -50,6 +53,9 @@ dependencies:
   nprogress:
     specifier: ^0.2.0
     version: 0.2.0
+  spark-md5:
+    specifier: ^3.0.2
+    version: 3.0.2
   store:
     specifier: ^2.0.12
     version: 2.0.12
@@ -5165,6 +5171,13 @@ packages:
       public-encrypt: 4.0.3
       randombytes: 2.1.0
       randomfill: 1.0.4
+
+  /cryptography@1.2.3:
+    resolution: {integrity: sha512-T3aCQGYU0z3+u+vzq3d2WhhHzk/XhxNoiohvWzNKsa62KoSzZ0U3gDHRB7GI8MUX7aFXH8Bru5iqGtZyOIx1HQ==}
+    dependencies:
+      lodash: 4.17.21
+      when: 3.7.8
+    dev: false
 
   /css-declaration-sorter@6.3.0(postcss@8.4.24):
     resolution: {integrity: sha512-OGT677UGHJTAVMRhPO+HJ4oKln3wkBTwtDFH0ojbqm+MJm6xuDMHp2nkhh/ThaBqq20IbraBQSWKfSLNHQO9Og==}
@@ -11521,6 +11534,10 @@ packages:
     engines: {node: '>= 8'}
     dev: true
 
+  /spark-md5@3.0.2:
+    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==}
+    dev: false
+
   /spdx-correct@3.1.1:
     resolution: {integrity: sha512-cOYcUWwhCuHCXi49RhFRCyJEK3iPj1Ziz9DpViV3tbZOwXD49QzIN3MpOLJNxh2qwq2lJJZaKMVw9qNi4jTC0w==}
     dependencies:
@@ -13301,6 +13318,10 @@ packages:
       tr46: 2.1.0
       webidl-conversions: 6.1.0
     dev: true
+
+  /when@3.7.8:
+    resolution: {integrity: sha512-5cZ7mecD3eYcMiCH4wtRPA5iFJZ50BJYDfckI5RRpQiktMiYTcn0ccLTZOvcbBume+1304fQztxeNzNS9Gvrnw==}
+    dev: false
 
   /which-boxed-primitive@1.0.2:
     resolution: {integrity: sha512-bwZdv0AKLpplFY2KZRX6TvyuN7ojjr7lwkg6ml0roIy9YeuSr7JS372qlNW18UQYzgYK9ziGcerWqZOmEn9VNg==}

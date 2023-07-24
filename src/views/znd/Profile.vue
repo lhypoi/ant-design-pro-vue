@@ -2,28 +2,22 @@
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
     <div class="border-b border-gray-300 flex flex-row items-center justify-between">
       <div class="text-3xl py-4">Tasks</div>
-      <a-button type="primary" size="large">
+      <a-button type="primary" size="large" @click="toCreateTask">
         Create Task
       </a-button>
     </div>
     <div class="flex flex-row items-center justify-between pt-8 pb-4">
       <div class="flex flex-row items-center">
-        <a-input-search placeholder="input search text" style="width: 200px" @search="onSearch" />
-        <div class="pl-6 whitespace-nowrap text-base">Total 0 results</div>
+        <a-input-search placeholder="input search text" style="width: 200px" v-model="formData.taskName" @search="onSearch" />
+        <div class="pl-6 whitespace-nowrap text-base">Total {{ rowLen }} results</div>
       </div>
       <div class="flex flex-row items-center gap-3">
-        <a-range-picker @change="onChange">
+        <a-range-picker v-model="formData.timeRange" @change="onSearch">
           <a-icon slot="suffixIcon" type="calendar" />
         </a-range-picker>
-        <a-select default-value="lucy" style="width: 120px" @change="handleChange">
-          <a-select-option value="jack">
-            Jack
-          </a-select-option>
-          <a-select-option value="lucy">
-            Lucy
-          </a-select-option>
-          <a-select-option value="Yiminghe">
-            yiminghe
+        <a-select v-model="formData.status" style="width: 120px" @change="onSearch">
+          <a-select-option v-for="item in statusList" :value="item.key" :key="item.key">
+            {{ item.label }}
           </a-select-option>
         </a-select>
       </div>
@@ -34,16 +28,29 @@
       size="default"
       rowKey="key"
       :columns="columns"
-      :data="getBucketFileList"
+      :data="getUserTaskList"
       :alert="false"
       :showPagination="false"
     >
       <span slot="serial" slot-scope="text, record, index">
-        {{ upperLevel.name ? (index === 0 ? '' : index) : index + 1 }}
+        {{ index + 1 }}
       </span>
-      <span slot="name" slot-scope="text, record">
-        <a v-if="record.key !== '_'" @click="handleRowClick(record)">{{ text }}</a>
-        <a v-else @click="handleToParent"><a-icon type="ellipsis" /></a>
+      <span slot="createTime" slot-scope="text">
+        {{ text | timeFormat }}
+      </span>
+      <span slot="endTime" slot-scope="text">
+        {{ text | timeFormat }}
+      </span>
+      <span slot="serial" slot-scope="text, record, index">
+        {{ index + 1 }}
+      </span>
+      <span slot="logPath" slot-scope="text">
+        <a v-if="text" @click="handleDownload(text)"><a-icon type="file" theme="filled" /></a>
+        <span v-else>/</span>
+      </span>
+      <span slot="downloadLink" slot-scope="text">
+        <a v-if="text" @click="handleDownload(text)"><a-icon type="file" theme="filled" /></a>
+        <span v-else>/</span>
       </span>
     </s-table>
   </div>
@@ -51,8 +58,9 @@
 
 <script>
 import { STable } from '@/components'
-import { getUserTaskList, getFolderBucketFileList, getDownloadUrl } from '@/api/cauAuth'
+import { getUserTaskList } from '@/api/cauAuth'
 import { downloadFile } from '@/utils/util'
+import moment from 'moment'
 
 export default {
   name: 'Profile',
@@ -64,73 +72,106 @@ export default {
       columns: [
         {
           title: '#',
-          width: '100px',
+          width: '60px',
           align: 'center',
           scopedSlots: { customRender: 'serial' }
         },
         {
           title: 'Task Name',
-          dataIndex: 'md5'
+          dataIndex: 'taskName',
+          width: 250
         },
         {
           title: 'Create Name',
-          dataIndex: 'md5'
+          dataIndex: 'createTime',
+          width: 160,
+          scopedSlots: { customRender: 'createTime' }
         },
         {
           title: 'End Name',
-          dataIndex: 'md5'
+          dataIndex: 'endTime',
+          width: 160,
+          scopedSlots: { customRender: 'endTime' }
         },
         {
           title: 'Status',
-          dataIndex: 'md5'
+          dataIndex: 'status'
+        },
+        {
+          title: 'MD5',
+          dataIndex: 'fileMd5',
+          width: 280
+        },
+        {
+          title: 'Log',
+          dataIndex: 'logPath',
+          scopedSlots: { customRender: 'logPath' }
+        },
+        {
+          title: 'File',
+          dataIndex: 'downloadLink',
+          scopedSlots: { customRender: 'downloadLink' }
         }
-        // {
-        //   title: 'File name',
-        //   dataIndex: 'name',
-        //   scopedSlots: { customRender: 'name' }
-        // },
-        // {
-        //   title: 'MD5',
-        //   width: '300px',
-        //   dataIndex: 'md5'
-        // }
       ],
-      upperLevel: {},
-      levelStack: [],
-      upperLevel2: {}
+      rowLen: 0,
+      statusList: [
+        {
+          key: '',
+          label: 'All'
+        },
+        {
+          key: 'completed',
+          label: 'Completed'
+        },
+        {
+          key: 'Phasing',
+          label: 'Phasing'
+        },
+        {
+          key: 'failed',
+          label: 'Failed'
+        }
+      ],
+      formData: {
+        taskName: '',
+        timeRange: [],
+        status: ''
+      }
     }
   },
   computed: {
   },
+  filters: {
+    timeFormat (value) {
+      return value ? moment(new Date(parseInt(value))).format('YYYY-MM-DD HH:mm:ss') : '/'
+    }
+  },
   async mounted() {
   },
   methods: {
-    async getBucketFileList() {
+    toCreateTask() {
+      this.$router.push({ name: 'Imputation' })
+    },
+    async getUserTaskList() {
+      console.log(this.formData)
       const tableData = {
         data: []
       }
       try {
-        const res = this.upperLevel.name ? await getFolderBucketFileList({
-          bucketName: this.upperLevel.bucketName,
-          region: this.upperLevel.region,
-          folder: this.upperLevel.name
-        }) : await getUserTaskList({
-
+        const res = await getUserTaskList({
+          taskName: this.formData.taskName || undefined,
+          status: this.formData.status || undefined,
+          startTime: this.formData.timeRange[0] ? this.formData.timeRange[0].valueOf() : undefined,
+          endTime: this.formData.timeRange[1] ? this.formData.timeRange[1].valueOf() : undefined
         })
         if (res && res.header && res.header.resCode === '0000') {
           tableData.data = [
-            ...res.body.folderList,
-            ...(this.upperLevel.name ? res.body.fileList.slice(1) : res.body.fileList)
+            ...res.body
           ].map((row, index) => ({
             ...row,
-            key: index + '_' + row.name,
-            md5: row.etag || '/'
+            key: row.taskId,
+            fileMd5: row.fileMd5 || '/'
           }))
-          if (this.levelStack.length) {
-            tableData.data.unshift({
-              key: '_'
-            })
-          }
         } else {
           this.$message.error(res.header.resMessage || 'load fail')
         }
@@ -138,43 +179,14 @@ export default {
         this.$message.error(error.message)
         console.log(error)
       }
+      this.rowLen = tableData.data.length
       return tableData
     },
-    async handleRowClick(row) {
-      try {
-        if (!row.etag) {
-          this.levelStack.push({ ...this.upperLevel })
-          this.upperLevel = { ...row }
-          this.$refs.table.loadData()
-        } else {
-          this.handleDownload(row)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    handleToParent() {
-      this.upperLevel = { ...this.levelStack.pop() }
+    onSearch() {
       this.$refs.table.loadData()
     },
-    async handleDownload(row) {
-      this.$refs.table.localLoading = true
-      try {
-        const res = await getDownloadUrl({
-          bucketName: row.bucketName,
-          region: row.region,
-          filePath: row.name
-        })
-        if (res && res.header && res.header.resCode === '0000') {
-          downloadFile(res.body, row.name)
-        } else {
-          this.$message.error(res.header.resMessage || 'download fail')
-        }
-      } catch (error) {
-        this.$message.error(error.message)
-        console.log(error)
-      }
-      this.$refs.table.localLoading = false
+    handleDownload(url) {
+      downloadFile(url)
     }
   }
 }

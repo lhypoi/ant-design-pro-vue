@@ -1,37 +1,256 @@
 <template>
-  <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
-    <h1 class="text-4xl font-bold text-center pt-2 pb-5">{{ article.title }}</h1>
-    <div class="border-t border-gray-300 my-4"></div>
-    <p v-for="(item, index) in article.content" :key="index" class="text-gray-500 pt-4 pb-5 text-xl indent-6">{{ item }}</p>
+  <div class="Imputation flex-auto flex flex-col bg-white rounded-3xl p-8 pt-16">
+    <div class="text-4xl pb-8 mb-10 mx-24 text-center font-bold text-black border-b border-solid border-gray-200">Genotype Imputation</div>
+    <a-form-model
+      class="form"
+      ref="imputationForm"
+      :model="formData"
+      :rules="formRules"
+      :label-col="formColConfig.label"
+      :wrapper-col="formColConfig.wrapper"
+      :colon="false"
+    >
+      <a-form-model-item ref="taskName" label="Task Name" prop="taskName">
+        <a-input
+          v-model="formData.taskName"
+          placeholder="Please input"
+          size="large"
+        />
+      </a-form-model-item>
+      <a-form-model-item ref="ref_panel" label="Reference Panel" prop="ref_panel">
+        <a-select v-model="formData.ref_panel" size="large">
+          <a-select-option value="1KCIGP">
+            1KCIGP
+          </a-select-option>
+          <a-select-option value="1KCIGP-v1">
+            1KCIGP-v1
+          </a-select-option>
+        </a-select>
+      </a-form-model-item>
+      <a-form-model-item ref="phasing" label="Phased" prop="phasing">
+        <a-select v-model="formData.phasing" size="large">
+          <a-select-option value="true">
+            YES
+          </a-select-option>
+          <a-select-option value="false">
+            NO
+          </a-select-option>
+        </a-select>
+      </a-form-model-item>
+      <a-form-model-item ref="quality_control" label="Quality Control" prop="quality_control">
+        <a-select v-model="formData.quality_control" size="large">
+          <a-select-option value="true">
+            YES
+          </a-select-option>
+          <a-select-option value="false">
+            NO
+          </a-select-option>
+        </a-select>
+      </a-form-model-item>
+      <a-form-model-item ref="fileList" label="Input VCF Files" prop="fileList">
+        <a-upload :file-list="formData.fileList" :remove="handleFileRemove" :before-upload="beforeUpload">
+          <a-button :loading="fileAnalysising"> <a-icon v-if="!fileAnalysising" type="upload" /> {{ fileAnalysising ? 'MD5 calculating' : 'Uploading Files' }} </a-button>
+        </a-upload>
+      </a-form-model-item>
+      <a-form-model-item ref="agree1" prop="agree1" :wrapper-col="formColConfig.noLabelRow">
+        <a-checkbox v-model="formData.agree1" size="large" class="text-sm">
+          I accept the <router-link class="text-blue-400" :to="{ name: 'License' }">mbiobank license.</router-link>
+        </a-checkbox>
+      </a-form-model-item>
+      <a-form-model-item ref="agree2" prop="agree2" :wrapper-col="formColConfig.noLabelRow">
+        <a-checkbox v-model="formData.agree2" size="large" class="text-sm">
+          I will report any inadvertent data release, security breach or other data management incident of which I become aware.
+        </a-checkbox>
+      </a-form-model-item>
+      <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
+        <a-button type="primary" class="submit mt-2" size="large" :loading="submitting" @click="onSubmit">
+          Submit Task
+        </a-button>
+      </a-form-model-item>
+    </a-form-model>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { createTask } from '@/api/createTask'
+import SparkMD5 from 'spark-md5'
+
 export default {
   name: 'Imputation',
-  components: {
-  },
   data() {
     return {
-      article: {
-        title: `The 1000 Chinese Domestic Pig Genomes Project`,
-        content: [
-          `With the developments of sequencing technology, the costs of sequencing were sharply reduced. The application of porcine genetics in a comprehensive way, facilitated by whole-genome sequencing of large cohorts, provides a systematic approach to study the genes and pathways that can be used for pig breeding.`,
-          `Nowadays, numerous studies have successfully obtained genome sequencing data from different pig breeds worldwide. However, However, some of these datasets contain samples with low sequencing depth, which compromises the accuracy and quantity of variant detection. Especially, Chinese domestic pigs represent more than one-third of Asian pig breeds and exhibit distinct genomic features as highlighted in previous investigations. Nevertheless, the establishment of a representative, standardized, and systematic Chinese domestic pig population cohort remains elusive. Considering the aforementioned challenges in pig genetics and breeding research, large-scale and comprehensive Chinese domestic pig genomic database is urgently needed.`,
-          `To address the above issues, we have established a biobank containing 1,011 individuals distributed across 21 provinces, encompassing over half of the regions in China. The 1000 Chinese Domestic Pig Genomes Project (1KCIGP) aims to augment the genomic database with more than 1,000 deep whole-genome sequencing data of Chinese indigenous pigs. The goal of 1KCIGP is to identify Chinese domestic pig’s common variants and low frequency, high impact variants in novel genes and pathways associated with important economic traits. Simultaneously, the 1KCIGP provides a Chinese domestic reference panel for imputation and a BARCODE SNPs for Pig (BSP) system to identify the pig breed. Thus, the 1KCIGP presents a great opportunity to discover important candidate genetic marks and genes, contributing to advancements in pig breeding and benefiting China as well as the global community.`
+      formData: {
+        taskName: '',
+        ref_panel: '1KCIGP',
+        phasing: 'true',
+        quality_control: 'true',
+        md5_incoming: '',
+        fileList: [],
+        agree1: false,
+        agree2: false
+      },
+      formRules: {
+        taskName: [
+          {
+            validator: (rule, value, callback) => {
+              try {
+                if (!value.trim()) {
+                  callback(new Error('Please input'))
+                }
+              } catch (error) {
+                console.log(error)
+                callback(error)
+              }
+              callback()
+            }
+          }
+        ],
+        fileList: [
+          {
+            validator: (rule, value, callback) => {
+              try {
+                if (value.length === 0) {
+                  callback(new Error('Please upload file'))
+                }
+              } catch (error) {
+                console.log(error)
+                callback(error)
+              }
+              callback()
+            }
+          }
+        ],
+        agree1: [
+          {
+            validator: (rule, value, callback) => {
+              try {
+                if (!value) {
+                  callback(new Error('Please agree'))
+                }
+              } catch (error) {
+                console.log(error)
+                callback(error)
+              }
+              callback()
+            }
+          }
+        ],
+        agree2: [
+          {
+            validator: (rule, value, callback) => {
+              try {
+                if (!value) {
+                  callback(new Error('Please agree'))
+                }
+              } catch (error) {
+                console.log(error)
+                callback(error)
+              }
+              callback()
+            }
+          }
         ]
-      }
+      },
+      fileAnalysising: false,
+      submitting: false
     }
   },
   computed: {
+    ...mapState({
+    }),
+    formColConfig() {
+      const label = { span: 6 }
+      const wrapper = { span: 12 }
+      const noLabelRow = { span: 12, offset: 6 }
+      return {
+        label,
+        wrapper,
+        noLabelRow
+      }
+    }
   },
-  created() {
-  },
-  async mounted() {
+  mounted() {
+    this.formData.taskName = this.getCurTaskName()
   },
   methods: {
+    getCurTaskName() {
+      const currentDate = new Date()
+      const year = currentDate.getFullYear()
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+      const day = String(currentDate.getDate()).padStart(2, '0')
+      const hours = String(currentDate.getHours()).padStart(2, '0')
+      const minutes = String(currentDate.getMinutes()).padStart(2, '0')
+      const seconds = String(currentDate.getSeconds()).padStart(2, '0')
+      const taskName = `imputation_${year}_${month}_${day}_${hours}_${minutes}_${seconds}`
+      return taskName
+    },
+    handleFileRemove() {
+      this.formData.fileList = []
+      this.formData.md5_incoming = ''
+    },
+    beforeUpload(file) {
+      this.formData.fileList = [file]
+      try {
+        this.fileAnalysising = true
+        const reader = new FileReader()
+        const Spark = new SparkMD5.ArrayBuffer()
+        reader.onload = (event) => {
+          Spark.append(event.target.result)
+          const md5 = Spark.end()
+          this.formData.md5_incoming = md5
+          this.fileAnalysising = false
+        }
+        reader.readAsArrayBuffer(file)
+      } catch (error) {
+        console.log(error)
+      }
+      return false
+    },
+    onSubmit() {
+      this.$refs.imputationForm.validate(async valid => {
+        if (valid) {
+          this.submitting = true
+          try {
+            const formData = new FormData()
+            formData.append('taskName', this.formData.taskName)
+            formData.append('ref_panel', this.formData.ref_panel)
+            formData.append('phasing', this.formData.phasing)
+            formData.append('quality_control', this.formData.quality_control)
+            formData.append('md5_incoming', this.formData.md5_incoming)
+            formData.append('file', this.formData.fileList[0])
+            const res = await createTask(formData)
+            if (res && res.message) {
+              this.$success({
+                title: 'Your file has been successfully submitted and your task is running. Once this task complete, we will send an e-mail to inform you and you can download the result in your profile.',
+                okText: 'Ok'
+              })
+            }
+          } catch (error) {
+            this.$message.error('submit fail')
+            console.log(error)
+          }
+          this.submitting = false
+        }
+      })
+    }
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.Imputation {
+  :deep(.form) {
+    .ant-form-item-label {
+      @apply pr-5;
+      label {
+        @apply text-base;
+      }
+    }
+  }
+
+  .submit {
+    @apply bg-green-500 border-0;
+  }
+}
+</style>
