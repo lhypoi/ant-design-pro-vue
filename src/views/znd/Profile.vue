@@ -44,6 +44,9 @@
       <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
+      <span slot="status" slot-scope="text" :class="text === 'completed' ? 'text-green-500' : text === 'failed' ? 'text-red-500' : 'text-blue-500'">
+        {{ text }}
+      </span>
       <span slot="logPath" slot-scope="text">
         <a v-if="text" @click="handleDownload(text)"><a-icon type="file" theme="filled" /></a>
         <span v-else>/</span>
@@ -95,7 +98,8 @@ export default {
         },
         {
           title: 'Status',
-          dataIndex: 'status'
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' }
         },
         {
           title: 'MD5',
