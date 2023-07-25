@@ -172,8 +172,16 @@ ol {
   display: block !important;
 }
 
+.ant-btn-icon-only > i {
+  vertical-align: -2px !important;
+}
+
 .ant-btn-primary {
   background-color: #1890ff;
+}
+
+.ant-btn-primary.success-btn {
+  @apply bg-green-500 border-0;
 }
 
 // TODO: 这里的表单各类字段边框隐藏定制，页面级类？

@@ -48,8 +48,8 @@
         <a v-if="text" @click="handleDownload(text)"><a-icon type="file" theme="filled" /></a>
         <span v-else>/</span>
       </span>
-      <span slot="downloadLink" slot-scope="text">
-        <a v-if="text" @click="handleDownload(text)"><a-icon type="file" theme="filled" /></a>
+      <span slot="downloadLink" slot-scope="text, record">
+        <a v-if="text && record.outOfDate !== '1'" @click="handleDownload(text)"><a-icon type="file" theme="filled" /></a>
         <span v-else>/</span>
       </span>
     </s-table>
@@ -59,7 +59,7 @@
 <script>
 import { STable } from '@/components'
 import { getUserTaskList } from '@/api/cauAuth'
-import { downloadFile } from '@/utils/util'
+// import { downloadFile } from '@/utils/util'
 import moment from 'moment'
 
 export default {
@@ -153,7 +153,6 @@ export default {
       this.$router.push({ name: 'Imputation' })
     },
     async getUserTaskList() {
-      console.log(this.formData)
       const tableData = {
         data: []
       }
@@ -186,7 +185,8 @@ export default {
       this.$refs.table.loadData()
     },
     handleDownload(url) {
-      downloadFile(url)
+      // downloadFile(url)
+      window.open(url, '_blank')
     }
   }
 }

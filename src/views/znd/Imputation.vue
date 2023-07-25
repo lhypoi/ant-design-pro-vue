@@ -1,6 +1,11 @@
 <template>
   <div class="Imputation flex-auto flex flex-col bg-white rounded-3xl p-8 pt-16">
-    <div class="text-4xl pb-8 mb-10 mx-24 text-center font-bold text-black border-b border-solid border-gray-200">Genotype Imputation</div>
+    <div class="text-4xl pb-3 mb-10 mx-24 text-center font-bold text-black border-b border-solid border-gray-200">
+      Genotype Imputation
+      <div class="flex flex-row justify-end">
+        <router-link class="text-sm pt-4 text-blue-400 font-normal" :to="{ name: 'Profile' }">My Profile</router-link>
+      </div>
+    </div>
     <a-form-model
       class="form"
       ref="imputationForm"
@@ -63,7 +68,7 @@
         </a-checkbox>
       </a-form-model-item>
       <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
-        <a-button type="primary" class="submit mt-2" size="large" :loading="submitting" @click="onSubmit">
+        <a-button type="primary" class="success-btn mt-2" size="large" :loading="submitting" @click="onSubmit">
           Submit Task
         </a-button>
       </a-form-model-item>
@@ -223,7 +228,10 @@ export default {
             if (res && res.message) {
               this.$success({
                 title: 'Your file has been successfully submitted and your task is running. Once this task complete, we will send an e-mail to inform you and you can download the result in your profile.',
-                okText: 'Ok'
+                okText: 'To Profile',
+                onOk: () => {
+                  this.$router.push({ name: 'Profile' })
+                }
               })
             }
           } catch (error) {
@@ -247,10 +255,6 @@ export default {
         @apply text-base;
       }
     }
-  }
-
-  .submit {
-    @apply bg-green-500 border-0;
   }
 }
 </style>
