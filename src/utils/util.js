@@ -1,3 +1,5 @@
+import message from 'ant-design-vue/es/message'
+
 export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
@@ -95,6 +97,7 @@ export function scorePassword (pass) {
 }
 
 export function downloadFile(url, fileName) {
+  message.success('The download has been successfully initiated, please wait for a few moments. Upon completion, the browser will pop up a save window.', 5)
   var x = new XMLHttpRequest()
   x.open('GET', url, true)
   x.responseType = 'blob'
