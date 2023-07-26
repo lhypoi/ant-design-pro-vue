@@ -71,3 +71,31 @@ export function getUserTaskList (parameter) {
     }
   })
 }
+
+export function getUserBsp (parameter) {
+  return request({
+    url,
+    method: 'post',
+    data: {
+      body: parameter,
+      header: {
+        serviceCode: 'getUserBsp',
+        reqTime: (new Date()).toISOString()
+      }
+    }
+  })
+}
+
+export function getBspStatus (parameter) {
+  return request({
+    url,
+    method: 'post',
+    data: {
+      body: parameter,
+      header: {
+        serviceCode: 'getBspStatus',
+        reqTime: (new Date()).toISOString()
+      }
+    }
+  })
+}

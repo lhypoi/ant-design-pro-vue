@@ -225,7 +225,7 @@ export default {
             formData.append('md5_incoming', this.formData.md5_incoming)
             formData.append('file', this.formData.fileList[0])
             const res = await createTask(formData)
-            if (res && res.message) {
+            if (res && res.header && res.header.resCode === '0000') {
               this.$success({
                 title: 'Your file has been successfully submitted and your task is running. Once this task complete, we will send an e-mail to inform you and you can download the result in your profile.',
                 okText: 'To Profile',
@@ -233,6 +233,8 @@ export default {
                   this.$router.push({ name: 'Profile' })
                 }
               })
+            } else {
+              this.$message.error(res.header.resMessage || 'submit fail')
             }
           } catch (error) {
             this.$message.error('submit fail')
