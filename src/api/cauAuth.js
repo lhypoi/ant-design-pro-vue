@@ -99,3 +99,31 @@ export function getBspStatus (parameter) {
     }
   })
 }
+
+export function getBreedList (parameter) {
+  return request({
+    url,
+    method: 'post',
+    data: {
+      body: parameter,
+      header: {
+        serviceCode: 'getBreedList',
+        reqTime: (new Date()).toISOString()
+      }
+    }
+  })
+}
+
+export function querySNPData (parameter) {
+  return request({
+    url,
+    method: 'post',
+    data: {
+      body: parameter,
+      header: {
+        serviceCode: 'querySNPData',
+        reqTime: (new Date()).toISOString()
+      }
+    }
+  })
+}

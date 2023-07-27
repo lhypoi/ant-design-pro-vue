@@ -42,7 +42,7 @@ export const asyncRouterMap = [
         name: 'Help',
         redirect: '/help/imputation',
         component: RouteView,
-        meta: { title: 'HELP', icon: 'calendar' },
+        meta: { title: 'HELP', icon: 'file-markdown' },
         children: [
           // znd/help/imputation
           {
@@ -80,7 +80,7 @@ export const asyncRouterMap = [
         path: '/BSP',
         name: 'BSP',
         component: () => import('@/views/znd/BSP'),
-        meta: { title: 'BSP', icon: 'download' }
+        meta: { title: 'BSP', icon: 'cloud-sync' }
       },
        // znd/register
       {

@@ -3,40 +3,44 @@
     <h1 class="text-4xl font-bold text-center pt-2 pb-4">BARCODE SNPs for Pig (BSP)</h1>
     <div class="text-base indent-6 pb-1">A database of specific SNPs for indigenous pigs worldwide. It also supplies quick and precise tools for predicting the breed or population a given individual belongs to, and their potential ancestors.</div>
     <div class="pt-6">
-      <a-tabs :default-active-key="tabForms[1].key" size="large">
+      <a-tabs :default-active-key="tabForms[0].key" size="large">
         <a-tab-pane v-for="item in tabForms" :key="item.key" :tab="item.title">
           <div class="px-4">
             <template v-if="item.key === '1'">
               <div class="flex flex-row items-center justify-between pt-4 pb-4">
-                <a-select
-                  show-search
-                  allowClear
-                  placeholder="Select breed"
-                  v-model="formData[item.key].filteredVal"
-                  @change="handleFormDataChange"
-                  class="w-60"
-                >
-                  <a-select-option v-for="filteredOption in item.filteredOptions" :key="filteredOption" :value="filteredOption">
-                    {{ filteredOption }}
-                  </a-select-option>
-                </a-select>
+                <div class="pr-12 flex-auto">
+                  <a-select
+                    show-search
+                    allowClear
+                    showArrow
+                    mode="multiple"
+                    placeholder="Select breed"
+                    v-model="searchFormData[item.key].breed"
+                    @change="() => handleSearch(item.key)"
+                    class="w-full"
+                  >
+                    <a-select-option v-for="breed in item.breedList" :key="breed" :value="breed">
+                      {{ breed }}
+                    </a-select-option>
+                  </a-select>
+                </div>
                 <a-button type="primary">
                   Export
                 </a-button>
               </div>
-              <!-- <s-table
+              <s-table
                 :ref="'table' + item.key"
                 size="default"
                 rowKey="key"
-                :columns="columns"
-                :data="() => getUserBsp(item.key)"
+                :columns="func1Columns"
+                :data="(params) => querySNPData(item.key, params)"
                 :alert="false"
-                :showPagination="false"
+                showPagination="auto"
               >
                 <span slot="serial" slot-scope="text, record, index">
                   {{ index + 1 }}
                 </span>
-              </s-table> -->
+              </s-table>
             </template>
             <template v-if="item.key === '2' || item.key === '3'">
               <div class="flex flex-row p-4 gap-2 bg-gray-100 mt-1 rounded-lg">
@@ -145,7 +149,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getUserBsp, getBspStatus } from '@/api/cauAuth'
+import { getUserBsp, getBspStatus, getBreedList, querySNPData } from '@/api/cauAuth'
 import { createBsp } from '@/api/createBsp'
 import moment from 'moment'
 import { downloadFile } from '@/utils/util'
@@ -161,11 +165,7 @@ export default {
         {
           key: '1',
           title: 'The database of specific SNPs',
-          filteredOptions: [
-            'pig1',
-            'pig2',
-            'pig3'
-          ]
+          breedList: []
         },
         {
           key: '2',
@@ -187,9 +187,6 @@ export default {
         }
       ],
       formData: {
-        '1': {
-          filteredVal: undefined
-        },
         '2': {
           breed: [],
           fileList1: [],
@@ -204,6 +201,9 @@ export default {
         }
       },
       searchFormData: {
+        '1': {
+          breed: []
+        },
         '2': {
           bspName: '',
           timeRange: []
@@ -276,6 +276,42 @@ export default {
           dataIndex: 'accuracy',
           width: 100
         }
+      ],
+      func1Columns: [
+        {
+          title: '#',
+          width: '60px',
+          align: 'center',
+          scopedSlots: { customRender: 'serial' }
+        },
+        {
+          title: 'Breed',
+          dataIndex: 'breed'
+        },
+        {
+          title: 'Rs ID',
+          dataIndex: 'rsID'
+        },
+        {
+          title: 'Position',
+          dataIndex: 'position'
+        },
+        {
+          title: 'Chromosome',
+          dataIndex: 'chromosome'
+        },
+        {
+          title: 'Alt',
+          dataIndex: 'alt'
+        },
+        {
+          title: 'Pk',
+          dataIndex: 'pk'
+        },
+        {
+          title: 'Ref',
+          dataIndex: 'ref'
+        }
       ]
     }
   },
@@ -289,8 +325,49 @@ export default {
   created() {
   },
   async mounted() {
+    this.initAsyncConfig()
   },
   methods: {
+    async initAsyncConfig() {
+      try {
+        const getBreedListRes = await getBreedList({})
+        if (getBreedListRes && getBreedListRes.header && getBreedListRes.header.resCode === '0000') {
+          this.tabForms[0].breedList = getBreedListRes.body
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async querySNPData(tabKey, params) {
+      const tableData = {
+        data: [],
+        pageSize: params.pageSize,
+        pageNo: params.pageNo,
+        totalCount: 0
+      }
+      try {
+        const res = await querySNPData({
+          breed: this.searchFormData[tabKey].breed.join(','),
+          currentPage: params.pageNo,
+          pageSize: params.pageSize
+        })
+        if (res && res.header && res.header.resCode === '0000') {
+          tableData.data = [
+            ...res.body.data
+          ].map((row, index) => ({
+            ...row,
+            key: row.pk
+          }))
+          tableData.totalCount = res.body.total
+        } else {
+          this.$message.error(res.header.resMessage || 'load fail')
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
+      }
+      return tableData
+    },
     async getUserBsp(tabKey) {
       const tableData = {
         data: []
@@ -321,7 +398,7 @@ export default {
     },
     handleSearch(tabKey) {
       const tableName = 'table' + tabKey
-      this.$refs[tableName][0].loadData()
+      this.$refs[tableName][0].refresh(true)
     },
     async getBspStatus(tabKey) {
       const tableData = {
@@ -356,9 +433,6 @@ export default {
       this.searchResData[tabKey].detailStatus = null
       this.searchResData[tabKey].detailProgress = 0
       this.searchResData[tabKey].detailModal = true
-    },
-    handleFormDataChange() {
-      console.log(this.formData)
     },
     handleFileRemove(tabKey, formKey) {
       this.formData[tabKey][formKey] = []
