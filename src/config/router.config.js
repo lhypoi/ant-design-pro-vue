@@ -22,6 +22,13 @@ export const asyncRouterMap = [
         component: () => import('@/views/znd/Home'),
         hidden: true
       },
+      // znd/home-search
+      {
+        path: '/home-search',
+        name: 'HomeSearch',
+        component: () => import('@/views/znd/HomeSearch'),
+        hidden: true
+      },
       // znd/info
       {
         path: '/info',
