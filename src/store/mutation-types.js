@@ -22,3 +22,10 @@ export const NAV_THEME = {
   LIGHT: 'light',
   DARK: 'dark'
 }
+
+export const APP_NAME = {
+  ZND: 'znd',
+  LINK_DEV: 'link_dev'
+}
+
+export const CUR_APP = APP_NAME.ZND

@@ -24,7 +24,7 @@
                     </a-select-option>
                   </a-select>
                 </div>
-                <a-button type="primary">
+                <a-button type="primary" :loading="searchResData[item.key].exporting" @click="() => handleFunc1Export(item.key)">
                   Export
                 </a-button>
               </div>
@@ -151,8 +151,9 @@
 import { STable } from '@/components'
 import { getUserBsp, getBspStatus, getBreedList, querySNPData } from '@/api/cauAuth'
 import { createBsp } from '@/api/createBsp'
+import { exportDownload } from '@/api/exportDownload'
 import moment from 'moment'
-import { downloadFile } from '@/utils/util'
+import { downloadFile, downloadByStream, getCurTimeStr } from '@/utils/util'
 
 export default {
   name: 'BSP',
@@ -214,6 +215,9 @@ export default {
         }
       },
       searchResData: {
+        '1': {
+          exporting: false
+        },
         '2': {
           rowLen: 0,
           detailId: '',
@@ -487,6 +491,21 @@ export default {
       const url = tabKey === '2' ? '/function2-feature loci information.txt' : '/function3-feature loci information.txt'
       const name = tabKey === '2' ? 'Low Density Full Library Locations.txt' : 'High Density Full Library Locations.txt'
       downloadFile(url, name)
+    },
+    async handleFunc1Export(tabKey) {
+      if (this.searchFormData[tabKey].breed.length) {
+        this.searchResData[tabKey].exporting = true
+        try {
+          const stream = await exportDownload({
+            breed: this.searchFormData[tabKey].breed.join(',')
+          })
+          downloadByStream(stream, 'snps_' + getCurTimeStr() + '.xlsx')
+        } catch (error) {
+          this.$message.error('export fail')
+          console.log(error)
+        }
+        this.searchResData[tabKey].exporting = false
+      }
     }
   }
 }

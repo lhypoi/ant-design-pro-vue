@@ -110,3 +110,25 @@ export function downloadFile(url, fileName) {
   }
   x.send()
 }
+
+export function downloadByStream(stream, fileName) {
+  message.success('The download has been successfully initiated, please wait for a few moments. Upon completion, the browser will pop up a save window.', 5)
+  const url = window.URL.createObjectURL(new Blob([stream]))
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', fileName)
+  document.body.appendChild(link)
+  link.click()
+}
+
+export function getCurTimeStr() {
+  const currentDate = new Date()
+  const year = currentDate.getFullYear()
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+  const day = String(currentDate.getDate()).padStart(2, '0')
+  const hours = String(currentDate.getHours()).padStart(2, '0')
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0')
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0')
+  const str = `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`
+  return str
+}
