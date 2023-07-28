@@ -12,6 +12,7 @@ import { i18nRender } from '@/locales'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const allowList = [
+  '404',
   'login',
   'register',
   'registerResult',
