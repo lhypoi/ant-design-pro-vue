@@ -141,6 +141,18 @@ const asyncRouterMapAll = {
           meta: { title: '任务广场', icon: 'appstore' }
         }
       ]
+    },
+    {
+      path: '/user/register-pre',
+      name: 'registerPre',
+      component: () => import('@/views/user/link/RegisterPre'),
+      hidden: true
+    },
+    {
+      path: '/user/t-register',
+      name: 'tRegister',
+      component: () => import('@/views/user/link/TRegister'),
+      hidden: true
     }
   ]
 }
@@ -187,20 +199,6 @@ export const constantRouterMap = [
       }
     ]
   },
-
-  {
-    path: '/user/register-pre',
-    name: 'registerPre',
-    component: () => import('@/views/user/link/RegisterPre'),
-    hidden: true
-  },
-  {
-    path: '/user/t-register',
-    name: 'tRegister',
-    component: () => import('@/views/user/link/TRegister'),
-    hidden: true
-  },
-
   {
     path: '/404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
