@@ -28,4 +28,4 @@ export const APP_NAME = {
   LINK_DEV: 'link_dev'
 }
 
-export const CUR_APP = APP_NAME.ZND
+export const CUR_APP = APP_NAME.LINK_DEV
