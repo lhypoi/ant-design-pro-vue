@@ -135,23 +135,23 @@ const asyncRouterMapAll = {
       children: [
         // task
         {
-          path: '/task/TaskSquare',
+          path: '/TaskSquare',
           name: 'TaskSquare',
-          component: () => import('@/views/task/TaskSquare'),
+          component: () => import('@/views/link/TaskSquare'),
           meta: { title: '任务广场', icon: 'appstore' }
         }
       ]
     },
     {
-      path: '/user/register-pre',
+      path: '/register-pre',
       name: 'registerPre',
-      component: () => import('@/views/user/link/RegisterPre'),
+      component: () => import('@/views/link/RegisterPre'),
       hidden: true
     },
     {
-      path: '/user/t-register',
+      path: '/t-register',
       name: 'tRegister',
-      component: () => import('@/views/user/link/TRegister'),
+      component: () => import('@/views/link/TRegister'),
       hidden: true
     }
   ]
