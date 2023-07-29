@@ -127,3 +127,17 @@ export function querySNPData (parameter) {
     }
   })
 }
+
+export function searchMainData (parameter) {
+  return request({
+    url,
+    method: 'post',
+    data: {
+      body: parameter,
+      header: {
+        serviceCode: 'searchMainData',
+        reqTime: (new Date()).toISOString()
+      }
+    }
+  })
+}

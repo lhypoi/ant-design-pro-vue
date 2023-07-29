@@ -121,11 +121,20 @@
                 <div v-if="searchResData[item.key].detailStatus === 'processing'" class="py-4 text-blue-400">
                   Processing, currently at {{ searchResData[item.key].detailProgress }}%.
                 </div>
+                <div class="flex flex-row justify-end pb-4">
+                  <a-button
+                    type="primary"
+                    class="success-btn"
+                    @click="() => handleFunc23Export(item.key)"
+                  >
+                    Export
+                  </a-button>
+                </div>
                 <div class="max-h-[600px] overflow-y-auto">
                   <s-table
                     size="default"
                     rowKey="key"
-                    :columns="modalDetailColumns"
+                    :columns="item.key === '2' ? modalDetailColumns : modalDetailFunc3Columns"
                     :data="() => getBspStatus(item.key)"
                     :alert="false"
                     :showPagination="false"
@@ -153,7 +162,7 @@ import { getUserBsp, getBspStatus, getBreedList, querySNPData } from '@/api/cauA
 import { createBsp } from '@/api/createBsp'
 import { exportDownload } from '@/api/exportDownload'
 import moment from 'moment'
-import { downloadFile, downloadByStream, getCurTimeStr } from '@/utils/util'
+import { downloadFile, downloadByStream, getCurTimeStr, exportToExcel } from '@/utils/util'
 
 export default {
   name: 'BSP',
@@ -223,14 +232,16 @@ export default {
           detailId: '',
           detailModal: false,
           detailStatus: null,
-          detailProgress: 0
+          detailProgress: 0,
+          rows: []
         },
         '3': {
           rowLen: 0,
           detailId: '',
           detailModal: false,
           detailStatus: null,
-          detailProgress: 0
+          detailProgress: 0,
+          rows: []
         }
       },
       columns: [
@@ -279,6 +290,39 @@ export default {
           title: 'accuracy',
           dataIndex: 'accuracy',
           width: 100
+        }
+      ],
+      modalDetailFunc3Columns: [
+        {
+          title: '#',
+          width: '60px',
+          align: 'center',
+          dataIndex: 'serialNo',
+          scopedSlots: { customRender: 'serial' }
+        },
+        {
+          title: 'Prediction Breed',
+          dataIndex: 'Prediction Breed'
+        },
+        {
+          title: 'sampleNo',
+          dataIndex: 'sampleNo',
+          width: 160
+        },
+        {
+          title: 'prediction probability',
+          dataIndex: 'prediction probability',
+          width: 120
+        },
+        {
+          title: 'Prediction Possibility for Prediction Breed',
+          dataIndex: 'Prediction Possibility for Prediction Breed',
+          width: 100
+        },
+        {
+          title: 'judgment',
+          dataIndex: 'judgment',
+          width: 120
         }
       ],
       func1Columns: [
@@ -430,6 +474,7 @@ export default {
         this.$message.error(error.message)
         console.log(error)
       }
+      this.searchResData[tabKey].rows = tableData.data
       return tableData
     },
     handleShowDetail(tabKey, detailId) {
@@ -506,6 +551,17 @@ export default {
         }
         this.searchResData[tabKey].exporting = false
       }
+    },
+    handleFunc23Export(tabKey) {
+      if (!this.searchResData[tabKey].rows.length) {
+        return
+      }
+      const columns = Object.keys(this.searchResData[tabKey].rows[0]).map(key => ({
+        key,
+        header: key
+      }))
+      const rows = this.searchResData[tabKey].rows
+      exportToExcel(columns, rows, 'bsp_' + this.searchResData[tabKey].detailId + '.xlsx')
     }
   }
 }

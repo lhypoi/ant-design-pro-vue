@@ -2,7 +2,7 @@
   <a-dropdown v-if="hasLogin" placement="bottomRight">
     <span class="ant-pro-account-avatar">
       <a-avatar size="small" :src="avatarImg" class="antd-pro-global-header-index-avatar" />
-      <span class="text-white">{{ userInfo.username }}</span>
+      <span>{{ userInfo.username }}</span>
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
@@ -28,8 +28,8 @@
   </a-dropdown>
   <span v-else style="display: block; background: transparent;">
     <div class="h-full flex flex-row items-center">
-      <div class="text-base text-gray-400 cursor-pointer hover:text-white pr-4" @click="handleToLogin">Log In</div>
-      <div class="text-base text-gray-400 cursor-pointer hover:text-white" @click="handleToRegister">Sign Up</div>
+      <div class="text-base text-gray-400 cursor-pointer hover:text-gray-700 pr-4" @click="handleToLogin">Log In</div>
+      <div class="text-base text-gray-400 cursor-pointer hover:text-gray-700" @click="handleToRegister">Sign Up</div>
     </div>
   </span>
 </template>
