@@ -1,6 +1,6 @@
 <template>
   <div class="h-full flex items-center">
-    <div class="text-2xl cursor-pointer" :class="isHome ? 'text-white' : 'text-gray-400'" @click="toHome">
+    <div class="text-2xl cursor-pointer" :class="isHome ? 'text-gray-700' : 'text-gray-400'" @click="toHome">
       mBiobank
     </div>
     <!-- <div

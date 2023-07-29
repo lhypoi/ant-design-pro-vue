@@ -1,4 +1,5 @@
 import message from 'ant-design-vue/es/message'
+import ExcelJS from 'exceljs'
 
 export function timeFix () {
   const time = new Date()
@@ -131,4 +132,24 @@ export function getCurTimeStr() {
   const seconds = String(currentDate.getSeconds()).padStart(2, '0')
   const str = `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`
   return str
+}
+
+export function exportToExcel(columns, rows, fileName) {
+  // columns [{ header: '姓名', key: 'name' }]
+  // rows  [{ name: '张三', age: 25, gender: '男' }]
+  const workbook = new ExcelJS.Workbook()
+  const worksheet = workbook.addWorksheet('Sheet 1')
+  worksheet.columns = columns
+  rows.forEach(row => {
+    worksheet.addRow(row)
+  })
+  workbook.xlsx.writeBuffer().then(buffer => {
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    a.click()
+    URL.revokeObjectURL(url)
+  })
 }
