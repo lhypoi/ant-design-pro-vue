@@ -97,19 +97,28 @@ export function scorePassword (pass) {
   return parseInt(score)
 }
 
+function isFileExtensionWillPre(filename = '') {
+  var validExtensions = /\.(txt|xlsx|xls|ppt|pptx|doc|docx|pdf)$/i
+  return validExtensions.test(filename)
+}
+
 export function downloadFile(url, fileName) {
-  message.success('The download has been successfully initiated, please wait for a few moments. Upon completion, the browser will pop up a save window.', 5)
-  var x = new XMLHttpRequest()
-  x.open('GET', url, true)
-  x.responseType = 'blob'
-  x.onload = function(e) {
-      var url = window.URL.createObjectURL(x.response)
-      var a = document.createElement('a')
-      a.href = url
-      a.download = fileName
-      a.click()
+  if (isFileExtensionWillPre(fileName)) {
+    message.success('The download has been successfully initiated, please wait for a few moments. Upon completion, the browser will pop up a save window.', 5)
+    var x = new XMLHttpRequest()
+    x.open('GET', url, true)
+    x.responseType = 'blob'
+    x.onload = function(e) {
+        var url = window.URL.createObjectURL(x.response)
+        var a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        a.click()
+    }
+    x.send()
+  } else {
+    window.open(url, fileName, 'download')
   }
-  x.send()
 }
 
 export function downloadByStream(stream, fileName) {

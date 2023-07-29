@@ -1,14 +1,34 @@
 <template>
-  <div class="min-h-screen relative p-6 flex flex-col justify-center">
+  <div class="relative">
     <!-- bg -->
     <div class="absolute top-0 left-0 h-full w-1/2 bg-indigo-50 -skew-x-6 scale-x-150 -translate-x-1/4"></div>
+    <div class="relative min-h-screen mx-auto px-8 py-10 xl:max-w-[1200px]">
+      <div class="pb-8">
+        <img src="@/assets/logo.webp" alt="" class="h-6">
+      </div>
+      <div class="mx-auto p-4 border border-solid border-gray-400 rounded-md bg-white xl:max-w-[1000px]">
+        <div class="mx-auto xl:max-w-[600px]">
+          <div class="border border-solid border-gray-400 rounded-md flex p-2">
+            <div
+              v-for="item in stepList"
+              :key="item.key"
+              class="flex-auto flex items-center justify-center h-8 text-base rounded-md transition-colors"
+              :class="item.key === curStep ? 'bg-blue-50 text-slate-950' : 'text-gray-400'"
+            >{{ item.label }}</div>
+          </div>
+          <div>
+
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- logo -->
-    <div class="relative flex pl-4 pb-6">
+    <div class="hidden relative flex pl-4 pb-6">
       <img src="@/assets/logo.webp" alt="" class="h-6">
     </div>
     <!-- container -->
     <div
-      class="relative m-h-[624px] border border-solid border-gray-400 rounded-3xl bg-white px-4 py-8"
+      class="hidden relative m-h-[624px] border border-solid border-gray-400 rounded-3xl bg-white px-4 py-8"
     >
       <!-- step -->
       <div class="w-full mt-8 border border-solid border-gray-400 rounded-md p-1 flex">
