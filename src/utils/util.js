@@ -117,7 +117,7 @@ export function downloadFile(url, fileName) {
     }
     x.send()
   } else {
-    window.open(url, fileName, 'download')
+    window.open(url, '_blank')
   }
 }
 

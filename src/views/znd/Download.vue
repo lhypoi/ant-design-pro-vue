@@ -28,6 +28,9 @@
         <a v-if="record.key !== '_'" @click="handleRowClick(record)">{{ text }}</a>
         <a v-else @click="handleToParent"><a-icon type="ellipsis" /></a>
       </span>
+      <span slot="size" slot-scope="text">
+        {{ text | filesize }}
+      </span>
     </s-table>
   </div>
 </template>
@@ -76,8 +79,14 @@ export default {
         },
         {
           title: 'MD5',
-          width: '300px',
+          width: '350px',
           dataIndex: 'md5'
+        },
+        {
+          title: 'size',
+          width: '200px',
+          dataIndex: 'size',
+          scopedSlots: { customRender: 'size' }
         }
       ],
       upperLevel: {},
