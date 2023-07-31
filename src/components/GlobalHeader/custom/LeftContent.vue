@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex items-center">
-    <div class="text-2xl cursor-pointer" :class="isHome ? 'text-gray-700' : 'text-gray-400'" @click="toHome">
-      mBiobank
+    <div class="text-2xl cursor-pointer w-20 h-9" :class="isHome ? 'text-gray-700' : 'text-gray-400'" @click="toHome">
+      <img :src="logoImg" alt="logo" style="width: auto; height: 100%; vertical-align: 0; display: block;">
     </div>
     <!-- <div
       class="flex-auto ml-4 sm:ml-8 mr-2 sm:mr-16 flex items-center h-9 rounded-full border border-solid border-zinc-200 bg-neutral-50 hover:ring-1 hover:ring-indigo-500 px-6"
@@ -42,12 +42,18 @@
 </template>
 <script>
 import { debounce } from 'lodash-es'
+import { APP_NAME, CUR_APP } from '@/store/mutation-types'
 
 export default {
   data() {
     this.lastFetchId = 0
     this.fetchUser = debounce(this.fetchUser, 800)
+    const logoImgAll = {
+      [APP_NAME.ZND]: require('@/assets/znd/logo.png'),
+      [APP_NAME.LINK_DEV]: require('@/assets/znd/logo.png')
+    }
     return {
+      logoImg: logoImgAll[CUR_APP],
       data: [],
       value: [],
       fetching: false
