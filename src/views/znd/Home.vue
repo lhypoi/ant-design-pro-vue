@@ -1,7 +1,7 @@
 <template>
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
     <div class="flex flex-row justify-center h-28 mt-20">
-      <img src="http://chinamap-public-sh.oss-cn-shanghai.aliyuncs.com/static%2Ffiles%2FchinaMap.png" class="h-full w-auto" alt="">
+      <img src="@/assets/znd/logo.png" class="h-full w-auto" alt="">
     </div>
     <div class="flex flex-row items-start justify-between px-32 pt-20">
       <div class="w-3/12 pr-2">
@@ -17,7 +17,7 @@
           :model="formData"
           :rules="formRules"
         >
-          <div class="flex flex-row gap-1">
+          <div class="flex flex-row items-start gap-1">
             <template v-if="formData.type === 'gene'">
               <a-form-model-item key="gene" prop="gene" style="width: 100%">
                 <a-input
@@ -39,6 +39,8 @@
             <template v-if="formData.type === 'range'">
               <a-form-model-item key="chrom" prop="chrom" style="width: 36%">
                 <a-input
+                  addon-before="chr"
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.chrom"
                   placeholder="1-18, X or Y"
@@ -46,6 +48,7 @@
               </a-form-model-item>
               <a-form-model-item key="startPos" prop="startPos" style="width: 32%">
                 <a-input
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.startPos"
                   placeholder="start position"
@@ -53,6 +56,7 @@
               </a-form-model-item>
               <a-form-model-item key="endPos" prop="endPos" style="width: 32%">
                 <a-input
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.endPos"
                   placeholder="end position"
@@ -62,6 +66,8 @@
             <template v-if="formData.type === 'pos'">
               <a-form-model-item key="chrom2" prop="chrom2" style="width: 36%">
                 <a-input
+                  addon-before="chr"
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.chrom2"
                   placeholder="1-18, X or Y"
@@ -69,6 +75,7 @@
               </a-form-model-item>
               <a-form-model-item key="pos" prop="pos" style="width: 64%">
                 <a-input
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.pos"
                   placeholder="position"
@@ -121,19 +128,19 @@ export default {
     return {
       typeList: [
         {
-          label: 'Gene',
+          label: 'Gene symbol',
           key: 'gene'
         },
         {
-          label: 'ID',
+          label: 'rsID',
           key: 'id'
         },
         {
-          label: 'CHROM range ',
+          label: 'Regions',
           key: 'range'
         },
         {
-          label: 'CHROM special',
+          label: 'Positions',
           key: 'pos'
         }
       ],

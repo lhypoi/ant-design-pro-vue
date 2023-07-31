@@ -1,3 +1,10 @@
+import { APP_NAME, CUR_APP } from '@/store/mutation-types'
+
+const appTitleAll = {
+  [APP_NAME.ZND]: '1KCIGP',
+  [APP_NAME.LINK_DEV]: '领克数云'
+}
+
 /**
  * 项目默认配置项
  * primaryColor - 默认主题色, 如果修改颜色不生效，请清理 localStorage
@@ -23,7 +30,7 @@ export default {
   menu: {
     locale: true
   },
-  title: 'Ant Design Pro',
+  title: appTitleAll[CUR_APP],
   pwa: false,
   iconfontUrl: '',
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'

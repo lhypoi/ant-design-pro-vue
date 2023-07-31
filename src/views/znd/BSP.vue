@@ -533,7 +533,7 @@ export default {
       this.formData[tabKey].creating = false
     },
     handleFullDownload(tabKey) {
-      const url = tabKey === '2' ? '/function2-feature loci information.txt' : '/function3-feature loci information.txt'
+      const url = tabKey === '2' ? '/znd/function2-feature loci information.txt' : '/znd/function3-feature loci information.txt'
       const name = tabKey === '2' ? 'Low Density Full Library Locations.txt' : 'High Density Full Library Locations.txt'
       downloadFile(url, name)
     },
