@@ -14,7 +14,7 @@
           :model="formData"
           :rules="formRules"
         >
-          <div class="flex flex-row gap-1">
+          <div class="flex flex-row items-start gap-1">
             <template v-if="formData.type === 'gene'">
               <a-form-model-item key="gene" prop="gene" style="width: 100%">
                 <a-input
@@ -36,6 +36,8 @@
             <template v-if="formData.type === 'range'">
               <a-form-model-item key="chrom" prop="chrom" style="width: 36%">
                 <a-input
+                  addon-before="chr"
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.chrom"
                   placeholder="1-18, X or Y"
@@ -43,6 +45,7 @@
               </a-form-model-item>
               <a-form-model-item key="startPos" prop="startPos" style="width: 32%">
                 <a-input
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.startPos"
                   placeholder="start position"
@@ -50,6 +53,7 @@
               </a-form-model-item>
               <a-form-model-item key="endPos" prop="endPos" style="width: 32%">
                 <a-input
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.endPos"
                   placeholder="end position"
@@ -59,6 +63,8 @@
             <template v-if="formData.type === 'pos'">
               <a-form-model-item key="chrom2" prop="chrom2" style="width: 36%">
                 <a-input
+                  addon-before="chr"
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.chrom2"
                   placeholder="1-18, X or Y"
@@ -66,6 +72,7 @@
               </a-form-model-item>
               <a-form-model-item key="pos" prop="pos" style="width: 64%">
                 <a-input
+                  style="display: block; top: 0; height: 40px; overflow: hidden;"
                   size="large"
                   v-model="formData.pos"
                   placeholder="position"
@@ -125,51 +132,57 @@ export default {
           scopedSlots: { customRender: 'serial' }
         },
         {
-          title: 'Alt_freq',
-          dataIndex: 'Alt_freq'
-        },
-        {
           title: 'CHROM',
           dataIndex: 'CHROM'
-        },
-        {
-          title: 'ALT',
-          dataIndex: 'ALT',
-          width: 200
         },
         {
           title: 'POS',
           dataIndex: 'POS'
         },
         {
+          title: 'ID',
+          dataIndex: 'ID'
+        },
+        {
+          title: 'REF',
+          dataIndex: 'REF'
+        },
+        {
+          title: 'ALT',
+          dataIndex: 'ALT'
+        },
+        {
           title: 'QUAL',
           dataIndex: 'QUAL'
         },
         {
-          title: 'REF',
-          dataIndex: 'REF',
-          width: 200
+          title: 'Alt_freq',
+          dataIndex: 'Alt_freq'
         },
         {
-          title: 'pk',
-          dataIndex: 'pk'
+          title: 'gene',
+          dataIndex: 'gene'
+        },
+        {
+          title: 'European_AF',
+          dataIndex: 'European_AF'
         }
       ],
       typeList: [
         {
-          label: 'Gene',
+          label: 'Gene symbol',
           key: 'gene'
         },
         {
-          label: 'ID',
+          label: 'rsID',
           key: 'id'
         },
         {
-          label: 'CHROM range ',
+          label: 'Regions',
           key: 'range'
         },
         {
-          label: 'CHROM special',
+          label: 'Positions',
           key: 'pos'
         }
       ],
@@ -344,7 +357,7 @@ export default {
             ...res.body.data
           ].map((row, index) => ({
             ...row,
-            key: row.pk + '_' + row.POS + '_' + row.CHROM + '_' + row.ALT
+            key: row.pk + '_' + row.POS + '_' + row.CHROM + '_' + row.ALT + '_' + row.Alt_freq + '_' + row.ID
           }))
           tableData.totalCount = res.body.total
         } else {
