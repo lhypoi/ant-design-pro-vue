@@ -1,10 +1,10 @@
 <template>
   <div class="Login flex-auto flex flex-col bg-white rounded-3xl p-8 pt-16">
     <div class="flex flex-row">
-      <div class="w-2/5">
+      <div class="w-0">
 
       </div>
-      <div class="w-3/5">
+      <div class="w-full">
         <a-form-model
           class="form"
           ref="loginForm"

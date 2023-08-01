@@ -44,14 +44,41 @@
             </template>
             <template v-if="item.key === '2' || item.key === '3'">
               <div class="flex flex-row p-4 gap-2 bg-gray-100 mt-1 rounded-lg">
+                <div v-if="item.key === '2'">
+                  <a-tooltip :overlayStyle="{ maxWidth: '1000px' }" placement="topLeft">
+                    <template slot="title">
+                      <div style="width: 920px;">
+                        If select based on full library, the SNPs must meet the Low Density Full Library Location.
+                        <br>
+                        If you select based on custom SNPs, the file to be uploaded must match the breed-specific SNPs downloaded from The database of specific SNPs.
+                      </div>
+                    </template>
+                    <a-button type="primary" icon="download" class="success-btn" @click="handleFullDownload(item.key)" />
+                  </a-tooltip>
+                </div>
+                <div v-if="item.key === '2'" class="w-56">
+                  <a-select
+                    showArrow
+                    placeholder="Select Prediction Type"
+                    v-model="formData[item.key].predictionType"
+                    @change="() => handlePredictionTypeChange(item.key)"
+                    class="w-full"
+                  >
+                    <a-select-option v-for="filteredOption in item.predictionTypeList" :key="filteredOption.key" :value="filteredOption.key">
+                      {{ filteredOption.label }}
+                    </a-select-option>
+                  </a-select>
+                </div>
                 <a-select
+                  v-if="item.key === '2'"
                   show-search
                   allowClear
                   showArrow
                   mode="multiple"
                   placeholder="Select breed"
+                  :disabled="formData[item.key].predictionType === 'all'"
                   v-model="formData[item.key].breed"
-                  class="w-full"
+                  class="flex-auto"
                 >
                   <a-select-option v-for="filteredOption in item.breedList" :key="filteredOption" :value="filteredOption">
                     {{ filteredOption }}
@@ -81,7 +108,7 @@
                 <div class="flex flex-row items-center">
                   <a-input-search placeholder="input search text" style="width: 200px" v-model="searchFormData[item.key].bspName" @search="() => handleSearch(item.key)" />
                   <div class="pl-6 whitespace-nowrap text-base">Total {{ searchResData[item.key].rowLen }} results</div>
-                  <div class="pl-4">
+                  <div v-if="item.key === '3'" class="pl-4">
                     <div class="underline cursor-pointer text-blue-500" @click="handleFullDownload(item.key)">Download {{ item.key === '2' ? 'Low' : 'High' }} Density Full Library Locations</div>
                   </div>
                 </div>
@@ -107,7 +134,7 @@
                   {{ text | timeFormat }}
                 </span>
                 <span slot="detail" slot-scope="text, record">
-                  <a @click="handleShowDetail(item.key, record.fileId)">detail</a>
+                  <a @click="handleShowDetail(item.key, record.fileId, record)">detail</a>
                 </span>
               </s-table>
               <a-modal
@@ -130,7 +157,7 @@
                     Export
                   </a-button>
                 </div>
-                <div class="max-h-[600px] overflow-y-auto">
+                <div>
                   <s-table
                     size="default"
                     rowKey="key"
@@ -138,6 +165,7 @@
                     :data="() => getBspStatus(item.key)"
                     :alert="false"
                     :showPagination="false"
+                    :scroll="{ x: item.key === '2' ? undefined : true, y: 500 }"
                   >
                     <span slot="serial" slot-scope="text, record, index">
                       {{ index + 1 }}
@@ -184,6 +212,16 @@ export default {
             'Anqing Six-end-white pig',
             'Bama Xiang pig',
             'Bamei pig'
+          ],
+          predictionTypeList: [
+            {
+              label: 'based on full library',
+              key: 'all'
+            },
+            {
+              label: 'based on Custom SNPs',
+              key: 'part'
+            }
           ]
         },
         {
@@ -193,17 +231,29 @@ export default {
             'Anqing Six-end-white pig',
             'Bama Xiang pig',
             'Bamei pig'
+          ],
+          predictionTypeList: [
+            {
+              label: 'based on full library',
+              key: 'all'
+            },
+            {
+              label: 'based on Custom SNPs',
+              key: 'part'
+            }
           ]
         }
       ],
       formData: {
         '2': {
+          predictionType: 'all',
           breed: [],
           fileList1: [],
           fileList2: [],
           creating: false
         },
         '3': {
+          predictionType: 'all',
           breed: [],
           fileList1: [],
           fileList2: [],
@@ -230,6 +280,7 @@ export default {
         '2': {
           rowLen: 0,
           detailId: '',
+          detaiRow: {},
           detailModal: false,
           detailStatus: null,
           detailProgress: 0,
@@ -238,6 +289,7 @@ export default {
         '3': {
           rowLen: 0,
           detailId: '',
+          detaiRow: {},
           detailModal: false,
           detailStatus: null,
           detailProgress: 0,
@@ -246,7 +298,7 @@ export default {
       },
       columns: [
         {
-          title: '#',
+          title: 'No',
           width: '60px',
           align: 'center',
           scopedSlots: { customRender: 'serial' }
@@ -271,67 +323,129 @@ export default {
       ],
       modalDetailColumns: [
         {
-          title: '#',
+          title: 'No',
           width: '60px',
           align: 'center',
           dataIndex: 'serialNo',
           scopedSlots: { customRender: 'serial' }
         },
         {
-          title: 'Prediction Breed',
-          dataIndex: 'Prediction Breed'
-        },
-        {
-          title: 'sampleNo',
+          title: 'SampleNo',
           dataIndex: 'sampleNo',
           width: 160
         },
         {
-          title: 'accuracy',
+          title: 'Prediction Breed',
+          dataIndex: 'Prediction Breed'
+        },
+        {
+          title: 'Accuracy',
           dataIndex: 'accuracy',
           width: 100
         }
       ],
       modalDetailFunc3Columns: [
         {
-          title: '#',
+          title: 'No',
           width: '60px',
           align: 'center',
           dataIndex: 'serialNo',
+          fixed: 'left',
           scopedSlots: { customRender: 'serial' }
-        },
-        {
-          title: 'Prediction Breed',
-          dataIndex: 'Prediction Breed'
         },
         {
           title: 'sampleNo',
           dataIndex: 'sampleNo',
-          width: 160
-        },
-        {
-          title: 'prediction probability',
-          dataIndex: 'prediction probability',
           width: 120
-        },
-        {
-          title: 'Prediction Possibility for Prediction Breed',
-          dataIndex: 'Prediction Possibility for Prediction Breed',
-          width: 100
         },
         {
           title: 'judgment',
           dataIndex: 'judgment',
           width: 120
+        },
+        {
+          title: 'prediction accuracy',
+          dataIndex: 'prediction probability',
+          width: 160
+        },
+        {
+          title: 'Prediction Breed',
+          dataIndex: 'Prediction Breed',
+          width: 220
+        },
+        {
+          title: 'Prediction accuracy for Prediction Breed',
+          dataIndex: 'Prediction Possibility for Prediction Breed',
+          width: 300
+        },
+        {
+          title: 'Ancestor name1',
+          dataIndex: 'Ancestor 1',
+          width: 140
+        },
+        {
+          title: 'Ancestor proportion1',
+          dataIndex: 'Admixture (Ancestor 1)',
+          width: 170
+        },
+        {
+          title: 'Ancestor name2',
+          dataIndex: 'Ancestor 2',
+          width: 140
+        },
+        {
+          title: 'Ancestor proportion2',
+          dataIndex: 'Admixture (Ancestor 2)',
+          width: 170
+        },
+        {
+          title: 'Ancestor name3',
+          dataIndex: 'Ancestor 3',
+          width: 140
+        },
+        {
+          title: 'Ancestor proportion3',
+          dataIndex: 'Admixture (Ancestor 3)',
+          width: 170
+        },
+        {
+          title: 'Ancestor name4',
+          dataIndex: 'Ancestor 4',
+          width: 140
+        },
+        {
+          title: 'Ancestor proportion4',
+          dataIndex: 'Admixture (Ancestor 4)',
+          width: 170
+        },
+        {
+          title: 'Ancestor name5',
+          dataIndex: 'Ancestor 5',
+          width: 140
+        },
+        {
+          title: 'Ancestor proportion5',
+          dataIndex: 'Admixture (Ancestor 5)',
+          width: 170
+        },
+        {
+          title: 'Ancestor name6',
+          dataIndex: 'Ancestor 6',
+          width: 140
+        },
+        {
+          title: 'Ancestor proportion6',
+          dataIndex: 'Admixture (Ancestor 6)',
+          width: 170
         }
       ],
       func1Columns: [
-        {
-          title: '#',
-          width: '60px',
-          align: 'center',
-          scopedSlots: { customRender: 'serial' }
-        },
+        // {
+        //   title: 'No',
+        //   dataIndex: 'pk',
+        //   align: 'center',
+        //   width: '100px'
+        // },
         {
           title: 'Breed',
           dataIndex: 'breed'
@@ -341,24 +455,20 @@ export default {
           dataIndex: 'rsID'
         },
         {
-          title: 'Position',
-          dataIndex: 'position'
-        },
-        {
           title: 'Chromosome',
           dataIndex: 'chromosome'
         },
         {
-          title: 'Alt',
-          dataIndex: 'alt'
-        },
-        {
-          title: 'Pk',
-          dataIndex: 'pk'
+          title: 'Position',
+          dataIndex: 'position'
         },
         {
           title: 'Ref',
           dataIndex: 'ref'
+        },
+        {
+          title: 'Alt',
+          dataIndex: 'alt'
         }
       ]
     }
@@ -477,8 +587,9 @@ export default {
       this.searchResData[tabKey].rows = tableData.data
       return tableData
     },
-    handleShowDetail(tabKey, detailId) {
+    handleShowDetail(tabKey, detailId, detaiRow) {
       this.searchResData[tabKey].detailId = detailId
+      this.searchResData[tabKey].detaiRow = detaiRow
       this.searchResData[tabKey].detailStatus = null
       this.searchResData[tabKey].detailProgress = 0
       this.searchResData[tabKey].detailModal = true
@@ -502,6 +613,10 @@ export default {
       return taskName
     },
     async createBsp(tabKey) {
+      if (this.formData[tabKey].predictionType === 'part' && !this.formData[tabKey].breed.length) {
+        this.$message.warning('Please select breed')
+        return
+      }
       if (!this.formData[tabKey].fileList1[0]) {
         this.$message.warning('Please upload map file')
         return
@@ -514,8 +629,8 @@ export default {
       try {
         const formData = new FormData()
         formData.append('bspName', this.getCurBspName())
-        formData.append('predicitonType', this.formData[tabKey].breed.length ? 'part' : 'all')
-        formData.append('breed', this.formData[tabKey].breed.join(','))
+        if (tabKey === '2') formData.append('predicitonType', this.formData[tabKey].predictionType)
+        if (tabKey === '2') formData.append('breed', this.formData[tabKey].breed.join(','))
         formData.append('file1', this.formData[tabKey].fileList1[0])
         formData.append('file2', this.formData[tabKey].fileList2[0])
         formData.append('fnType', tabKey === '2' ? 'fn2' : 'fn3')
@@ -556,12 +671,17 @@ export default {
       if (!this.searchResData[tabKey].rows.length) {
         return
       }
-      const columns = Object.keys(this.searchResData[tabKey].rows[0]).map(key => ({
-        key,
-        header: key
+      const columns = (tabKey === '2' ? this.modalDetailColumns : this.modalDetailFunc3Columns).map(item => ({
+        key: item.dataIndex,
+        header: item.title
       }))
       const rows = this.searchResData[tabKey].rows
-      exportToExcel(columns, rows, 'bsp_' + this.searchResData[tabKey].detailId + '.xlsx')
+      exportToExcel(columns, rows, this.searchResData[tabKey].detaiRow.bspName + '.xlsx')
+    },
+    handlePredictionTypeChange(tabKey) {
+      if (this.formData[tabKey].predictionType === 'all') {
+        this.formData[tabKey].breed = []
+      }
     }
   }
 }
