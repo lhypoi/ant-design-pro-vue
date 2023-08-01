@@ -66,7 +66,7 @@
       </a-form-model-item>
       <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
         <a-button type="primary" class="submit mt-2" size="large" :loading="submitting" @click="onSubmit">
-          Submit
+          Sign Up
         </a-button>
       </a-form-model-item>
     </a-form-model>

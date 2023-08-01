@@ -1,37 +1,49 @@
 <template>
   <div class="Login flex-auto flex flex-col bg-white rounded-3xl p-8 pt-16">
-    <a-form-model
-      class="form"
-      ref="loginForm"
-      :model="formData"
-      :rules="formRules"
-      :label-col="formColConfig.label"
-      :wrapper-col="formColConfig.wrapper"
-      :colon="false"
-    >
-      <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
-        <div class="text-4xl pb-8 font-bold text-black border-b border-solid border-gray-200">Login</div>
-      </a-form-model-item>
-      <a-form-model-item ref="email" label="E-Mail Address" prop="email">
-        <a-input
-          v-model="formData.email"
-          placeholder="It should be a valid and non-public domain email address."
-          size="large"
-        />
-      </a-form-model-item>
-      <a-form-model-item ref="password" label="Password" prop="password">
-        <a-input-password
-          v-model="formData.password"
-          placeholder="At least 8 characters."
-          size="large"
-        />
-      </a-form-model-item>
-      <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
-        <a-button type="primary" class="submit mt-2" size="large" :loading="submitting" @click="onSubmit">
-          Submit
-        </a-button>
-      </a-form-model-item>
-    </a-form-model>
+    <div class="flex flex-row">
+      <div class="w-2/5">
+
+      </div>
+      <div class="w-3/5">
+        <a-form-model
+          class="form"
+          ref="loginForm"
+          :model="formData"
+          :rules="formRules"
+          :label-col="formColConfig.label"
+          :wrapper-col="formColConfig.wrapper"
+          :colon="false"
+        >
+          <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
+            <div class="text-4xl pb-8 font-bold text-black border-b border-solid border-gray-200">Login</div>
+          </a-form-model-item>
+          <a-form-model-item ref="email" label="E-Mail Address" prop="email">
+            <a-input
+              v-model="formData.email"
+              placeholder="It should be a valid and non-public domain email address."
+              size="large"
+            />
+          </a-form-model-item>
+          <a-form-model-item ref="password" label="Password" prop="password">
+            <a-input-password
+              v-model="formData.password"
+              placeholder="At least 8 characters."
+              size="large"
+            />
+          </a-form-model-item>
+          <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
+            <div class="flex flex-row gap-12 mt-2">
+              <a-button type="primary" class="submit" size="large" :loading="submitting" @click="onSubmit">
+                Log In
+              </a-button>
+              <a-button type="primary" class="submit" size="large" @click="handleToRegister">
+                Sign Up
+              </a-button>
+            </div>
+          </a-form-model-item>
+        </a-form-model>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -96,8 +108,8 @@ export default {
     }),
     formColConfig() {
       const label = { span: 6 }
-      const wrapper = { span: 12 }
-      const noLabelRow = { span: 12, offset: 6 }
+      const wrapper = { span: 16 }
+      const noLabelRow = { span: 16, offset: 6 }
       return {
         label,
         wrapper,
@@ -126,6 +138,9 @@ export default {
           this.submitting = false
         }
       })
+    },
+    handleToRegister() {
+      this.$router.push({ name: 'Register' })
     }
   }
 }
