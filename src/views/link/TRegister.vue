@@ -76,6 +76,7 @@
                       </a-form-model-item>
                     </template>
                     <template v-if="item.key === 3">
+                      <div class="text-sm font-bold text-black pb-3">我想做什么：</div>
                       <a-form-model-item prop="name">
                         <a-input
                           v-model="formData[item.key].name"
@@ -99,6 +100,41 @@
                         <a-input
                           v-model="formData[item.key].major"
                           placeholder="请输入专业"
+                        />
+                      </a-form-model-item>
+                      <a-form-model-item prop="college">
+                        <a-input
+                          v-model="formData[item.key].college"
+                          placeholder="请输入毕业大学"
+                        />
+                      </a-form-model-item>
+                      <div class="text-sm font-bold text-black pb-3">擅长做什么：</div>
+                      <a-form-model-item prop="advantage">
+                        <a-textarea
+                          v-model="formData[item.key].advantage"
+                          :rows="4"
+                          placeholder="请输入擅长领域：例如：擅长数据分析、数据挖掘、数据建模，精通SPSS、Python、R等分析工具，熟练掌握tableau、power等可视化工具。"
+                        />
+                      </a-form-model-item>
+                      <div class="text-sm font-bold text-black pb-3">会使用哪些工具：</div>
+                      <a-form-model-item prop="tools">
+                        <a-select
+                          show-search
+                          allowClear
+                          showArrow
+                          placeholder="请选择或直接输入"
+                          v-model="formData[item.key].tools"
+                        >
+                          <a-select-option v-for="filteredOption in []" :key="filteredOption" :value="filteredOption">
+                            {{ filteredOption }}
+                          </a-select-option>
+                        </a-select>
+                      </a-form-model-item>
+                      <div class="text-sm font-bold text-black pb-3">我想做什么：</div>
+                      <a-form-model-item prop="want">
+                        <a-checkbox-group
+                          v-model="formData[item.key].want"
+                          :options="['Apple', 'Pear', 'Orange']"
                         />
                       </a-form-model-item>
                     </template>
@@ -269,8 +305,8 @@ export default {
           major: '',
           college: '',
           advantage: '',
-          tools: '',
-          want: '',
+          tools: undefined,
+          want: [],
           sample: ''
         }
       },
