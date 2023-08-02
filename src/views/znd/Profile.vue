@@ -85,13 +85,13 @@ export default {
           width: 250
         },
         {
-          title: 'Create Name',
+          title: 'Create Time',
           dataIndex: 'createTime',
           width: 160,
           scopedSlots: { customRender: 'createTime' }
         },
         {
-          title: 'End Name',
+          title: 'End Time',
           dataIndex: 'endTime',
           width: 160,
           scopedSlots: { customRender: 'endTime' }

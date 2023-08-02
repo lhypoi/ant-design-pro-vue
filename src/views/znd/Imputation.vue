@@ -3,7 +3,11 @@
     <div class="text-4xl pb-3 mb-10 mx-24 text-center font-bold text-black border-b border-solid border-gray-200">
       Genotype Imputation
       <div class="flex flex-row justify-end">
-        <router-link class="text-sm pt-4 text-blue-400 font-normal" :to="{ name: 'Profile' }">My Profile</router-link>
+        <router-link class="text-sm pt-4 text-blue-400 font-normal" :to="{ name: 'Profile' }">
+          <a-button type="primary" class="success-btn" icon="file-sync" size="large">
+            My Profile
+          </a-button>
+        </router-link>
       </div>
     </div>
     <a-form-model
@@ -27,9 +31,9 @@
           <a-select-option value="1KCIGP">
             1KCIGP
           </a-select-option>
-          <a-select-option value="1KCIGP-v1">
+          <!-- <a-select-option value="1KCIGP-v1">
             1KCIGP-v1
-          </a-select-option>
+          </a-select-option> -->
         </a-select>
       </a-form-model-item>
       <a-form-model-item ref="phasing" label="Phased" prop="phasing">
@@ -201,6 +205,26 @@ export default {
         const reader = new FileReader()
         const Spark = new SparkMD5.ArrayBuffer()
         reader.onload = (event) => {
+          const maxSize = 500 * 1024 * 1024 // 500MB
+          const sizeValid = file.size < maxSize
+          if (!sizeValid) {
+            this.$message.error('File size cannot exceed 500MB')
+            this.formData.fileList = []
+            this.fileAnalysising = false
+            return
+          }
+          const buffer = event.target.result
+          const bcfHeader = '1f8b08040000000000ff060042430200'
+          const fileHeader = Array.from(new Uint8Array(buffer.slice(0, 16)))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('')
+          const bcfValid = fileHeader === bcfHeader
+          if (!bcfValid) {
+            this.$message.error('File is invalid')
+            this.formData.fileList = []
+            this.fileAnalysising = false
+            return
+          }
           Spark.append(event.target.result)
           const md5 = Spark.end()
           this.formData.md5_incoming = md5

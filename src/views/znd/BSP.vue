@@ -308,7 +308,7 @@ export default {
           dataIndex: 'bspName'
         },
         {
-          title: 'Create Name',
+          title: 'Create Time',
           dataIndex: 'createTime',
           width: 160,
           scopedSlots: { customRender: 'createTime' }
