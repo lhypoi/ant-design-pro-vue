@@ -53,14 +53,13 @@ export default {
           {
             title: 'Limitations on Use',
             content: [
-              `1.1 You shall not recognize or contact participants in this project;`,
-              `1.2 You agree to use data for non-commercial research purposes only;`,
-              `1.3 You agree that you will not attempt to link the data provided to a third-party database;`,
-              `1.4 You agree not to transfer or disclose all or part of the data to others. Instead, please direct them to this website;`,
-              `1.5 You accept any part of the data provided by the project team, the original data creator, the copyright owner, etc.;`,
-              `1.6 You understand and acknowledge that data is protected by copyright and other intellectual property rights. Providers shall have the sole right to prosecute patents and patent application claiming or covering unauthorized data and Inventions;`,
-              `1.7 You accept that this agreement will terminate immediately after you violate this agreement, and you will be required to destroy any data you hold;`,
-              `1.8 You accept that it may be necessary for the project team or its designated agent to change the terms of this agreement from time to time to solve new problems. Providers reserve the right to change these terms at any time without prior notice. Use of this website will be subject to the terms of use of the latest version published on this website.`
+              `1.1 You agree to use data for non-commercial research purposes only;`,
+              `1.2 You agree that you will not attempt to link the data provided to a third-party database;`,
+              `1.3 You agree not to transfer or disclose all or part of the data to others. Instead, please direct them to this website;`,
+              `1.4 You accept any part of the data provided by the project team, the original data creator, the copyright owner, etc.;`,
+              `1.5 You understand and acknowledge that data is protected by copyright and other intellectual property rights. Providers shall have the sole right to prosecute patents and patent application claiming or covering unauthorized data and Inventions;`,
+              `1.6 You accept that this agreement will terminate immediately after you violate this agreement, and you will be required to destroy any data you hold;`,
+              `1.7 You accept that it may be necessary for the project team or its designated agent to change the terms of this agreement from time to time to solve new problems. Providers reserve the right to change these terms at any time without prior notice. Use of this website will be subject to the terms of use of the latest version published on this website.`
             ]
           }
         ]
