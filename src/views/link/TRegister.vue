@@ -7,7 +7,7 @@
         <img src="@/assets/logo.webp" alt="" class="h-6">
       </div>
       <div class="mx-auto p-4 border border-solid border-gray-400 rounded-3xl bg-white xl:max-w-[1000px]">
-        <div class="mx-auto xl:max-w-[600px] pt-16 pb-16">
+        <div class="mx-auto xl:max-w-[600px] min-h-[600px] flex flex-col pt-16 pb-16">
           <div class="border border-solid border-gray-400 rounded-md flex p-1">
             <div
               v-for="item in stepList"
@@ -146,7 +146,7 @@
                           action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                           :fileList="formData[item.key].sample"
                         >
-                          <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10 mt-8">
+                          <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10 mt-2">
                             <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
                             <div class="pt-4 text-slate-950 text-lg font-bold">
                               将文书拖到此处，或<span class="text-indigo-500">点击上传</span>
@@ -163,26 +163,28 @@
               </a-tab-pane>
             </a-tabs>
           </div>
-          <div class="w-full pt-32 flex gap-4">
-            <a-button
-              v-if="curStep > 1"
-              type="primary"
-              block
-              class="stepBtn"
-              @click="handleStepPre"
-            >
-              返回上一步
-            </a-button>
-            <a-button
-              type="primary"
-              block
-              class="stepBtn"
-              :disabled="!canStepNext"
-              :loading="nextLoading"
-              @click="handleStepNext"
-            >
-              {{ curStep === 3 ? '提交' : '下一步' }}
-            </a-button>
+          <div class="flex-auto flex flex-col justify-end pt-8">
+            <div class="flex gap-4">
+              <a-button
+                v-if="curStep > 1"
+                type="primary"
+                block
+                class="stepBtn"
+                @click="handleStepPre"
+              >
+                返回上一步
+              </a-button>
+              <a-button
+                type="primary"
+                block
+                class="stepBtn"
+                :disabled="!canStepNext"
+                :loading="nextLoading"
+                @click="handleStepNext"
+              >
+                {{ curStep === 3 ? '提交' : '下一步' }}
+              </a-button>
+            </div>
           </div>
         </div>
       </div>
