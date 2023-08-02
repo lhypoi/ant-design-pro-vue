@@ -12,6 +12,8 @@ import permission from './modules/static-router'
 // 动态路由模式（api请求后端生成）
 // import permission from './modules/async-router'
 
+import asyncConfig from './modules/async-config'
+
 import getters from './getters'
 
 Vue.use(Vuex)
@@ -20,7 +22,8 @@ export default new Vuex.Store({
   modules: {
     app,
     user,
-    permission
+    permission,
+    asyncConfig
   },
   state: {},
   mutations: {},

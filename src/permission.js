@@ -29,9 +29,14 @@ const allowList = [
 const loginRoutePath = '/login'
 const defaultRoutePath = '/home'
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start() // start progress bar
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`)
+  try {
+    await store.dispatch('asyncConfig/getAsyncConfig')
+  } catch (error) {
+    console.log(error)
+  }
   /* has token */
   const token = storage.get(ACCESS_TOKEN)
   if (token) {
