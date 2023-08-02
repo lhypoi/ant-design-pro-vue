@@ -112,7 +112,7 @@
                       <a-form-model-item prop="advantage">
                         <a-textarea
                           v-model="formData[item.key].advantage"
-                          :rows="4"
+                          :rows="5"
                           placeholder="请输入擅长领域：例如：擅长数据分析、数据挖掘、数据建模，精通SPSS、Python、R等分析工具，熟练掌握tableau、power等可视化工具。"
                         />
                       </a-form-model-item>
@@ -135,7 +135,27 @@
                         <a-checkbox-group
                           v-model="formData[item.key].want"
                           :options="['Apple', 'Pear', 'Orange']"
+                          class="flex justify-between"
                         />
+                      </a-form-model-item>
+                      <a-form-model-item prop="sample">
+                        <a-upload-dragger
+                          class="dragUploader"
+                          name="file"
+                          :multiple="true"
+                          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                          :fileList="formData[item.key].sample"
+                        >
+                          <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10 mt-8">
+                            <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
+                            <div class="pt-4 text-slate-950 text-lg font-bold">
+                              将文书拖到此处，或<span class="text-indigo-500">点击上传</span>
+                            </div>
+                            <div class="pt-2 text-sm text-gray-400">
+                              可导入pdf / docx / doc 格式简历，最大10MB
+                            </div>
+                          </div>
+                        </a-upload-dragger>
                       </a-form-model-item>
                     </template>
                   </a-form-model>
@@ -307,7 +327,7 @@ export default {
           advantage: '',
           tools: undefined,
           want: [],
-          sample: ''
+          sample: []
         }
       },
       educationAttainmentList: [
@@ -333,22 +353,23 @@ export default {
   },
   computed: {
     canStepNext() {
-      let flag = false
-      const curForm = this.formData[this.curStep]
-      switch (this.curStep) {
-        case 1:
-          if (curForm.phone && curForm.pwd && curForm.captcha) flag = true
-          break
-        case 2:
-        // if (curForm.fileList.length) flag = true
-          break
-        case 3:
-          // if (curForm.name && curForm.educationAttainment && curForm.specializedField && curForm.college) flag = true
-          break
-        default:
-          break
-      }
-      return flag
+      // let flag = false
+      // const curForm = this.formData[this.curStep]
+      // switch (this.curStep) {
+      //   case 1:
+      //     if (curForm.phone && curForm.pwd && curForm.captcha) flag = true
+      //     break
+      //   case 2:
+      //   if (curForm.fileList.length) flag = true
+      //     break
+      //   case 3:
+      //     if (curForm.name && curForm.educationAttainment && curForm.specializedField && curForm.college) flag = true
+      //     break
+      //   default:
+      //     break
+      // }
+      // return flag
+      return true
     }
   },
   async mounted() {
@@ -356,20 +377,21 @@ export default {
   },
   methods: {
     handleStepNext() {
-      if (!this.canStepNext) return
-      switch (this.curStep) {
-        case 1:
-          this.handleToStep2()
-          break
-        case 2:
-          this.handleToStep2()
-          break
-        case 3:
-          this.handleSubmit()
-          break
-        default:
-          break
-      }
+      this.curStep++
+      // if (!this.canStepNext) return
+      // switch (this.curStep) {
+      //   case 1:
+      //     this.handleToStep2()
+      //     break
+      //   case 2:
+      //     this.handleToStep2()
+      //     break
+      //   case 3:
+      //     this.handleSubmit()
+      //     break
+      //   default:
+      //     break
+      // }
     },
     async handleToStep2() {
       this.nextLoading = true
@@ -435,6 +457,10 @@ export default {
     .ant-form-item {
       .ant-input {
         @apply h-12 rounded-md text-base border-gray-400 pl-5;
+      }
+
+      textarea.ant-input {
+        @apply h-auto mb-0;
       }
 
       .ant-select {
