@@ -1,6 +1,11 @@
 <template>
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
-    <div ref="container"></div>
+    <div v-if="loading" class="w-[750px] mx-auto pt-10">
+      <a-skeleton active :paragraph="{ rows: 10 }" />
+    </div>
+    <div v-show="!loading">
+      <div ref="container"></div>
+    </div>
   </div>
 </template>
 
@@ -11,6 +16,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       htmlStr: `
     <div class="stackedit__html">
       <h1>Variant Query</h1>
@@ -75,6 +81,7 @@ export default {
   computed: {
   },
   created() {
+    this.loading = true
   },
   async mounted() {
     const shadowRoot = this.$refs.container.attachShadow({ mode: 'open' })
@@ -104,15 +111,19 @@ export default {
         }
       })
     })
-    const hash = window.location.hash
-    if (hash) {
-      setTimeout(() => {
-        const targetElement = shadowRoot.querySelector(hash)
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 500)
-    }
+
+    setTimeout(() => {
+      this.loading = false
+      const hash = window.location.hash
+      if (hash) {
+        setTimeout(() => {
+          const targetElement = shadowRoot.querySelector(hash)
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' })
+          }
+        }, 300)
+      }
+    }, 1000)
   },
   methods: {
   }

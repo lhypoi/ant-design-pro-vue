@@ -1,6 +1,11 @@
 <template>
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
-    <div ref="container"></div>
+    <div v-if="loading" class="w-[750px] mx-auto pt-10">
+      <a-skeleton active :paragraph="{ rows: 10 }" />
+    </div>
+    <div v-show="!loading">
+      <div ref="container"></div>
+    </div>
   </div>
 </template>
 
@@ -11,6 +16,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       htmlStr: `
 <div class="stackedit__html"><p></p><div class="toc"><h3>BSP</h3><ul><li><a href="#Introduction_1">Introduction</a></li><li><a href="#Module_1_The_database_of_specific_SNPs_3">Module 1: The database of specific SNPs</a></li><ul><li><a href="#The_meaning_of_each_column_in_the_table_14">The meaning of each column in the table</a></li></ul><li><a href="#Module_2_Breed_prediction_22">Module 2: Breed prediction</a></li><li><a href="#Module_3_Estimation_of_potential_ancestors_31">Module 3: Estimation of potential ancestors</a></li><ul><li><a href="#Interpretation_of_results_37">Interpretation of results</a></li></ul><li><a href="#The_operation_for_Breed_Prediction_based_on_Custom_SNPs_48">The operation for Breed Prediction based on Custom SNPs.</a></li><li><a href="#FAQ_60">FAQ</a></li></ul></div><p></p>
 <h1><a id="Introduction_1"></a>Introduction</h1>
@@ -93,6 +99,7 @@ Estimate potential ancestors of samples</p>
   computed: {
   },
   created() {
+    this.loading = true
   },
   async mounted() {
     const shadowRoot = this.$refs.container.attachShadow({ mode: 'open' })
@@ -122,15 +129,19 @@ Estimate potential ancestors of samples</p>
         }
       })
     })
-    const hash = window.location.hash
-    if (hash) {
-      setTimeout(() => {
-        const targetElement = shadowRoot.querySelector(hash)
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 500)
-    }
+
+    setTimeout(() => {
+      this.loading = false
+      const hash = window.location.hash
+      if (hash) {
+        setTimeout(() => {
+          const targetElement = shadowRoot.querySelector(hash)
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' })
+          }
+        }, 300)
+      }
+    }, 800)
   },
   methods: {
   }
