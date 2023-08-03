@@ -1,10 +1,29 @@
 <template>
   <div class="Login flex-auto flex flex-col bg-white rounded-3xl p-8 pt-16">
+    <h1 v-if="isPageToBSP" class="text-4xl font-bold text-center pt-2 pb-16">BARCODE SNPs for Pig (BSP)</h1>
     <div class="flex flex-row">
-      <div class="w-0">
-
+      <div v-if="isPageToBSP" class="w-1/2">
+        <div class="flex flex-col items-center pl-10 pr-12">
+          <div class="text-3xl font-bold text-black pb-5">Welcome to BSP</div>
+          <div class="text-xl indent-6">BARCODE SNPs for Pig (BSP), a  database of specific SNPs for indigenous pigs worldwide. It also supplies quick and precise tools for predicting the breed or population a given individual belongs to, and their potential ancestors.</div>
+        </div>
+        <div class="flex flex-col pl-10 pr-12 pt-20">
+          <div class="text-3xl font-bold text-black pb-4">Online analysis：</div>
+          <div
+            class="text-xl pb-4 underline underline-offset-8 text-blue-400 cursor-pointer hover:text-blue-600"
+            @click="handleToHelp(1)"
+          >1. The database of specific SNPs</div>
+          <div
+            class="text-xl pb-4 underline underline-offset-8 text-blue-400 cursor-pointer hover:text-blue-600"
+            @click="handleToHelp(2)"
+          >2. Breed prediction</div>
+          <div
+            class="text-xl pb-4 underline underline-offset-8 text-blue-400 cursor-pointer hover:text-blue-600"
+            @click="handleToHelp(3)"
+          >3. Estimation of potential ancestor</div>
+        </div>
       </div>
-      <div class="w-full">
+      <div :class="isPageToBSP ? 'w-1/2' : 'w-full'">
         <a-form-model
           class="form"
           ref="loginForm"
@@ -15,7 +34,10 @@
           :colon="false"
         >
           <a-form-model-item :wrapper-col="formColConfig.noLabelRow">
-            <div class="text-4xl pb-8 font-bold text-black border-b border-solid border-gray-200">Login</div>
+            <div
+              class="font-bold text-black "
+              :class="isPageToBSP ? 'text-3xl' : 'text-4xl border-b border-solid border-gray-200 pb-8'"
+            >Login</div>
           </a-form-model-item>
           <a-form-model-item ref="email" label="E-Mail Address" prop="email">
             <a-input
@@ -38,6 +60,13 @@
               </a-button>
               <a-button type="primary" class="submit" size="large" @click="handleToRegister">
                 Sign Up
+              </a-button>
+            </div>
+          </a-form-model-item>
+          <a-form-model-item v-if="isPageToBSP" :wrapper-col="formColConfig.noLabelRow">
+            <div class="pt-12 flex flex-row">
+              <a-button icon="container" type="primary" class="w-40 h-12 text-xl" size="large" @click="handleToHelp(0)">
+                Help
               </a-button>
             </div>
           </a-form-model-item>
@@ -106,10 +135,13 @@ export default {
     ...mapState({
       publicEmailDomains: state => state.user.publicEmailDomains
     }),
+    isPageToBSP() {
+      return this.$route.query.redirect === '/BSP'
+    },
     formColConfig() {
-      const label = { span: 6 }
-      const wrapper = { span: 16 }
-      const noLabelRow = { span: 16, offset: 6 }
+      const label = { span: this.isPageToBSP ? 5 : 6 }
+      const wrapper = { span: this.isPageToBSP ? 19 : 16 }
+      const noLabelRow = { span: this.isPageToBSP ? 19 : 16, offset: this.isPageToBSP ? 5 : 6 }
       return {
         label,
         wrapper,
@@ -141,6 +173,24 @@ export default {
     },
     handleToRegister() {
       this.$router.push({ name: 'Register' })
+    },
+    handleToHelp(target) {
+      switch (target) {
+        case 0:
+          this.$router.push({ name: 'HelpBSP' })
+          break
+        case 1:
+          this.$router.push({ name: 'HelpBSP', hash: '#Module_1_The_database_of_specific_SNPs_3' })
+          break
+        case 2:
+          this.$router.push({ name: 'HelpBSP', hash: '#Module_2_Breed_prediction_22' })
+          break
+        case 3:
+          this.$router.push({ name: 'HelpBSP', hash: '#Module_3_Estimation_of_potential_ancestors_31' })
+          break
+        default:
+          break
+      }
     }
   }
 }

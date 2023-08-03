@@ -24,7 +24,10 @@ const allowList = [
   'PublicEmailDomains',
   'License',
   // 'Download',
-  'Login'
+  'Login',
+  'HelpBSP',
+  'HelpImputation',
+  'VariantQuery'
 ] // no redirect allowList
 const loginRoutePath = '/login'
 const defaultRoutePath = '/home'

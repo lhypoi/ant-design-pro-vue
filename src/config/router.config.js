@@ -66,6 +66,13 @@ const asyncRouterMapAll = {
               name: 'HelpBSP',
               component: () => import('@/views/znd/HelpBSP'),
               meta: { title: 'BSP', icon: 'container' }
+            },
+            // znd/help/variant-query
+            {
+              path: '/help/variant-query',
+              name: 'VariantQuery',
+              component: () => import('@/views/znd/VariantQuery'),
+              meta: { title: 'VariantQuery', icon: 'exception' }
             }
           ]
         },
