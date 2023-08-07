@@ -1,9 +1,9 @@
 <template>
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
-    <div class="flex flex-row justify-center h-28 mt-20">
+    <div class="flex flex-row justify-center h-14">
       <img src="@/assets/znd/logo.png" class="h-full w-auto" alt="">
     </div>
-    <div class="flex flex-row items-start justify-between px-32 pt-20">
+    <div class="flex flex-row items-start justify-between px-32 pt-10">
       <div class="w-3/12 pr-2">
         <a-select v-model="formData.type" size="large" class="w-full">
           <a-select-option v-for="item in typeList" :key="item.key" :value="item.key">
@@ -99,12 +99,12 @@
       </div>
     </div>
     <div class="flex flex-row justify-between px-20 pt-10">
-      <div style="width: 33%;">
+      <div style="width: 750px;">
         <div id="main" style="height:500px; width:100%;">
         </div>
       </div>
-      <div class="flex flex-row justify-between px-20 pt-10 items-center">
-        <div class="flex flex-col justify-between" style="width: 65%;">
+      <div class="flex flex-row justify-between pl-10">
+        <div class="flex flex-col mr-10" style="width: 65%;">
           <div class="flex flex-col  pb-6">
             <div class="text-2xl font-bold pb-2">Version</div>
             <div>2020-08.PHASE1</div>
@@ -351,6 +351,8 @@ export default {
               show: false
             }
           },
+          layoutCenter: ['60%', '50%'], // 位置
+          layoutSize: '80%', // 大小
           data: this.myData // 数据
         }]
       }
