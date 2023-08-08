@@ -1,13 +1,12 @@
 <template>
   <global-footer class="footer custom-render">
     <template v-slot:links>
-      <a href="https://www.github.com/vueComponent/pro-layout" target="_blank">Pro Layout</a>
-      <a href="https://www.github.com/vueComponent/ant-design-vue-pro" target="_blank">Github</a>
-      <a href="https://www.github.com/sendya/" target="_blank">@Sendya</a>
+      <span class="text-center">备案号：京ICP备2023016911号-2</span>
+      <span class="text-center mx-10">@1KCIGP</span>
     </template>
-    <template v-slot:copyright>
+    <!-- <template v-slot:copyright>
       <a href="https://github.com/vueComponent" target="_blank">vueComponent</a>
-    </template>
+    </template> -->
   </global-footer>
 </template>
 
