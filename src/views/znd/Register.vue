@@ -76,6 +76,7 @@
 <script>
 import { mapState } from 'vuex'
 import { sendMailCode, signup } from '@/api/cau'
+import { CUR_APP } from '@/store/mutation-types'
 
 const regexConfig = {
   username: /^[a-z][a-z0-9_]{5,11}$/,
@@ -190,7 +191,7 @@ export default {
   },
   computed: {
     ...mapState({
-      publicEmailDomains: state => state.user.publicEmailDomains
+      publicEmailDomains: state => state[CUR_APP].publicEmailDomains
     }),
     formColConfig() {
       const label = { span: 6 }

@@ -4,32 +4,45 @@ import store from './store'
 import storage from 'store'
 import NProgress from 'nprogress' // progress bar
 import '@/components/NProgress/nprogress.less' // progress bar custom style
-// import notification from 'ant-design-vue/es/notification'
+import notification from 'ant-design-vue/es/notification'
 import { setDocumentTitle, domTitle } from '@/utils/domUtil'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { i18nRender } from '@/locales'
+import { asyncRouterMap } from '@/config/router.config'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
+// 递归提取 可公开访问的路由names 和 登录names
+const [publicRouteNames, loginRouteNames] = ((target) => {
+  const getNames = (target, res) => {
+    return target.reduce((res, routeItem) => {
+      const [publicRouteNames, loginRouteNames] = res
+      if (routeItem.publiclyAccessible) {
+        publicRouteNames.push(routeItem.name)
+      }
+      if (routeItem.defaultLoginRoute) {
+        loginRouteNames.push(routeItem.name)
+      }
+      if (routeItem.children && routeItem.children.length) {
+        const [childPublicRouteNames, childLoginRouteNames] = getNames(routeItem.children, res)
+        publicRouteNames.concat(childPublicRouteNames)
+        loginRouteNames.concat(childLoginRouteNames)
+      }
+      return [publicRouteNames, loginRouteNames]
+    }, res)
+  }
+  return getNames(target, [[], []])
+})(asyncRouterMap)
+
 const allowList = [
-  '404',
-  'login',
-  'register',
-  'registerResult',
-  'registerPre',
-  'tRegister',
-  'Home',
-  'Info',
-  'Register',
-  'PublicEmailDomains',
-  'License',
-  // 'Download',
-  'Login'
-] // no redirect allowList
-const loginRoutePath = '/login'
-const defaultRoutePath = '/home'
+  ...publicRouteNames,
+  '404'
+]
+const loginRouteName = loginRouteNames[0] || '404'
+const defaultRoutePath = '/'
 
 router.beforeEach(async (to, from, next) => {
+  console.log(to)
   NProgress.start() // start progress bar
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`)
   try {
@@ -40,7 +53,7 @@ router.beforeEach(async (to, from, next) => {
   /* has token */
   const token = storage.get(ACCESS_TOKEN)
   if (token) {
-    if (to.path === loginRoutePath) {
+    if (to.name === loginRouteName) {
       next({ path: defaultRoutePath })
       NProgress.done()
     } else {
@@ -70,14 +83,14 @@ router.beforeEach(async (to, from, next) => {
               }
             })
           })
-          .catch(() => {
-            // notification.error({
-            //   message: '错误',
-            //   description: '请求用户信息失败，请重试'
-            // })
+          .catch((e) => {
+            notification.error({
+              message: e.message
+              // description: '请求用户信息失败，请重试'
+            })
             // 失败时，获取用户信息失败时，调用登出，来清空历史保留信息
             store.dispatch('Logout').then(() => {
-              next({ path: loginRoutePath, query: { redirect: to.fullPath } })
+              next({ name: loginRouteName, query: { redirect: to.fullPath } })
             })
           })
       } else {
@@ -89,7 +102,7 @@ router.beforeEach(async (to, from, next) => {
       // 在免登录名单，直接进入
       next()
     } else {
-      next({ path: loginRoutePath, query: { redirect: to.fullPath } })
+      next({ name: loginRouteName, query: { redirect: to.fullPath } })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }

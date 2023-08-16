@@ -16,14 +16,22 @@ import asyncConfig from './modules/async-config'
 
 import getters from './getters'
 
+import { CUR_APP } from '@/store/mutation-types'
+
 Vue.use(Vuex)
+
+let curAppModule = {}
+try {
+  curAppModule = require(`@/store/modules/cur_app/${CUR_APP}`).default
+} catch {}
 
 export default new Vuex.Store({
   modules: {
     app,
     user,
     permission,
-    asyncConfig
+    asyncConfig,
+    [CUR_APP]: curAppModule
   },
   state: {},
   mutations: {},

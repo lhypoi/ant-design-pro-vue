@@ -37,6 +37,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { CUR_APP } from '@/store/mutation-types'
 
 const regexConfig = {
   email: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
@@ -92,7 +93,7 @@ export default {
   },
   computed: {
     ...mapState({
-      publicEmailDomains: state => state.user.publicEmailDomains
+      publicEmailDomains: state => state[CUR_APP].publicEmailDomains
     }),
     formColConfig() {
       const label = { span: 6 }

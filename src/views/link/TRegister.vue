@@ -4,7 +4,7 @@
     <div class="absolute top-0 left-0 h-full w-1/2 bg-indigo-50 -skew-x-6 scale-x-150 -translate-x-1/4"></div>
     <div class="relative min-h-screen mx-auto px-8 py-10 xl:max-w-[1200px]">
       <div class="pb-16">
-        <img src="@/assets/logo.webp" alt="" class="h-6">
+        <img :src="logoImg" alt="" class="h-6">
       </div>
       <div class="mx-auto p-4 border border-solid border-gray-400 rounded-3xl bg-white xl:max-w-[1000px]">
         <div v-if="showResultPanel" class="mx-auto xl:max-w-[600px] min-h-[600px] flex flex-col items-center pt-16 pb-16">
@@ -25,7 +25,7 @@
             </a-button>
           </div>
         </div>
-        <div v-else class="mx-auto xl:max-w-[600px] min-h-[600px] flex flex-col pt-16 pb-16">
+        <div v-else class="link-style-form mx-auto xl:max-w-[600px] min-h-[600px] flex flex-col pt-16 pb-16">
           <div class="border border-solid border-gray-400 rounded-md flex p-1">
             <div
               v-for="item in stepList"
@@ -69,7 +69,7 @@
                             @change="() => { $refs.smsCode[0].onFieldChange() }"
                           />
                           <a-button
-                            class="sendCodeBtn"
+                            class="send-code-btn"
                             type="primary"
                             :disabled="sendBtnData.disabled"
                             :loading="sendBtnData.loading"
@@ -197,7 +197,7 @@
                 v-if="curStep > 1"
                 type="primary"
                 block
-                class="stepBtn"
+                class="step-btn"
                 @click="handleStepPre"
               >
                 返回上一步
@@ -205,7 +205,7 @@
               <a-button
                 type="primary"
                 block
-                class="stepBtn"
+                class="step-btn"
                 :loading="submitting"
                 @click="handleStepNext"
               >
@@ -220,8 +220,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { uploadUrl, sendSmsCode, teacherSignup } from '@/api/lingke'
+import { CUR_APP } from '@/store/mutation-types'
 
 const regexConfig = {
   phoneNumber: /^1[0-9]{10}$/
@@ -470,6 +471,9 @@ export default {
     }
   },
   computed: {
+    ...mapState(CUR_APP, [
+      'logoImg'
+    ]),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
     }),
@@ -639,60 +643,6 @@ export default {
     .ant-upload {
       @apply p-0;
     }
-  }
-}
-
-.TRegister {
-  :deep(.ant-form) {
-    .ant-form-item {
-      .ant-form-item-control {
-        @apply pb-1;
-      }
-
-      .ant-form-explain {
-        @apply pl-5;
-      }
-
-      .ant-input {
-        @apply h-11 mb-1 rounded-md text-base border-gray-400 pl-5;
-      }
-
-      textarea.ant-input {
-        @apply h-auto;
-      }
-
-      .ant-select {
-        @apply block mb-1;
-
-        .ant-select-selection {
-          @apply rounded-md text-base border-gray-400;
-          min-height: 44px;
-          padding-top: 2px;
-          padding-bottom: 6px;
-        }
-
-        .ant-select-selection__rendered {
-          @apply ml-5 mr-7;
-        }
-
-        .ant-select-selection--multiple .ant-select-arrow,
-        .ant-select-selection--multiple .ant-select-selection__clear {
-          @apply top-6;
-        }
-      }
-
-      .ant-checkbox-group {
-        @apply mb-1;
-      }
-    }
-  }
-
-  .sendCodeBtn {
-    @apply h-11 rounded-md text-base border-0;
-  }
-
-  .stepBtn {
-    @apply h-12 rounded-md text-base border-0;
   }
 }
 </style>

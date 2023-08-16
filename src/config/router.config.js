@@ -21,6 +21,7 @@ const asyncRouterMapAll = {
         {
           path: '/home',
           name: 'Home',
+          publiclyAccessible: true,
           component: () => import('@/views/znd/Home'),
           hidden: true
         },
@@ -35,6 +36,7 @@ const asyncRouterMapAll = {
         {
           path: '/info',
           name: 'Info',
+          publiclyAccessible: true,
           component: () => import('@/views/znd/Info'),
           meta: { title: 'INFO', icon: 'bulb' }
         },
@@ -42,6 +44,7 @@ const asyncRouterMapAll = {
         {
           path: '/license',
           name: 'License',
+          publiclyAccessible: true,
           component: () => import('@/views/znd/License'),
           meta: { title: 'LICENSE', icon: 'database' }
         },
@@ -94,6 +97,7 @@ const asyncRouterMapAll = {
         {
           path: '/register',
           name: 'Register',
+          publiclyAccessible: true,
           component: () => import('@/views/znd/Register'),
           meta: { title: 'Register' },
           hidden: true
@@ -102,6 +106,7 @@ const asyncRouterMapAll = {
         {
           path: '/public-email-domains',
           name: 'PublicEmailDomains',
+          publiclyAccessible: true,
           component: () => import('@/views/znd/PublicEmailDomains'),
           meta: { title: 'Public Email Domains' },
           hidden: true
@@ -110,6 +115,8 @@ const asyncRouterMapAll = {
         {
           path: '/login',
           name: 'Login',
+          publiclyAccessible: true,
+          defaultLoginRoute: true,
           component: () => import('@/views/znd/Login'),
           meta: { title: 'Login' },
           hidden: true
@@ -131,7 +138,7 @@ const asyncRouterMapAll = {
       name: 'index',
       component: BasicLayout,
       meta: { title: 'menu.home' },
-      redirect: '/task/TaskSquare',
+      redirect: '/TaskSquare',
       children: [
         // task
         {
@@ -145,13 +152,23 @@ const asyncRouterMapAll = {
     {
       path: '/register-pre',
       name: 'registerPre',
+      publiclyAccessible: true,
       component: () => import('@/views/link/RegisterPre'),
       hidden: true
     },
     {
       path: '/t-register',
       name: 'tRegister',
+      publiclyAccessible: true,
       component: () => import('@/views/link/TRegister'),
+      hidden: true
+    },
+    {
+      path: '/t-login',
+      name: 'tLogin',
+      publiclyAccessible: true,
+      defaultLoginRoute: true,
+      component: () => import('@/views/link/TLogin'),
       hidden: true
     }
   ]
@@ -171,34 +188,6 @@ export const asyncRouterMap = [
  * @type { *[] }
  */
 export const constantRouterMap = [
-  {
-    path: '/user',
-    component: UserLayout,
-    redirect: '/user/login',
-    hidden: true,
-    children: [
-      {
-        path: 'login',
-        name: 'login',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
-      },
-      {
-        path: 'register',
-        name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
-      },
-      {
-        path: 'register-result',
-        name: 'registerResult',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult')
-      },
-      {
-        path: 'recover',
-        name: 'recover',
-        component: undefined
-      }
-    ]
-  },
   {
     path: '/404',
     name: '404',

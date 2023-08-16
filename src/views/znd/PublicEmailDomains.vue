@@ -8,6 +8,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { CUR_APP } from '@/store/mutation-types'
 
 export default {
   name: 'PublicEmailDomains',
@@ -20,7 +21,7 @@ export default {
   },
   computed: {
     ...mapState({
-      publicEmailDomains: state => state.user.publicEmailDomains
+      publicEmailDomains: state => state[CUR_APP].publicEmailDomains
     })
   },
   created() {

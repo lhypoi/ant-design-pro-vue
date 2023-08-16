@@ -26,9 +26,27 @@ export function teacherSignup (parameter) {
   })
 }
 
+export function login (parameter) {
+  return request({
+    url: url + '/user/login',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function getAccount (parameter) {
+  return request({
+    url: url + '/teacher/getAccount',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   getCodeDict,
   sendSmsCode,
-  teacherSignup
+  teacherSignup,
+  login,
+  getAccount
 }

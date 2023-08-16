@@ -192,22 +192,6 @@ ol {
   @apply bg-green-500 border-0 hover:bg-green-400 focus:bg-green-400;
 }
 
-// TODO: 这里的表单各类字段边框隐藏定制，页面级类？
-// 但如果内部组件需要反转，怎么恢复？
-// 定制 antd input 的边框样式
-// .ant-input {
-//   border: none !important;
-//   background: transparent;
-//   box-shadow: none !important;
-// }
-
-// 定制 antd select 的边框样式
-// .ant-select-selection {
-//   border: none !important;
-//   background: transparent;
-//   box-shadow: none !important;
-// }
-
 // 浏览器自动填充时，取消代理背景色
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
@@ -244,5 +228,57 @@ input:-webkit-autofill:active {
 
   to{
     transform: translateX(-100%);
+  }
+}
+
+.link-style-form {
+  .ant-form-item {
+    .ant-form-item-control {
+      @apply pb-1;
+    }
+
+    .ant-form-explain {
+      @apply pl-5;
+    }
+
+    .ant-input {
+      @apply h-11 mb-1 rounded-md text-base border-gray-400 pl-5;
+    }
+
+    textarea.ant-input {
+      @apply h-auto;
+    }
+
+    .ant-select {
+      @apply block mb-1;
+
+      .ant-select-selection {
+        @apply rounded-md text-base border-gray-400;
+        min-height: 44px;
+        padding-top: 2px;
+        padding-bottom: 6px;
+      }
+
+      .ant-select-selection__rendered {
+        @apply ml-5 mr-7;
+      }
+
+      .ant-select-selection--multiple .ant-select-arrow,
+      .ant-select-selection--multiple .ant-select-selection__clear {
+        @apply top-6;
+      }
+    }
+
+    .ant-checkbox-group {
+      @apply mb-1;
+    }
+  }
+
+  .send-code-btn {
+    @apply h-11 rounded-md text-base border-0;
+  }
+
+  .step-btn {
+    @apply h-12 rounded-md text-base border-0;
   }
 }
