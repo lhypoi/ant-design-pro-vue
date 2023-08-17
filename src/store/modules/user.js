@@ -103,7 +103,7 @@ const user = {
             })
             break
           case APP_NAME.LINK_DEV:
-            lingkeApi.getAccount({}).then(res => {
+            lingkeApi.getUserInfo().then(res => {
               if (res && res.code === 1000) {
                 const resData = res.data
                 const role = {

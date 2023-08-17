@@ -34,11 +34,10 @@ export function login (parameter) {
   })
 }
 
-export function getAccount (parameter) {
+export function getUserInfo () {
   return request({
-    url: url + '/teacher/getAccount',
-    method: 'post',
-    data: parameter
+    url: url + '/base/getUserInfo',
+    method: 'get'
   })
 }
 
@@ -48,5 +47,5 @@ export default {
   sendSmsCode,
   teacherSignup,
   login,
-  getAccount
+  getUserInfo
 }
