@@ -105,14 +105,12 @@ const user = {
           case APP_NAME.LINK_DEV:
             lingkeApi.getUserInfo().then(res => {
               if (res && res.code === 1000) {
-                const resData = res.data
                 const role = {
                   id: 'standard',
                   permissions: []
                 }
                 const result = {
-                  resData,
-                  role: role
+                  ...res.data
                 }
                 commit('SET_ROLES', role)
                 commit('SET_INFO', result)

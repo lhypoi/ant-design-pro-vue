@@ -111,7 +111,7 @@ ol {
         height: 100%;
 
         .ant-pro-top-nav-header-left {
-          flex: 0;
+          flex: auto;
           padding-right: 40px;
 
           .ant-pro-top-nav-header-logo {
@@ -122,10 +122,12 @@ ol {
 
         .ant-pro-top-nav-header-menu {
           flex: auto !important;
+          max-width: 600px !important;
+          padding-right: 20px;
 
           .ant-menu {
             display: flex;
-            justify-content: flex-start;
+            justify-content: flex-end;
           }
         }
       }

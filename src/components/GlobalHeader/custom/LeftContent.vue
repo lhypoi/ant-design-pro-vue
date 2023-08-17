@@ -1,25 +1,25 @@
 <template>
-  <div class="h-full flex items-center">
-    <div class="text-2xl cursor-pointer w-20 h-9" :class="isHome ? 'text-gray-700' : 'text-gray-400'" @click="toHome">
-      <img :src="logoImg" alt="logo" style="width: auto; height: 100%; vertical-align: 0; display: block;">
+  <div class="h-full flex flex-row items-center flex-auto pr-4">
+    <div>
+      <!-- 强制覆盖，因为 antd pro 在此处的样式规则是直接指到 img 标签 -->
+      <img :src="logoImg" alt="logo" style="display: block; height: 24px; width: auto;">
     </div>
-    <!-- <div
-      class="flex-auto ml-4 sm:ml-8 mr-2 sm:mr-16 flex items-center h-9 rounded-full border border-solid border-zinc-200 bg-neutral-50 hover:ring-1 hover:ring-indigo-500 px-6"
+    <div
+      class="group flex-auto max-w-[400px] ml-8 flex items-center h-9 rounded-full border border-solid border-zinc-200 bg-neutral-50 hover:ring-1 hover:ring-indigo-500 px-6"
     >
       <div class="flex cursor-pointer">
         <a-icon
           type="search"
-          class="searchIcon text-zinc-200 hover:text-indigo-500"
+          class="searchIcon text-zinc-200 group-hover:text-indigo-500"
         />
       </div>
       <a-select
         showSearch
-        class="searchInput"
+        class="searchInput block flex-auto"
         label-in-value
         :value="value"
         :show-arrow="false"
         placeholder="搜索"
-        style="width: 100%"
         :filter-option="false"
         :not-found-content="fetching ? undefined : null"
         @search="fetchUser"
@@ -37,29 +37,29 @@
           {{ d.text }}
         </a-select-option>
       </a-select>
-    </div> -->
+    </div>
   </div>
 </template>
 <script>
+import { mapState } from 'vuex'
 import { debounce } from 'lodash-es'
-import { APP_NAME, CUR_APP } from '@/store/mutation-types'
+import { CUR_APP } from '@/store/mutation-types'
 
 export default {
+  name: 'LeftContent',
   data() {
     this.lastFetchId = 0
     this.fetchUser = debounce(this.fetchUser, 800)
-    const logoImgAll = {
-      [APP_NAME.ZND]: require('@/assets/znd/logo.png'),
-      [APP_NAME.LINK_DEV]: require('@/assets/znd/logo.png')
-    }
     return {
-      logoImg: logoImgAll[CUR_APP],
       data: [],
       value: [],
       fetching: false
     }
   },
   computed: {
+    ...mapState(CUR_APP, [
+      'logoImg'
+    ]),
     isHome() {
       return this.$route.name === 'Home'
     }

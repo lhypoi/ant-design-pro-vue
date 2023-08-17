@@ -2,7 +2,7 @@
   <a-dropdown v-if="hasLogin" placement="bottomRight">
     <span class="ant-pro-account-avatar">
       <a-avatar size="small" :src="avatarImg" class="antd-pro-global-header-index-avatar" />
-      <span>{{ userInfo.username }}</span>
+      <span>{{ userInfo.name }}</span>
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
@@ -48,7 +48,7 @@ export default {
   },
   data() {
     return {
-      avatarImg: require('@/assets/missing-face.png')
+      avatarImg: require('@/assets/link/avatar.png')
     }
   },
   computed: {
