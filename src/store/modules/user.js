@@ -77,8 +77,8 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo ({ commit }) {
-      return new Promise((resolve, reject) => {
+    GetInfo ({ commit, state }) {
+      return new Promise(async (resolve, reject) => {
         switch (CUR_APP) {
           case APP_NAME.ZND:
             getUserInfo({}).then(res => {
@@ -103,24 +103,34 @@ const user = {
             })
             break
           case APP_NAME.LINK_DEV:
-            lingkeApi.getUserInfo().then(res => {
-              if (res && res.code === 1000) {
+            try {
+              const result = {}
+              const userInfoRes = await lingkeApi.getUserInfo()
+              if (userInfoRes && userInfoRes.code === 1000) {
                 const role = {
-                  id: 'standard',
+                  id: userInfoRes.data.role,
                   permissions: []
                 }
-                const result = {
-                  ...res.data
-                }
+                result.role = role
                 commit('SET_ROLES', role)
-                commit('SET_INFO', result)
-                resolve(result)
+                commit('SET_INFO', userInfoRes.data)
               } else {
-                reject(new Error(res.msg || '获取用户信息失败'))
+                throw new Error(userInfoRes.msg || '获取用户信息失败')
               }
-            }).catch(error => {
+
+              const teacherRes = await lingkeApi.teacherGetOne({
+                userId: userInfoRes.data.userId
+              })
+              if (teacherRes && teacherRes.code === 1000) {
+                commit(CUR_APP + '/SET_TEACHER_INFO', teacherRes.data)
+              } else {
+                throw new Error(teacherRes.msg || '获取教师信息失败')
+              }
+
+              resolve(result)
+            } catch (error) {
               reject(error)
-            })
+            }
             break
           default:
             break

@@ -29,11 +29,18 @@
                     size="large"
                   />
                 </a-form-model-item>
-                <a-form-model-item prop="smsCode" ref="smsCode">
+                <a-form-model-item v-if="formData.loginType === '1'" key="passWord" prop="passWord" ref="passWord">
+                  <a-input-password
+                    v-model="formData.passWord"
+                    placeholder="密码"
+                    size="large"
+                  />
+                </a-form-model-item>
+                <a-form-model-item v-if="formData.loginType === '2'" key="smsCode" prop="smsCode" ref="smsCode">
                   <div class="flex flex-row gap-3">
                     <a-input
                       v-model="formData.smsCode"
-                      placeholder="请输入验证码"
+                      placeholder="验证码"
                       @blur="() => { $refs.smsCode.onFieldChange() }"
                       @change="() => { $refs.smsCode.onFieldChange() }"
                     />
@@ -78,7 +85,16 @@
                         </div>
                       </a-tooltip>
                     </div>
-                    <div class="cursor-pointer text-blue-400 hover:text-blue-600 hover:underline hover:underline-offset-4">密码登录</div>
+                    <div class="flex flex-row gap-1 items-center">
+                      <div
+                        v-for="alternativeLoginType in alternativeLoginTypes"
+                        :key="alternativeLoginType.key"
+                        class="cursor-pointer text-blue-400 hover:text-blue-600 hover:underline hover:underline-offset-4"
+                        @click="formData.loginType = alternativeLoginType.key"
+                      >
+                        {{ alternativeLoginType.value }}
+                      </div>
+                    </div>
                   </div>
                 </a-form-model-item>
                 <a-form-model-item>
@@ -111,7 +127,9 @@ export default {
   data() {
     return {
       formData: {
+        loginType: '',
         phoneNumber: '',
+        passWord: '',
         smsCode: ''
       },
       formRules: {
@@ -121,6 +139,21 @@ export default {
               try {
                 if (!value.trim()) {
                   callback(new Error('请输入手机号'))
+                }
+              } catch (error) {
+                console.log(error)
+                callback(error)
+              }
+              callback()
+            }
+          }
+        ],
+        passWord: [
+          {
+            validator: (rule, value, callback) => {
+              try {
+                if (!value.trim()) {
+                  callback(new Error('请输入密码'))
                 }
               } catch (error) {
                 console.log(error)
@@ -157,18 +190,20 @@ export default {
   },
   computed: {
     ...mapState(CUR_APP, [
-      'logoImg'
+      'logoImg',
+      'loginTypeEnum'
     ]),
-    formColConfig() {
-      const label = { span: 6 }
-      const wrapper = { span: 12 }
-      const noLabelRow = { span: 12, offset: 6 }
-      return {
-        label,
-        wrapper,
-        noLabelRow
-      }
+    alternativeLoginTypes() {
+      return Object.entries(this.loginTypeEnum)
+        .filter(([key]) => key !== this.formData.loginType)
+        .map(([key, value]) => ({
+          key,
+          value
+        }))
     }
+  },
+  created() {
+    this.formData.loginType = Object.keys(this.loginTypeEnum)[0]
   },
   mounted() {
   },
@@ -211,11 +246,13 @@ export default {
         if (valid) {
           this.submitting = true
           try {
-            await this.$store.dispatch('Login', {
-              loginType: '2',
-              phoneNumber: this.formData.phoneNumber,
-              smsCode: this.formData.smsCode
-            })
+            const params = {
+              loginType: this.formData.loginType,
+              phoneNumber: this.formData.phoneNumber
+            }
+            if (this.formData.loginType === '1') params.passWord = this.formData.passWord
+            if (this.formData.loginType === '2') params.smsCode = this.formData.smsCode
+            await this.$store.dispatch('Login', params)
             this.$message.success('登录成功')
             this.$router.push({ path: '/' })
           } catch (error) {

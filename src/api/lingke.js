@@ -41,11 +41,29 @@ export function getUserInfo () {
   })
 }
 
+export function orderGetList (parameter) {
+  return request({
+    url: url + '/order/getList',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function teacherGetOne (parameter) {
+  return request({
+    url: url + '/teacher/getOne',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   getCodeDict,
   sendSmsCode,
   teacherSignup,
   login,
-  getUserInfo
+  getUserInfo,
+  orderGetList,
+  teacherGetOne
 }

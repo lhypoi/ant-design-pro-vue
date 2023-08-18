@@ -58,7 +58,7 @@
         class="flex-auto flex items-center justify-center"
       >
         <a-spin :spinning="loading">
-          <a-empty :description="false" />
+          <a-empty description="空空如也" />
         </a-spin>
       </div>
     </div>
@@ -66,6 +66,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { CUR_APP } from '@/store/mutation-types'
+import lingkeApi from '@/api/lingke'
+
 export default {
   name: 'TaskSquare',
   components: {
@@ -96,39 +100,29 @@ export default {
     }
   },
   computed: {
+    ...mapState(CUR_APP, [
+      'teacherInfo'
+    ])
   },
   created() {
   },
   async mounted() {
+    console.log(this.teacherInfo)
     await this.getDataList()
   },
   methods: {
     async getDataList() {
       this.loading = true
       try {
-        await new Promise(resolve => setTimeout(() => {
-          resolve()
-        }, 500))
-        this.dataList = new Array(5).fill(0).map((_, i) => (
-          {
-            key: i,
-            title: 'spss回归分析辅导',
-            tags: [
-              {
-                title: '课业辅导'
-              },
-              {
-                title: '论文辅导'
-              },
-              {
-                title: '留学文书'
-              }
-            ],
-            time: '2023-06-12',
-            content: 'SPSS分析需要辅导，内容是回归分析，数据已经有了，不知道分析怎么做。下面是辅导细节介绍：Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo'
-          }
-        ))
+        const res = await lingkeApi.orderGetList({
+        })
+        if (res && res.code === 1000) {
+          this.dataList = res.data.list
+        } else {
+          throw new Error(res.msg || '加载失败')
+        }
       } catch (error) {
+        this.$message.error(error.message)
         console.log(error)
       }
       this.loading = false
