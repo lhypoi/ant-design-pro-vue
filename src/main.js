@@ -21,6 +21,8 @@ import './permission' // permission control
 import './utils/filter' // global filter
 import './global.less' // global style
 
+import InfiniteLoading from 'vue-infinite-loading'
+
 Vue.config.productionTip = false
 
 // mount axios to `Vue.$http` and `this.$http`
@@ -29,6 +31,37 @@ Vue.use(VueAxios)
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-container', PageHeaderWrapper)
 Vue.component('page-header-wrapper', PageHeaderWrapper)
+
+Vue.use(InfiniteLoading, {
+  slots: {
+    noResults: {
+      render() {
+        return (
+          <a-empty description="空空如也" />
+        )
+      }
+    },
+    noMore: {
+      render() {
+        return (
+          <div class="text-gray-400 flex flex-row justify-center items-center h-[63px]">
+            --- 已到达世界尽头 ---
+          </div>
+        )
+      }
+    },
+    error: {
+      render() {
+        const trigger = this.$attrs.trigger
+        return (
+          <div class="text-gray-400 flex flex-row justify-center items-center h-[63px]">
+            --- 网络似乎开小差了，请稍后<span class="text-blue-400 cursor-pointer"onClick={ trigger }>重试</span> ---
+          </div>
+        )
+      }
+    }
+  }
+})
 
 window.umi_plugin_ant_themeVar = themePluginConfig.theme
 
