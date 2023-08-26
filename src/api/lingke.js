@@ -57,6 +57,14 @@ export function teacherGetOne (parameter) {
   })
 }
 
+export function orderGetOne (parameter) {
+  return request({
+    url: url + '/order/getOne',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   getCodeDict,
@@ -65,5 +73,6 @@ export default {
   login,
   getUserInfo,
   orderGetList,
-  teacherGetOne
+  teacherGetOne,
+  orderGetOne
 }
