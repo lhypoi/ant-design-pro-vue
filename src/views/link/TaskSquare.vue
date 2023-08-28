@@ -111,7 +111,7 @@
               {{ detailData.detail }}
             </div>
           </div>
-          <div class="flex justify-between gap-5 pt-5">
+          <div class="flex justify-between gap-5 pt-5 sm:pt-0">
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
             >抢任务</div>
