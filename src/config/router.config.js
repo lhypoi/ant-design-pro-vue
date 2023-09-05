@@ -138,14 +138,21 @@ const asyncRouterMapAll = {
       name: 'index',
       component: BasicLayout,
       meta: { title: 'menu.home' },
-      redirect: '/TaskSquare',
+      redirect: '/task-square',
       children: [
-        // task
+        // task-square
         {
-          path: '/TaskSquare',
+          path: '/task-square',
           name: 'TaskSquare',
           component: () => import('@/views/link/TaskSquare'),
           meta: { title: '任务广场', icon: 'appstore' }
+        },
+        // personal-center
+        {
+          path: '/personal-center',
+          name: 'PersonalCenter',
+          component: () => import('@/views/link/PersonalCenter'),
+          meta: { title: '个人中心', icon: 'user' }
         }
       ]
     },

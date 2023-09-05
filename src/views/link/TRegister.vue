@@ -101,7 +101,7 @@
                       </a-form-model-item>
                     </template>
                     <template v-if="item.key === 3">
-                      <div class="text-sm font-bold text-black pb-3">我想做什么：</div>
+                      <div class="text-sm font-bold text-black pb-3">基本信息：</div>
                       <a-form-model-item prop="name">
                         <a-input
                           v-model="formData[item.key].name"
@@ -633,16 +633,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.dragUploader {
-  @apply w-full mb-2;
-  display: block;
-
-  :deep(.ant-upload-drag)  {
-    @apply bg-transparent border-none rounded-none;
-
-    .ant-upload {
-      @apply p-0;
-    }
-  }
-}
 </style>

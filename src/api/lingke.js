@@ -2,6 +2,7 @@ import request from '@/utils/request'
 
 const url = 'https://api.ukshuxi.com/lingke/api/v1'
 export const uploadUrl = url + '/base/uploadFile'
+export const downloadUrl = url + '/base/download'
 
 export function getCodeDict () {
   return request({
@@ -65,8 +66,17 @@ export function orderGetOne (parameter) {
   })
 }
 
+export function teacherUpdate (parameter) {
+  return request({
+    url: url + '/teacher/update',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
+  downloadUrl,
   getCodeDict,
   sendSmsCode,
   teacherSignup,
@@ -74,5 +84,6 @@ export default {
   getUserInfo,
   orderGetList,
   teacherGetOne,
-  orderGetOne
+  orderGetOne,
+  teacherUpdate
 }

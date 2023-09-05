@@ -186,6 +186,10 @@ ol {
   background-color: #1890ff;
 }
 
+.ant-btn-danger {
+  background-color: #ff4d4f;
+}
+
 .ant-upload-list-item-info {
   padding: 0 20px 0 4px;
 }
@@ -276,6 +280,19 @@ input:-webkit-autofill:active {
     }
   }
 
+  .dragUploader {
+    @apply w-full mb-2;
+    display: block;
+  
+    .ant-upload-drag  {
+      @apply bg-transparent border-none rounded-none;
+  
+      .ant-upload {
+        @apply p-0;
+      }
+    }
+  }
+
   .send-code-btn {
     @apply h-11 rounded-md text-base border-0;
   }
@@ -283,6 +300,21 @@ input:-webkit-autofill:active {
   .step-btn {
     @apply h-12 rounded-md text-base border-0;
   }
+
+  .reset-btn {
+    @apply h-12 rounded-md text-base;
+  }
+}
+
+// vue-pdf-embed 样式
+.pdf-box {
+  .vue-pdf-embed {
+    @apply flex flex-col gap-y-2;
+
+    > div {
+      @apply drop-shadow-xl;
+    }
+  }  
 }
 
 /* 滚动条样式 */
