@@ -79,7 +79,7 @@
                 placeholder="请选择或直接输入"
                 v-model="formData[curTabKey].tools"
               >
-                <a-select-option v-for="tool in toolsList" :key="tool" :value="tool" class="pl-5">
+                <a-select-option v-for="tool in localDict.toolsList" :key="tool" :value="tool" class="pl-5">
                   {{ tool }}
                 </a-select-option>
               </a-select>
@@ -127,31 +127,242 @@
                   @change="info => handleFileChange(info, curTabKey, 'cv', true)"
                   @preview="handleFileDownload"
                 >
-                  <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
-                    <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
-                    <div class="pt-4 text-slate-950 text-lg font-bold">
-                      将文书拖到此处，或<span class="text-indigo-500">点击上传</span>
-                    </div>
-                    <div class="pt-2 text-sm text-gray-400">
-                      可导入pdf / docx / doc 格式简历，最大10MB
-                    </div>
+                  <div :ref="`formCtrl_${curTabKey}_cv`" class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
                   </div>
                 </a-upload-dragger>
               </a-form-model-item>
             </div>
-            <div class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="testLoading ? 'overflow-hidden' : 'overflow-auto'">
+            <div class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
               <a-spin
+                v-if="pdfBoxParams.loading"
                 class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-gray-300 flex flex-col gap-5 justify-center items-center"
                 tip="加载中......"
               >
                 <a-icon slot="indicator" type="loading" class="text-4xl" spin />
               </a-spin>
               <div class="pdf-box p-3 bg-gray-500 min-h-full">
-                <!-- <vue-pdf-embed
-                  :source="`${lingkeApi.downloadUrl}?file=${formData[curTabKey].cv[0].url}`"
-                /> -->
+                <vue-pdf-embed
+                  v-if="formData[curTabKey].cv[0]?.downloadUrl"
+                  ref="pdf"
+                  :source="formData[curTabKey].cv[0].downloadUrl"
+                  @progress="handlePdfProgress"
+                />
               </div>
             </div>
+          </template>
+          <template v-if="curTabKey === '3'">
+            <div class="text-base text-gray-500 pb-3">认证进度：</div>
+            <div>
+              <a-progress
+                :percent="teacherCertifiPercent"
+                :stroke-color="{
+                  '0%': '#108ee9',
+                  '100%': '#87d068',
+                }" />
+            </div>
+            <div class="pt-2 pb-10 text-gray-400">
+              说明：每完成一个认证，会加一颗星，星越多，认证等级越高，会提升自身信誉，同时在平台的曝光也会越大， 可以吸引更多有辅导需求的同学。
+            </div>
+            <div class="text-sm text-gray-500 flex flex-row gap-3 items-center justify-between pt-3 pb-4 border-t border-solid border-gray-200">
+              上传毕业证/学生证：
+              <component :is="getTeacherCertifiStatusText('diploma')" />
+            </div>
+            <div class="h-0 overflow-hidden">
+              <a-form-model-item prop="diploma">
+                <a-upload-dragger
+                  class="dragUploader"
+                  :multiple="true"
+                  name="fileList"
+                  :action="lingkeApi.uploadUrl"
+                  :fileList="formData[curTabKey].diploma"
+                  @change="info => handleFileChange(info, curTabKey, 'diploma', true)"
+                  @preview="handleFileDownload"
+                >
+                  <div :ref="`formCtrl_${curTabKey}_diploma`" class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
+                  </div>
+                </a-upload-dragger>
+              </a-form-model-item>
+            </div>
+            <div class="pb-10 flex flex-row items-start gap-8">
+              <div
+                v-if="!formData[curTabKey].diploma[0]"
+                class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md hover:border-indigo-400 hover:text-indigo-400"
+                @click="handleFileCtrlClick(curTabKey, 'diploma')"
+              >
+                点击上传
+              </div>
+              <div
+                v-else
+                class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2"
+              >
+                <el-image
+                  v-if="formData[curTabKey].diploma[0].downloadUrl"
+                  class="w-28 h-auto"
+                  :src="formData[curTabKey].diploma[0].downloadUrl"
+                  :preview-src-list="[
+                    formData[curTabKey].diploma[0].downloadUrl
+                  ]"
+                >
+                  <a-spin slot="placeholder" class="w-28 pt-4" />
+                </el-image>
+                <a-spin v-else class="w-28 pt-4" />
+                <div
+                  class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400"
+                  @click="handleFileCtrlClick(curTabKey, 'diploma')"
+                >重新上传</div>
+              </div>
+              <div class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
+                <el-image
+                  class="w-28 h-auto"
+                  :src="illustrativeGraphs['diploma']"
+                  :preview-src-list="[
+                    illustrativeGraphs['diploma']
+                  ]"
+                />
+                <div class="text-gray-400 text-sm">示例图</div>
+              </div>
+            </div>
+            <div class="text-sm text-gray-500 flex flex-row gap-3 items-center justify-between pt-3 pb-4 border-t border-solid border-gray-200">
+              上传成绩单：
+              <component :is="getTeacherCertifiStatusText('transcript')" />
+            </div>
+            <div class="h-0 overflow-hidden">
+              <a-form-model-item prop="transcript">
+                <a-upload-dragger
+                  class="dragUploader"
+                  :multiple="true"
+                  name="fileList"
+                  :action="lingkeApi.uploadUrl"
+                  :fileList="formData[curTabKey].transcript"
+                  @change="info => handleFileChange(info, curTabKey, 'transcript', true)"
+                  @preview="handleFileDownload"
+                >
+                  <div :ref="`formCtrl_${curTabKey}_transcript`" class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
+                  </div>
+                </a-upload-dragger>
+              </a-form-model-item>
+            </div>
+            <div class="pb-10 flex flex-row items-start gap-8">
+              <div
+                v-if="!formData[curTabKey].transcript[0]"
+                class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md hover:border-indigo-400 hover:text-indigo-400"
+                @click="handleFileCtrlClick(curTabKey, 'transcript')"
+              >
+                点击上传
+              </div>
+              <div
+                v-else
+                class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2"
+              >
+                <el-image
+                  v-if="formData[curTabKey].transcript[0].downloadUrl"
+                  class="w-28 h-auto"
+                  :src="formData[curTabKey].transcript[0].downloadUrl"
+                  :preview-src-list="[
+                    formData[curTabKey].transcript[0].downloadUrl
+                  ]"
+                >
+                  <a-spin slot="placeholder" class="w-28 pt-4" />
+                </el-image>
+                <a-spin v-else class="w-28 pt-4" />
+                <div
+                  class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400"
+                  @click="handleFileCtrlClick(curTabKey, 'transcript')"
+                >重新上传</div>
+              </div>
+              <div class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
+                <el-image
+                  class="w-28 h-auto"
+                  :src="illustrativeGraphs['transcript']"
+                  :preview-src-list="[
+                    illustrativeGraphs['transcript']
+                  ]"
+                />
+                <div class="text-gray-400 text-sm">示例图</div>
+              </div>
+            </div>
+            <div class="text-sm text-gray-500 flex flex-row gap-3 items-center justify-between pt-3 pb-4 border-t border-solid border-gray-200">
+              上传签证：
+              <component :is="getTeacherCertifiStatusText('visa')" />
+            </div>
+            <div class="h-0 overflow-hidden">
+              <a-form-model-item prop="visa">
+                <a-upload-dragger
+                  class="dragUploader"
+                  :multiple="true"
+                  name="fileList"
+                  :action="lingkeApi.uploadUrl"
+                  :fileList="formData[curTabKey].visa"
+                  @change="info => handleFileChange(info, curTabKey, 'visa', true)"
+                  @preview="handleFileDownload"
+                >
+                  <div :ref="`formCtrl_${curTabKey}_visa`" class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
+                  </div>
+                </a-upload-dragger>
+              </a-form-model-item>
+            </div>
+            <div class="pb-10 flex flex-row items-start gap-8">
+              <div
+                v-if="!formData[curTabKey].visa[0]"
+                class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md hover:border-indigo-400 hover:text-indigo-400"
+                @click="handleFileCtrlClick(curTabKey, 'visa')"
+              >
+                点击上传
+              </div>
+              <div
+                v-else
+                class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2"
+              >
+                <el-image
+                  v-if="formData[curTabKey].visa[0].downloadUrl"
+                  class="w-28 h-auto"
+                  :src="formData[curTabKey].visa[0].downloadUrl"
+                  :preview-src-list="[
+                    formData[curTabKey].visa[0].downloadUrl
+                  ]"
+                >
+                  <a-spin slot="placeholder" class="w-28 pt-4" />
+                </el-image>
+                <a-spin v-else class="w-28 pt-4" />
+                <div
+                  class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400"
+                  @click="handleFileCtrlClick(curTabKey, 'visa')"
+                >重新上传</div>
+              </div>
+              <div class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
+                <el-image
+                  class="w-28 h-auto"
+                  :src="illustrativeGraphs['visa']"
+                  :preview-src-list="[
+                    illustrativeGraphs['visa']
+                  ]"
+                />
+                <div class="text-gray-400 text-sm">示例图</div>
+              </div>
+            </div>
+          </template>
+          <template v-if="curTabKey === '4'">
+            <div class="text-sm text-gray-500 pb-3">银行卡号：</div>
+            <a-form-model-item prop="bankNum">
+              <a-input
+                v-model="formData[curTabKey].bankNum"
+                placeholder="请输入银行卡号"
+              />
+            </a-form-model-item>
+            <div class="text-sm text-gray-500 pb-3">开户行支行：</div>
+            <a-form-model-item prop="bankBranch">
+              <a-input
+                v-model="formData[curTabKey].bankBranch"
+                placeholder="请输入开户行支行"
+              />
+            </a-form-model-item>
+            <div class="text-sm text-gray-500 pb-3">身份证号码：</div>
+            <a-form-model-item prop="idNo">
+              <a-input
+                v-model="formData[curTabKey].idNo"
+                placeholder="请输入身份证号码"
+              />
+            </a-form-model-item>
           </template>
         </a-form-model>
       </div>
@@ -160,12 +371,12 @@
           v-if="curTabKey === '2'"
           type="danger"
           class="step-btn w-40"
-          @click="handleSave"
+          @click="handleFileCtrlClick(curTabKey, 'cv')"
         >
           重新上传
         </a-button>
         <a-button
-          v-if="curTabKey === '1' || curTabKey === '2'"
+          v-if="curTabKey === '1' || curTabKey === '2' || curTabKey === '3' || curTabKey === '4'"
           type="primary"
           class="step-btn w-40"
           @click="handleSave"
@@ -191,7 +402,6 @@ export default {
   },
   data() {
     return {
-      testLoading: true,
       lingkeApi,
       tabList: [
         {
@@ -228,6 +438,16 @@ export default {
         },
         '2': {
           cv: []
+        },
+        '3': {
+          diploma: [],
+          transcript: [],
+          visa: []
+        },
+        '4': {
+          bankNum: '',
+          bankBranch: '',
+          idNo: ''
         }
       },
       formRules: {
@@ -352,13 +572,39 @@ export default {
               }
             }
           ]
+        },
+        '2': {
+          cv: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.length) {
+                    callback(new Error('请上传简历'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ]
         }
+      },
+      pdfBoxParams: {
+        loading: false
+      },
+      illustrativeGraphs: {
+        diploma: require('@/assets/link/illustrativeGraphs1.webp'),
+        transcript: require('@/assets/link/illustrativeGraphs2.webp'),
+        visa: require('@/assets/link/illustrativeGraphs3.webp')
       }
     }
   },
   computed: {
     ...mapState(CUR_APP, [
-      'teacherInfo'
+      'teacherInfo',
+      'localDict'
     ]),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
@@ -372,55 +618,19 @@ export default {
     orderTypeDict() {
       return this.codeDict.order && this.codeDict.order.type || {}
     },
-    toolsList() {
-      return [
-        'Java',
-        'C',
-        'C++',
-        'Python',
-        'SPSS',
-        'R',
-        'STATA',
-        'Eview',
-        'Power BI',
-        'Tableau',
-        'Excel',
-        'SAS',
-        'Matlab',
-        'Latex',
-        'go',
-        'JS',
-        'HTML',
-        'VUE'
-      ]
-    },
-    orderTypeOptions() {
-      return [
-        {
-          key: '',
-          value: '全 部'
-        },
-        ...Object.entries(this.codeDict.order?.type || {}).map(([key, value]) => (
-          {
-            key,
-            value
-          }
-        ))
-      ]
-    },
-    infiniteId() {
-      return `type_${this.searchParams.type}`
-    },
-    detailId() {
-      return this.$route.query.id
-    }
-  },
-  watch: {
-    detailId: {
-      handler() {
-        this.handleDetailIdChange()
-      },
-      immediate: true
+    teacherCertifiPercent() {
+      const percentMap = {
+        diploma: 30,
+        transcript: 30,
+        visa: 40
+      }
+      let resPrecent = 0
+      Object.keys(percentMap).forEach(key => {
+        if (this.teacherInfo[key + 'Status'] === '2') {
+          resPrecent = resPrecent + percentMap[key]
+        }
+      })
+      return resPrecent
     }
   },
   created() {
@@ -440,20 +650,20 @@ export default {
           advantage: teacherInfo.advantage,
           tools: teacherInfo.tools.split(','),
           want: teacherInfo.want.split(','),
-          sample: teacherInfo.sampleList.map(name => ({
-            uid: name,
-            name: name,
-            status: 'done',
-            url: name
-          }))
+          sample: this.parseFileNamesToObjs(teacherInfo.sampleList || [])
         },
         '2': {
-          cv: teacherInfo.cvList.map(name => ({
-            uid: name,
-            name: name,
-            status: 'done',
-            url: name
-          }))
+          cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
+        },
+        '3': {
+          diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
+          transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || []),
+          visa: this.parseFileNamesToObjs(teacherInfo.visaList || [])
+        },
+        '4': {
+          bankNum: teacherInfo.bankNum,
+          bankBranch: teacherInfo.bankBranch,
+          idNo: teacherInfo.idNo
         }
       }
       this.formData = formData
@@ -486,7 +696,26 @@ export default {
                   advantage: this.formData[this.curTabKey].advantage,
                   tools: this.formData[this.curTabKey].tools.join(','),
                   want: this.formData[this.curTabKey].want.join(','),
-                  sample: this.formData[this.curTabKey].sample[0].url
+                  sample: this.formData[this.curTabKey].sample[0].uploadResName
+                })
+                break
+              case '2':
+                Object.assign(params, {
+                  cv: this.formData[this.curTabKey].cv[0].uploadResName
+                })
+                break
+              case '3':
+                Object.assign(params, {
+                  diploma: this.formData[this.curTabKey].diploma[0]?.uploadResName || '',
+                  transcript: this.formData[this.curTabKey].transcript[0]?.uploadResName || '',
+                  visa: this.formData[this.curTabKey].visa[0]?.uploadResName || ''
+                })
+                break
+              case '4':
+                Object.assign(params, {
+                  bankNum: this.formData[this.curTabKey].bankNum,
+                  bankBranch: this.formData[this.curTabKey].bankBranch,
+                  idNo: this.formData[this.curTabKey].idNo
                 })
                 break
               default:
@@ -495,7 +724,6 @@ export default {
             const res = await lingkeApi.teacherUpdate(params)
             if (res && res.data === 1) {
               await this.$store.dispatch('GetInfo')
-              this.initFormData()
               this.$message.success('保存成功')
             } else {
               throw new Error(res.msg || '保存失败')
@@ -515,68 +743,55 @@ export default {
       if (single) fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
         if (file.response) {
-          file.url = file.response.data[0]
+          file.uploadResName = file.response.data[0]
+          file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
         }
         return file
       })
       this.formData[formKey][itemKey] = fileList
     },
+    parseFileNamesToObjs(names) {
+      return names.map(name => {
+        const [, , fileName, , fileExtension] = name.match(/(\[.*?\])?(.*)(-.*?)(\..*)$/) || []
+        return {
+          uid: name,
+          name: (fileName + fileExtension) || name,
+          status: 'done',
+          uploadResName: name,
+          downloadUrl: `${lingkeApi.downloadBaseUrl}?file=${name}`
+        }
+      })
+    },
     handleFileDownload(file) {
-      const url = `${lingkeApi.downloadUrl}?file=${file.url}`
-      downloadFile(url, file.name, true)
+      downloadFile(file.downloadUrl, file.name, true)
     },
-    handleBack() {
-      this.$router.push({ name: 'TaskSquare' })
+    handleFileCtrlClick(formKey, itemKey) {
+      this.$refs[`formCtrl_${formKey}_${itemKey}`].click()
     },
-    async infiniteHandler($state) {
-      try {
-        const res = await lingkeApi.orderGetList({
-          pageIndex: this.searchParams.pageIndex,
-          pageSize: this.searchParams.pageSize,
-          type: this.searchParams.type
-        })
-        if (res && res.code === 1000) {
-          this.dataList = [...this.dataList, ...res.data.list]
-          if (this.dataList.length) $state.loaded()
-          if (this.searchParams.pageIndex < res.data.totalPage) {
-            this.searchParams.pageIndex++
-          } else {
-            $state.complete()
-          }
-        } else {
-          throw new Error(res.msg || '加载失败')
-        }
-      } catch (error) {
-        this.$message.error(error.message)
-        $state.error()
-        console.log(error)
+    handlePdfProgress({ loaded, total }) {
+      this.pdfBoxParams.loading = loaded !== total
+    },
+    getTeacherCertifiStatusText(formKey) {
+      const isFileEmpty = !this.formData[this.curTabKey][formKey][0]
+      if (isFileEmpty) {
+        return null
       }
-    },
-    handleOrderType(type) {
-      this.searchParams.pageIndex = 1
-      this.dataList = []
-      this.searchParams.type = type
-    },
-    handleToDetail(row) {
-      this.$router.push({ name: 'TaskSquare', query: { id: row.id } })
-    },
-    async handleDetailIdChange() {
-      if (this.detailId) {
-        try {
-          const res = await lingkeApi.orderGetOne({
-            Id: parseInt(this.detailId)
-          })
-          if (res && res.code === 1000) {
-            this.detailData = res.data
-          } else {
-            throw new Error(res.msg || '加载失败')
-          }
-        } catch (error) {
-          this.$message.error(error.message)
-          console.log(error)
+      const formKeyStatus = this.teacherInfo[formKey + 'Status'] || '1'
+      const text = this.codeDict.teacher[formKey + 'Status'][formKeyStatus]
+      const colorMap = {
+        1: '#2db7f5',
+        2: '#87d068',
+        3: '#f50'
+      }
+      const color = colorMap[formKeyStatus]
+      return {
+        render: () => {
+          return (
+            <a-tag color={ color } class="mr-0">
+              { text }
+            </a-tag>
+          )
         }
-      } else {
-        this.detailData = null
       }
     }
   }

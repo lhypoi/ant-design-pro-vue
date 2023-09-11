@@ -152,7 +152,7 @@
                           placeholder="请选择或直接输入"
                           v-model="formData[item.key].tools"
                         >
-                          <a-select-option v-for="tool in toolsList" :key="tool" :value="tool" class="pl-5">
+                          <a-select-option v-for="tool in localDict.toolsList" :key="tool" :value="tool" class="pl-5">
                             {{ tool }}
                           </a-select-option>
                         </a-select>
@@ -472,7 +472,8 @@ export default {
   },
   computed: {
     ...mapState(CUR_APP, [
-      'logoImg'
+      'logoImg',
+      'localDict'
     ]),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
@@ -482,28 +483,6 @@ export default {
     },
     orderTypeDict() {
       return this.codeDict.order && this.codeDict.order.type || {}
-    },
-    toolsList() {
-      return [
-        'Java',
-        'C',
-        'C++',
-        'Python',
-        'SPSS',
-        'R',
-        'STATA',
-        'Eview',
-        'Power BI',
-        'Tableau',
-        'Excel',
-        'SAS',
-        'Matlab',
-        'Latex',
-        'go',
-        'JS',
-        'HTML',
-        'VUE'
-      ]
     }
   },
   async mounted() {
