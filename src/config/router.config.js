@@ -178,16 +178,36 @@ const asyncRouterMapAll = {
       component: () => import('@/views/link/TLogin'),
       hidden: true
     }
+  ],
+  [APP_NAME.NUCLEAR_LAB]: [
+    {
+      path: '/',
+      name: 'index',
+      component: BasicLayout,
+      redirect: '/home',
+      children: [
+        // home
+        {
+          path: '/home',
+          name: 'Home',
+          component: () => import('@/views/nuclear_lab/Login'),
+          meta: { title: '首页', icon: 'appstore', permission: ['home'] }
+        }
+      ]
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      publiclyAccessible: true,
+      defaultLoginRoute: true,
+      component: () => import('@/views/nuclear_lab/Login'),
+      hidden: true
+    }
   ]
 }
 
 export const asyncRouterMap = [
-  ...asyncRouterMapAll[CUR_APP],
-  {
-    path: '*',
-    redirect: '/404',
-    hidden: true
-  }
+  ...asyncRouterMapAll[CUR_APP]
 ]
 
 /**
@@ -195,6 +215,10 @@ export const asyncRouterMap = [
  * @type { *[] }
  */
 export const constantRouterMap = [
+  {
+    path: '*',
+    redirect: '/404'
+  },
   {
     path: '/404',
     name: '404',

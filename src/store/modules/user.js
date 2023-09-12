@@ -6,6 +6,7 @@ import { ACCESS_TOKEN, APP_NAME, CUR_APP } from '@/store/mutation-types'
 import { signin } from '@/api/cau'
 import { getUserInfo } from '@/api/cauAuth'
 import lingkeApi from '@/api/lingke'
+import nuclearLabApi from '@/api/nuclearLab'
 
 storage.addPlugin(expirePlugin)
 const user = {
@@ -59,6 +60,20 @@ const user = {
           case APP_NAME.LINK_DEV:
             lingkeApi.login(userInfo).then(res => {
               if (res && res.code === 1000) {
+                const token = res.data.token
+                storage.set(ACCESS_TOKEN, token, new Date().getTime() + 10 * 60 * 60 * 1000)
+                commit('SET_TOKEN', token)
+                resolve()
+              } else {
+                reject(new Error(res.msg || '登录失败'))
+              }
+            }).catch(error => {
+              reject(error)
+            })
+            break
+          case APP_NAME.NUCLEAR_LAB:
+            nuclearLabApi.login(userInfo).then(res => {
+              if (res && res.code === 200) {
                 const token = res.data.token
                 storage.set(ACCESS_TOKEN, token, new Date().getTime() + 10 * 60 * 60 * 1000)
                 commit('SET_TOKEN', token)
@@ -127,6 +142,26 @@ const user = {
                 throw new Error(teacherRes.msg || '获取教师信息失败')
               }
 
+              resolve(result)
+            } catch (error) {
+              reject(error)
+            }
+            break
+          case APP_NAME.NUCLEAR_LAB:
+            try {
+              const result = {}
+              const userInfoRes = await nuclearLabApi.userInfo()
+              if (userInfoRes && userInfoRes.code === 200) {
+                const role = {
+                  id: userInfoRes.data.role,
+                  permissionList: userInfoRes.data.menus.map(menu => menu.name)
+                }
+                result.role = role
+                commit('SET_ROLES', role)
+                commit('SET_INFO', userInfoRes.data)
+              } else {
+                throw new Error(userInfoRes.msg || '获取用户信息失败')
+              }
               resolve(result)
             } catch (error) {
               reject(error)

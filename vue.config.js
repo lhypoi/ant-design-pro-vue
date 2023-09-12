@@ -161,6 +161,11 @@ const vueConfig = {
         target: 'http://120.25.231.168:18080',
         ws: false,
         changeOrigin: true
+      },
+      '/nrl/api': {
+        target: 'https://api.ukshuxi.com',
+        ws: false,
+        changeOrigin: true
       }
     }
   },

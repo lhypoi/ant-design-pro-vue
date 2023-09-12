@@ -1,5 +1,5 @@
-// import router, { resetRouter } from './router'
-import router from './router'
+import router, { resetRouter } from './router'
+// import router from './router'
 import store from './store'
 import storage from 'store'
 import NProgress from 'nprogress' // progress bar
@@ -68,10 +68,10 @@ router.beforeEach(async (to, from, next) => {
             store.dispatch('GenerateRoutes', { token, ...res }).then(() => {
               // 动态添加可访问路由表
               // VueRouter@3.5.0+ New API
-              // resetRouter() // 重置路由 防止退出重新登录或者 token 过期后页面未刷新，导致的路由重复添加
-              // store.getters.addRouters.forEach(r => {
-              //   router.addRoute(r)
-              // })
+              resetRouter() // 重置路由 防止退出重新登录或者 token 过期后页面未刷新，导致的路由重复添加
+              store.getters.addRouters.forEach(r => {
+                router.addRoute(r)
+              })
               // 请求带有 redirect 重定向时，登录自动重定向到该地址
               const redirect = decodeURIComponent(from.query.redirect || to.path)
               if (to.path === redirect) {
@@ -94,6 +94,11 @@ router.beforeEach(async (to, from, next) => {
             })
           })
       } else {
+        // TODO: 登录后意外访问到的页面，暂时都去 404，后续扩展权限提示
+        if (!to.matched.length) {
+          next({ name: '404' })
+          return
+        }
         next()
       }
     }

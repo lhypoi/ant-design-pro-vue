@@ -25,7 +25,8 @@ export const NAV_THEME = {
 
 export const APP_NAME = {
   ZND: 'znd',
-  LINK_DEV: 'link_dev'
+  LINK_DEV: 'link_dev',
+  NUCLEAR_LAB: 'nuclear_lab'
 }
 
-export const CUR_APP = APP_NAME.LINK_DEV
+export const CUR_APP = APP_NAME.NUCLEAR_LAB
