@@ -3,7 +3,7 @@ import { APP_NAME, CUR_APP } from '@/store/mutation-types'
 const appTitleAll = {
   [APP_NAME.ZND]: '1KCIGP',
   [APP_NAME.LINK_DEV]: '领克数云',
-  [APP_NAME.NUCLEAR_LAB]: '核实验室'
+  [APP_NAME.NUCLEAR_LAB]: '核与辐射工作场所管理系统'
 }
 
 /**
@@ -21,12 +21,12 @@ const appTitleAll = {
  */
 
 export default {
-  navTheme: 'light', // theme for nav menu
+  navTheme: 'dark', // theme for nav menu
   primaryColor: '#2F54EB', // '#F5222D', // primary color of ant design
-  layout: 'topmenu', // nav menu position: `sidemenu` or `topmenu`
-  contentWidth: 'Fixed', // layout of content: `Fluid` or `Fixed`, only works when layout is topmenu
-  fixedHeader: false, // sticky header
-  fixSiderbar: false, // sticky siderbar
+  layout: 'sidemenu', // nav menu position: `sidemenu` or `topmenu`
+  contentWidth: 'Fluid', // layout of content: `Fluid` or `Fixed`, only works when layout is topmenu
+  fixedHeader: true, // sticky header
+  fixSiderbar: true, // sticky siderbar
   colorWeak: false,
   menu: {
     locale: true
