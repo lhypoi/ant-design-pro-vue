@@ -84,6 +84,22 @@ export function userInfo () {
   })
 }
 
+export function roomList (parameter) {
+  return request({
+    url: url + '/room/list',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function roomUpdateById (id, parameter) {
+  return request({
+    url: url + '/room/update/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -97,5 +113,7 @@ export default {
   teacherGetOne,
   orderGetOne,
   teacherUpdate,
-  userInfo
+  userInfo,
+  roomList,
+  roomUpdateById
 }

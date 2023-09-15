@@ -190,7 +190,7 @@ const asyncRouterMapAll = {
         {
           path: '/home',
           name: 'Home',
-          component: () => import('@/views/nuclear_lab/Login'),
+          component: () => import('@/views/nuclear_lab/Home'),
           meta: { title: '首页', icon: 'appstore', permission: ['home'] }
         }
       ]

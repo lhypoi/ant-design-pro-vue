@@ -47,7 +47,8 @@ import {
   message,
   notification,
   Empty,
-  FormModel
+  FormModel,
+  Pagination
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -107,6 +108,7 @@ Vue.use(Descriptions)
 Vue.use(Space)
 Vue.use(Empty)
 Vue.use(FormModel)
+Vue.use(Pagination)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message
@@ -123,6 +125,7 @@ Vue.use(PageLoading)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
 
+// element ui
 Vue.use(Image)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')
