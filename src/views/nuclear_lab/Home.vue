@@ -97,7 +97,7 @@
 import nuclearLabApi from '@/api/nuclearLab'
 
 export default {
-  name: 'HomeSearch',
+  name: 'Home',
   components: {
   },
   data() {

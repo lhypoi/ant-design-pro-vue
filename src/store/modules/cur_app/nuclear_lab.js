@@ -3,8 +3,8 @@ const module = {
   namespaced: true,
   state: {
     loginTypeEnum: {
-      '1': '密码登录'
-      // '2': '验证码登录'
+      '1': '密码登录',
+      '2': '验证码登录'
     },
     localDict: {
       toolsList: [

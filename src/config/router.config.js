@@ -186,12 +186,19 @@ const asyncRouterMapAll = {
       component: BasicLayout,
       redirect: '/home',
       children: [
-        // home
+        // Home
         {
           path: '/home',
           name: 'Home',
           component: () => import('@/views/nuclear_lab/Home'),
           meta: { title: '首页', icon: 'appstore', permission: ['home'] }
+        },
+        // Permission
+        {
+          path: '/permission',
+          name: 'Permission',
+          component: () => import('@/views/nuclear_lab/Permission'),
+          meta: { title: '权限管理', icon: 'database', permission: ['permission'] }
         }
       ]
     },

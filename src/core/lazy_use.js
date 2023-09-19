@@ -61,7 +61,11 @@ import PermissionHelper from '@/core/permission/permission'
 import './directives/action'
 
 import {
-  Image
+  Image,
+  Loading,
+  Table as ETable,
+  TableColumn as ETableColumn,
+  Pagination as EPagination
 } from 'element-ui'
 
 Vue.use(ConfigProvider)
@@ -127,5 +131,9 @@ Vue.use(VueCropper)
 
 // element ui
 Vue.use(Image)
+Vue.use(Loading.directive)
+Vue.use(ETable)
+Vue.use(ETableColumn)
+Vue.use(EPagination)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')

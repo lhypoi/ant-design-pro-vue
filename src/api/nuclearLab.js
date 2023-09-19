@@ -100,6 +100,14 @@ export function roomUpdateById (id, parameter) {
   })
 }
 
+export function userList (parameter) {
+  return request({
+    url: url + '/user/list',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -115,5 +123,6 @@ export default {
   teacherUpdate,
   userInfo,
   roomList,
-  roomUpdateById
+  roomUpdateById,
+  userList
 }
