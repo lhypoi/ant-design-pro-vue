@@ -83,7 +83,7 @@
       width="90vw"
       @cancel="labModalParams.show = false"
     >
-      <div class="h-[75vh] sm:h-[80vh]">
+      <div class="h-[75vh] sm:h-[80vh] pt-6">
         <iframe
           :src="labModalParams.url"
           class="w-full h-full"

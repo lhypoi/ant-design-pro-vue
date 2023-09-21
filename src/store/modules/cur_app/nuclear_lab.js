@@ -27,16 +27,11 @@ const module = {
         'HTML',
         'VUE'
       ]
-    },
-    teacherInfo: {}
-  },
-  mutations: {
-    SET_TEACHER_INFO: (state, teacherInfo) => {
-      state.teacherInfo = teacherInfo
     }
   },
+  mutations: {
+  },
   actions: {
-
   }
 }
 

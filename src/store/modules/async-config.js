@@ -1,10 +1,12 @@
 import { APP_NAME, CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
+import nuclearLabApi from '@/api/nuclearLab'
 
 const asyncConfig = {
   namespaced: true,
   state: {
-    [APP_NAME.LINK_DEV]: null
+    [APP_NAME.LINK_DEV]: null,
+    [APP_NAME.NUCLEAR_LAB]: null
   },
 
   mutations: {
@@ -27,6 +29,16 @@ const asyncConfig = {
                   })
                 } else {
                   reject(new Error(res.msg || 'getCodeDict fail'))
+                }
+                break
+              case APP_NAME.NUCLEAR_LAB:
+                const nuclearLabRes = await nuclearLabApi.dictInfo()
+                if (nuclearLabRes && nuclearLabRes.code === 200) {
+                  commit('SET_' + CUR_APP, {
+                    codeDict: nuclearLabRes.data
+                  })
+                } else {
+                  reject(new Error(nuclearLabRes.msg || 'getCodeDict fail'))
                 }
                 break
               default:

@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
-// const url = 'https://api.ukshuxi.com/nrl/api'
-const url = '/nrl/api'
+const url = 'https://api.ukshuxi.com/nrl/api'
+// const url = '/nrl/api'
 export const uploadUrl = url + '/base/uploadFile'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'
@@ -108,6 +108,78 @@ export function userList (parameter) {
   })
 }
 
+export function dictInfo (parameter) {
+  return request({
+    url: url + '/dict/info',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function workOrderList (parameter) {
+  return request({
+    url: url + '/workOrder/list',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function workOrderTotal (parameter) {
+  return request({
+    url: url + '/workOrder/total',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function workOrderInfo (parameter) {
+  return request({
+    url: url + '/workOrder/info',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function roomAll (parameter) {
+  return request({
+    url: url + '/room/all',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function roomUserInfoById (id, parameter) {
+  return request({
+    url: url + '/room/userInfo/' + id,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function workOrderUpdateInfoById (id, parameter) {
+  return request({
+    url: url + '/workOrder/update/updateInfo/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderCreate (parameter) {
+  return request({
+    url: url + '/workOrder/create',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderDeleteById (id, parameter) {
+  return request({
+    url: url + '/workOrder/delete/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -124,5 +196,14 @@ export default {
   userInfo,
   roomList,
   roomUpdateById,
-  userList
+  userList,
+  dictInfo,
+  workOrderList,
+  workOrderTotal,
+  workOrderInfo,
+  roomAll,
+  roomUserInfoById,
+  workOrderUpdateInfoById,
+  workOrderCreate,
+  workOrderDeleteById
 }
