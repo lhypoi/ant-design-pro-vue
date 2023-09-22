@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
-const url = 'https://api.ukshuxi.com/nrl/api'
-// const url = '/nrl/api'
+// const url = 'https://api.ukshuxi.com/nrl/api'
+const url = '/nrl/api'
 export const uploadUrl = url + '/base/uploadFile'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'
@@ -180,6 +180,30 @@ export function workOrderDeleteById (id, parameter) {
   })
 }
 
+export function userRegister (parameter) {
+  return request({
+    url: url + '/user/register',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function userUpdateById (id, parameter) {
+  return request({
+    url: url + '/user/update/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function roleListAll (parameter) {
+  return request({
+    url: url + '/role/listAll',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -205,5 +229,8 @@ export default {
   roomUserInfoById,
   workOrderUpdateInfoById,
   workOrderCreate,
-  workOrderDeleteById
+  workOrderDeleteById,
+  userRegister,
+  userUpdateById,
+  roleListAll
 }

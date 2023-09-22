@@ -23,6 +23,14 @@
             >
               查询
             </a-button>
+            <a-button
+              class="h-11 rounded-md text-base"
+              type="primary"
+              size="large"
+              @click="handleOpenUserModal"
+            >
+              新增用户
+            </a-button>
           </div>
         </a-form-model>
       </div>
@@ -46,15 +54,91 @@
         </el-table-column>
       </k-table>
     </div>
+    <a-modal
+      v-if="userModalParams.show"
+      :title="userModalParams.userId ? '修改用户信息' : '新增用户'"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '640px'"
+      @cancel="userModalParams.show = false"
+    >
+      <div class="pt-4">
+        <div class="link-style-form">
+          <a-form-model
+            ref="userModalForm"
+            :model="userModalParams.formData"
+            :rules="userModalParams.formRules"
+            :label-col="{ span: 5 }"
+            :wrapper-col="{ offset: 1, span: 16 }"
+          >
+            <a-form-model-item key="username" prop="username" label="姓名">
+              <a-input
+                v-model="userModalParams.formData.username"
+                placeholder="请输入"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item key="roleId" prop="roleId" label="角色权限">
+              <a-select v-model="userModalParams.formData.roleId" size="large" placeholder="请选择" allowClear>
+                <a-select-option v-for="item in userModalParams.options['roleId']" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item key="roomIdList" prop="roomIdList" label="机房权限选择">
+              <a-checkbox-group v-model="userModalParams.formData.roomIdList" size="large">
+                <a-checkbox v-for="item in userModalParams.options['roomIdList']" :key="item.key" :value="item.key" name="roomIdList">
+                  {{ item.value }}
+                </a-checkbox>
+              </a-checkbox-group>
+            </a-form-model-item>
+            <a-form-model-item key="phoneNumber" prop="phoneNumber" label="手机号码">
+              <a-input
+                v-model="userModalParams.formData.phoneNumber"
+                placeholder="手机号码即为账号"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item key="password" prop="password" label="密码">
+              <a-input-password
+                v-model="userModalParams.formData.password"
+                placeholder="请输入"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item :wrapper-col="{ offset: 6, span: 16 }">
+              <div class="pt-4">
+                <a-button
+                  class="h-11 w-52 rounded-md text-base"
+                  type="primary"
+                  size="large"
+                  :loading="userModalParams.submitting"
+                  @click="handleUserModalFormUpdate"
+                >
+                  保存
+                </a-button>
+              </div>
+            </a-form-model-item>
+          </a-form-model>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script>
 import nuclearLabApi from '@/api/nuclearLab'
 import KTable from '@/components/Kira/KTable'
+import { mapGetters } from 'vuex'
+import { baseMixin } from '@/store/app-mixin'
 
 export default {
   name: 'Permission',
+  mixins: [baseMixin],
   components: {
     KTable
   },
@@ -62,16 +146,193 @@ export default {
     return {
       formData: {
         keyword: ''
+      },
+      userModalParams: {
+        show: false,
+        userId: '',
+        submitting: false,
+        formData: {
+          username: '',
+          roleId: undefined,
+          roomIdList: [],
+          phoneNumber: '',
+          password: ''
+        },
+        options: {
+          roleId: [],
+          roomIdList: []
+        },
+        formRules: {
+          username: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          roleId: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value) {
+                    callback(new Error('请选择'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          roomIdList: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.length) {
+                    callback(new Error('请选择'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          phoneNumber: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          password: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ]
+        }
       }
     }
   },
   computed: {
+    ...mapGetters('asyncConfig', {
+      codeDict: 'codeDict'
+    })
   },
   created() {
   },
   async mounted() {
+    this.initUserModalRoleOptions()
+    this.initUserModalRoomOptions()
   },
   methods: {
+    async initUserModalRoleOptions() {
+      try {
+        const res = await nuclearLabApi.roleListAll()
+        if (res && res.code === 200) {
+          this.userModalParams.options.roleId = res.data.map(item => {
+            return {
+              key: item.id,
+              value: item.name
+            }
+          })
+        } else {
+          throw new Error(res.message || '加载角色列表失败')
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async initUserModalRoomOptions() {
+      try {
+        const res = await nuclearLabApi.roomAll()
+        if (res && res.code === 200) {
+          this.userModalParams.options.roomIdList = res.data.map(item => {
+            return {
+              key: item.id,
+              value: item.name
+            }
+          })
+        } else {
+          throw new Error(res.message || '加载机房列表失败')
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    handleOpenUserModal(user) {
+      this.userModalParams = {
+        ...this.userModalParams,
+        show: true,
+        userId: user?.id || '',
+        submitting: false,
+        formData: {
+          username: user?.username || '',
+          roleId: user?.roleId || undefined,
+          roomIdList: [],
+          phoneNumber: user?.phoneNumber || '',
+          password: user?.password || ''
+        }
+      }
+    },
+    async handleUserModalFormUpdate() {
+      try {
+        await this.$refs.userModalForm.validate()
+      } catch {
+        this.$message.error('提交信息不符合要求，请检查')
+        return
+      }
+      this.userModalParams.submitting = true
+      try {
+        const params = {
+          username: this.userModalParams.formData.username,
+          roleId: this.userModalParams.formData.roleId,
+          roomIdList: this.userModalParams.formData.roomIdList,
+          phoneNumber: this.userModalParams.formData.phoneNumber,
+          password: this.userModalParams.formData.password || undefined
+        }
+        const res = this.userModalParams.userId ? await nuclearLabApi.userUpdateById(this.userModalParams.userId, params) : await nuclearLabApi.userRegister(params)
+        if (res && res.code === 200) {
+          this.$message.success('保存成功')
+          this.userModalParams.show = false
+          this.handleSearch()
+        } else {
+          throw new Error(res.message || '保存失败')
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
+      }
+      this.userModalParams.submitting = false
+    },
     async getUserList(params) {
       const tableData = {
         rows: [],
