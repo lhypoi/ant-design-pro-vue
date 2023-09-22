@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="relative flex-auto h-0">
-      <div class="h-full overflow-auto px-2 -mx-2 pb-2">
+      <div v-loading="loading" class="h-full overflow-auto px-2 -mx-2 pb-2">
         <div v-if="!loading && !roomList.length" class="pt-10">
           <a-empty />
         </div>
@@ -52,14 +52,6 @@
           </div>
         </div>
       </div>
-      <a-spin
-        v-if="loading"
-        class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-black bg-opacity-70 flex flex-col gap-5 justify-center items-center"
-        style="color: #409eff;"
-        tip="加载中......"
-      >
-        <a-icon slot="indicator" type="loading" class="text-4xl" spin />
-      </a-spin>
     </div>
     <div class="flex flex-row justify-end pt-4">
       <a-pagination
