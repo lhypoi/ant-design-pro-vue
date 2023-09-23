@@ -1,12 +1,12 @@
 <template>
-  <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
+  <div class="flex-auto flex flex-col bg-white rounded-3xl p-5 sm:p-8">
     <div class="flex flex-row">
-      <div class="link-style-form w-full">
+      <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
         <a-form-model
           :model="formData"
         >
-          <div class="flex flex-row items-start gap-4">
-            <a-form-model-item key="keyword" prop="keyword" class="flex-auto">
+          <div class="flex flex-row items-start gap-4 overflow-x-auto">
+            <a-form-model-item key="keyword" prop="keyword" class="flex-auto min-w-[160px]">
               <a-input
                 v-model="formData.keyword"
                 placeholder="请输入用户名"
@@ -43,14 +43,30 @@
         height="100%"
         class="h-full"
       >
-        <el-table-column prop="username" label="用户名" :align="'center'" :width="200" />
-        <el-table-column prop="roleName" label="角色" :align="'center'" :width="200" />
-        <el-table-column prop="phoneNumber" label="手机号码" :align="'center'" :width="200" />
+        <el-table-column prop="username" label="用户名" :align="'center'" min-width="160" />
+        <el-table-column prop="roleName" label="角色" :align="'center'" min-width="200" />
+        <el-table-column prop="phoneNumber" label="手机号码" :align="'center'" min-width="160" />
         <el-table-column
           label="操作"
           :align="'center'"
-          :fixed="'right'"
+          :width="200"
         >
+          <div slot-scope="scope" class="flex flex-row gap-4 justify-center">
+            <a-button
+              class="h-8 rounded-md text-sm"
+              type="danger"
+              @click="handleUserModalFormDelete(scope.row)"
+            >
+              删除
+            </a-button>
+            <a-button
+              class="h-8 rounded-md text-sm"
+              type="primary"
+              @click="handleOpenUserModal(scope.row)"
+            >
+              修改
+            </a-button>
+          </div>
         </el-table-column>
       </k-table>
     </div>
@@ -64,13 +80,13 @@
       @cancel="userModalParams.show = false"
     >
       <div class="pt-4">
-        <div class="link-style-form">
+        <div class="link-style-form" v-loading="userModalParams.loading">
           <a-form-model
             ref="userModalForm"
             :model="userModalParams.formData"
             :rules="userModalParams.formRules"
             :label-col="{ span: 5 }"
-            :wrapper-col="{ offset: 1, span: 16 }"
+            :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
           >
             <a-form-model-item key="username" prop="username" label="姓名">
               <a-input
@@ -102,7 +118,7 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item key="password" prop="password" label="密码">
+            <a-form-model-item v-if="!userModalParams.userId" key="password" prop="password" label="密码">
               <a-input-password
                 v-model="userModalParams.formData.password"
                 placeholder="请输入"
@@ -110,7 +126,7 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item :wrapper-col="{ offset: 6, span: 16 }">
+            <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
               <div class="pt-4">
                 <a-button
                   class="h-11 w-52 rounded-md text-base"
@@ -150,6 +166,7 @@ export default {
       userModalParams: {
         show: false,
         userId: '',
+        loading: false,
         submitting: false,
         formData: {
           username: '',
@@ -288,20 +305,44 @@ export default {
         console.log(error)
       }
     },
-    handleOpenUserModal(user) {
+    async handleOpenUserModal(user) {
       this.userModalParams = {
         ...this.userModalParams,
         show: true,
         userId: user?.id || '',
+        loading: true,
         submitting: false,
         formData: {
-          username: user?.username || '',
-          roleId: user?.roleId || undefined,
+          username: '',
+          roleId: undefined,
           roomIdList: [],
-          phoneNumber: user?.phoneNumber || '',
-          password: user?.password || ''
+          phoneNumber: '',
+          password: ''
         }
       }
+      try {
+        if (user?.id) {
+          const res = await nuclearLabApi.userById(user.id)
+          if (res && res.code === 200) {
+            this.userModalParams = {
+              ...this.userModalParams,
+              formData: {
+                username: res.data.username || '',
+                roleId: res.data.roleId || undefined,
+                roomIdList: res.data.roomList.map(item => item.id) || [],
+                phoneNumber: res.data.phoneNumber || '',
+                password: res.data.password || ''
+              }
+            }
+          } else {
+            throw new Error(res.message || '获取失败')
+          }
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
+      }
+      this.userModalParams.loading = false
     },
     async handleUserModalFormUpdate() {
       try {
@@ -332,6 +373,29 @@ export default {
         console.log(error)
       }
       this.userModalParams.submitting = false
+    },
+    handleUserModalFormDelete(user) {
+      this.$confirm({
+        title: '警告',
+        content: `确定删除该用户吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await nuclearLabApi.userDeleteById(user.id)
+            if (res && res.code === 200) {
+              this.$message.success('删除成功')
+              this.handleSearch()
+            } else {
+              throw new Error(res.message || '删除失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
     },
     async getUserList(params) {
       const tableData = {

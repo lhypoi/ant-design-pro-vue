@@ -150,6 +150,7 @@ ol {
   .ant-layout-content {
     display: flex;
     flex-direction: column;
+    @apply m-3 sm:m-8;
 
     .ant-pro-basicLayout-children-content-wrap {
       flex: auto;
@@ -303,6 +304,12 @@ input:-webkit-autofill:active {
 
   .reset-btn {
     @apply h-12 rounded-md text-base;
+  }
+
+  &.link-style-form-sm {
+    .ant-form-item {
+      @apply h-9;
+    }
   }
 }
 

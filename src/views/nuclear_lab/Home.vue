@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
+  <div class="flex-auto flex flex-col bg-white rounded-3xl p-5 sm:p-8">
     <div class="flex flex-row">
       <div class="link-style-form w-full">
         <a-form-model

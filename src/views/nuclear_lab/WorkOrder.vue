@@ -1,8 +1,8 @@
 <template>
-  <div class="flex-auto flex flex-col bg-white rounded-3xl p-8">
+  <div class="flex-auto flex flex-col bg-white rounded-3xl p-5 sm:p-8">
     <div class="flex flex-row items-center flex-wrap gap-3">
       <div class="flex-auto flex flex-row items-center sm:gap-16 flex-wrap">
-        <div class="text-black text-lg font-bold">{{ `${userInfo.roleName}：${userInfo.username}` }}</div>
+        <div class="text-black text-lg font-bold w-full sm:w-auto">{{ `${userInfo.roleName}：${userInfo.username}` }}</div>
         <div class="text-black text-lg font-bold">{{ `待核查任务数：${unCheckTotal}` }}</div>
       </div>
       <div>
@@ -25,12 +25,12 @@
         >
           <div class="h-full px-2 pt-2 flex flex-col min-h-[70vh]">
             <template v-if="tab.key === ''">
-              <div class="link-style-form w-full">
+              <div class="link-style-form w-full pb-5 sm:pb-0" :class="{ 'link-style-form-sm': isMobile }">
                 <a-form-model
                   :model="formData[tab.key]"
                 >
-                  <div class="flex flex-row items-start gap-4">
-                    <a-form-model-item key="roomName" prop="roomName">
+                  <div class="flex flex-row sm:flex-row items-start gap-2 sm:gap-4 overflow-x-auto">
+                    <a-form-model-item key="roomName" prop="roomName" class="min-w-[160px]">
                       <a-input
                         v-model="formData[tab.key].roomName"
                         placeholder="请输入机房名"
@@ -38,19 +38,19 @@
                         allowClear
                       />
                     </a-form-model-item>
-                    <a-form-model-item key="orderStatus" prop="orderStatus" class="w-48">
+                    <a-form-model-item key="orderStatus" prop="orderStatus" class="min-w-[180px]">
                       <a-select v-model="formData[tab.key].orderStatus" size="large" placeholder="请选择工单状态" allowClear>
                         <a-select-option v-for="item in orderStatusOptions" :key="item.key" :value="item.key">
                           {{ item.value }}
                         </a-select-option>
                       </a-select>
                     </a-form-model-item>
-                    <a-form-model-item key="timeRange" prop="timeRange" class="">
+                    <a-form-model-item key="timeRange" prop="timeRange" class="min-w-[240px]">
                       <a-range-picker v-model="formData[tab.key].timeRange" size="large" allowClear>
                         <a-icon slot="suffixIcon" type="calendar" />
                       </a-range-picker>
                     </a-form-model-item>
-                    <a-form-model-item key="chkUserName" prop="chkUserName">
+                    <a-form-model-item key="chkUserName" prop="chkUserName" class="min-w-[160px]">
                       <a-input
                         v-model="formData[tab.key].chkUserName"
                         placeholder="请输入核查员"
@@ -80,14 +80,14 @@
                 class="flex-auto"
               >
                 <el-table-column prop="workOrderNo" label="工单号" :align="'center'" :width="200" />
-                <el-table-column prop="roomName" label="机房名称" :align="'center'" :width="200" />
+                <el-table-column prop="roomName" label="机房名称" :align="'center'" width="auto" />
                 <el-table-column prop="chkTime" label="核查时间" :align="'center'" :width="200" />
                 <el-table-column prop="chkUserName" label="核查员" :align="'center'" :width="200" />
-                <el-table-column prop="orderStatusName" label="工单状态" :align="'center'" :width="200" />
+                <el-table-column prop="orderStatusName" label="工单状态" :align="'center'" width="auto" />
                 <el-table-column
                   label="操作"
                   :align="'center'"
-                  :fixed="'right'"
+                  :width="250"
                 >
                   <div slot-scope="scope" class="flex flex-row gap-4 justify-center">
                     <a-button
@@ -152,7 +152,7 @@
             :model="taskModalParams.formData"
             :rules="taskModalParams.formRules"
             :label-col="{ span: 5 }"
-            :wrapper-col="{ offset: 1, span: 16 }"
+            :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
           >
             <a-form-model-item key="title" prop="title" label="任务标题">
               <a-input
@@ -190,7 +190,7 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item :wrapper-col="{ offset: 6, span: 16 }">
+            <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
               <div class="pt-4">
                 <a-button
                   class="h-11 w-52 rounded-md text-base"

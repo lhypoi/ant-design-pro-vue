@@ -204,6 +204,22 @@ export function roleListAll (parameter) {
   })
 }
 
+export function userById (id, parameter) {
+  return request({
+    url: url + '/user/' + id,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function userDeleteById (id, parameter) {
+  return request({
+    url: url + '/user/delete/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -232,5 +248,7 @@ export default {
   workOrderDeleteById,
   userRegister,
   userUpdateById,
-  roleListAll
+  roleListAll,
+  userById,
+  userDeleteById
 }
