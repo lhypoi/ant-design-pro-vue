@@ -220,6 +220,14 @@ export function userDeleteById (id, parameter) {
   })
 }
 
+export function userLoginLog (parameter) {
+  return request({
+    url: url + '/user/loginLog',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -250,5 +258,6 @@ export default {
   userUpdateById,
   roleListAll,
   userById,
-  userDeleteById
+  userDeleteById,
+  userLoginLog
 }

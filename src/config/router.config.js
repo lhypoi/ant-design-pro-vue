@@ -206,6 +206,13 @@ const asyncRouterMapAll = {
           name: 'Permission',
           component: () => import('@/views/nuclear_lab/Permission'),
           meta: { title: '权限管理', icon: 'database', permission: ['permission'] }
+        },
+        // LoginLog
+        {
+          path: '/login-log',
+          name: 'LoginLog',
+          component: () => import('@/views/nuclear_lab/LoginLog'),
+          meta: { title: '登录日志', icon: 'solution', permission: ['loginLog'] }
         }
       ]
     },
