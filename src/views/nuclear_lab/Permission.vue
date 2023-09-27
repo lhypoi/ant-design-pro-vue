@@ -105,9 +105,13 @@
             </a-form-model-item>
             <a-form-model-item key="roomIdList" prop="roomIdList" label="机房权限选择">
               <a-checkbox-group v-model="userModalParams.formData.roomIdList" size="large">
-                <a-checkbox v-for="item in userModalParams.options['roomIdList']" :key="item.key" :value="item.key" name="roomIdList">
-                  {{ item.value }}
-                </a-checkbox>
+                <a-row>
+                  <a-col v-for="item in userModalParams.options['roomIdList']" :key="item.key" :span="8">
+                    <a-checkbox :value="item.key" name="roomIdList">
+                      {{ item.value }}
+                    </a-checkbox>
+                  </a-col>
+                </a-row>
               </a-checkbox-group>
             </a-form-model-item>
             <a-form-model-item key="phoneNumber" prop="phoneNumber" label="手机号码">
