@@ -224,6 +224,16 @@ const asyncRouterMapAll = {
       component: () => import('@/views/nuclear_lab/Login'),
       hidden: true
     }
+  ],
+  [APP_NAME.REPAYMENT_PLAN]: [
+    {
+      path: '/list',
+      name: 'List',
+      publiclyAccessible: true,
+      defaultLoginRoute: true,
+      component: () => import('@/views/repayment_plan/List'),
+      hidden: true
+    }
   ]
 }
 

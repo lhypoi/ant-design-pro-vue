@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import { constantRouterMap, asyncRouterMap } from '@/config/router.config'
+import { APP_ROUTE_BASE_NAME, CUR_APP } from '@/store/mutation-types'
 
 // hack router push callback
 const originalPush = Router.prototype.push
@@ -13,6 +14,7 @@ Vue.use(Router)
 
 const createRouter = () =>
   new Router({
+    base: APP_ROUTE_BASE_NAME[CUR_APP] || '',
     mode: 'history',
     routes: [...constantRouterMap]
   })
