@@ -116,7 +116,7 @@ export default {
           currency: 'CNY'
         })
         const remainingAmount = total - (initialInstallmentAmount * hasTimes)
-        const lastInstallmentAmount = total - (initialInstallmentAmount * (times - 1))
+        // const lastInstallmentAmount = total - (initialInstallmentAmount * (times - 1))
         const detailData = {
           '1': [],
           '2': []
@@ -126,6 +126,7 @@ export default {
         for (let i = 0; i < times; i++) {
           const year = currentDate.getFullYear()
           const month = currentDate.getMonth() + 1
+          // const month = currentDate.getMonth()
           const day = currentDate.getDate()
           const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`
           if (i >= hasTimes) {
@@ -133,14 +134,16 @@ export default {
               id: '1' + '_' + i,
               curTimes: i + 1,
               time: formattedDate,
-              pay: formatter.format((i === times - 1) ? lastInstallmentAmount : initialInstallmentAmount)
+              // pay: formatter.format((i === times - 1) ? lastInstallmentAmount : initialInstallmentAmount)
+              pay: formatter.format(2861)
             })
           } else {
             detailData['2'].push({
               id: '2' + '_' + i,
               curTimes: i + 1,
               time: formattedDate,
-              pay: formatter.format(initialInstallmentAmount)
+              // pay: formatter.format(initialInstallmentAmount)
+              pay: formatter.format(2861)
             })
           }
           currentDate.setMonth(currentDate.getMonth() + 1)
@@ -150,12 +153,12 @@ export default {
           time: time,
           total: formatter.format(total),
           times: times,
-          last: formatter.format(remainingAmount),
+          last: formatter.format(37200 || remainingAmount),
           detailData: detailData
         }
       }
       this.listData = [
-        generateData('2021-10-26', 60500, 36, 26, 2861)
+        generateData('2021-10-26', 60500, 36, 23, 2861)
       ]
       this.listLoading = false
     },
