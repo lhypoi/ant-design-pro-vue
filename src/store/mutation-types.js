@@ -33,7 +33,7 @@ export const APP_NAME = {
 export const APP_ROUTE_BASE_NAME = {
   [APP_NAME.ZND]: '',
   [APP_NAME.LINK_DEV]: '',
-  [APP_NAME.NUCLEAR_LAB]: '',
+  [APP_NAME.NUCLEAR_LAB]: 'nuclear-lab',
   [APP_NAME.REPAYMENT_PLAN]: '/repayment_plan/'
 }
 
