@@ -14,11 +14,11 @@
           <a-icon type="setting" />
           {{ $t('menu.account.settings') }}
         </a-menu-item> -->
-        <a-menu-item v-if="menu" key="profile" @click="handleToProfile">
+        <!-- <a-menu-item v-if="menu" key="profile" @click="handleToProfile">
           <a-icon type="file-sync" />
           {{ 'Profile' }}
-        </a-menu-item>
-        <a-menu-divider v-if="menu" />
+        </a-menu-item> -->
+        <!-- <a-menu-divider v-if="menu" /> -->
         <a-menu-item key="logout" @click="handleLogout">
           <a-icon type="logout" />
           {{ $t('menu.account.logout') }}

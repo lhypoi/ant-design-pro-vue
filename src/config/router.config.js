@@ -191,28 +191,35 @@ const asyncRouterMapAll = {
           path: '/home',
           name: 'Home',
           component: () => import('@/views/nuclear_lab/Home'),
-          meta: { title: '首页', icon: 'appstore', permission: ['home'] }
+          meta: { title: '模型展示', icon: 'appstore', permission: ['modelShow'] }
         },
         // WorkOrder
         {
           path: '/work-order',
           name: 'WorkOrder',
           component: () => import('@/views/nuclear_lab/WorkOrder'),
-          meta: { title: '工单管理', icon: 'table', permission: ['workOrder'] }
+          meta: { title: '工单管理', icon: 'table', permission: ['modelShow'] }
         },
         // Permission
         {
           path: '/permission',
           name: 'Permission',
           component: () => import('@/views/nuclear_lab/Permission'),
-          meta: { title: '权限管理', icon: 'database', permission: ['permission'] }
+          meta: { title: '权限管理', icon: 'database', permission: ['modelShow'] }
         },
         // LoginLog
         {
           path: '/login-log',
           name: 'LoginLog',
           component: () => import('@/views/nuclear_lab/LoginLog'),
-          meta: { title: '登录日志', icon: 'solution', permission: ['loginLog'] }
+          meta: { title: '登录日志', icon: 'solution', permission: ['modelShow'] }
+        },
+        // RoomSetting
+        {
+          path: '/room-setting',
+          name: 'RoomSetting',
+          component: () => import('@/views/nuclear_lab/RoomSetting'),
+          meta: { title: '机房设置', icon: 'solution', permission: ['roomSetting'] }
         }
       ]
     },

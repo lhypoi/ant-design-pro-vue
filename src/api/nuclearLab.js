@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-// const url = 'https://api.ukshuxi.com/nrl/api'
-const url = '/nrl/api'
-export const uploadUrl = url + '/base/uploadFile'
+// const url = 'https://api.ukshuxi.com/nrl/api/v1'
+const url = '/nrl/api/v1'
+export const uploadUrl = url + '/file/upload'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'
 
@@ -228,6 +228,14 @@ export function userLoginLog (parameter) {
   })
 }
 
+export function roomCreate (parameter) {
+  return request({
+    url: url + '/room/create',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -259,5 +267,6 @@ export default {
   roleListAll,
   userById,
   userDeleteById,
-  userLoginLog
+  userLoginLog,
+  roomCreate
 }

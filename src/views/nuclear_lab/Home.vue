@@ -1,16 +1,24 @@
 <template>
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-5 sm:p-8">
     <div class="flex flex-row">
-      <div class="link-style-form w-full">
+      <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
         <a-form-model
           ref="homeForm"
           :model="formData"
         >
-          <div class="flex flex-row items-start gap-4">
-            <a-form-model-item key="keyword" prop="keyword" class="flex-auto">
+          <div class="flex flex-row items-start gap-4 overflow-x-auto">
+            <a-form-model-item key="keyword" prop="keyword" class="flex-auto min-w-[170px]">
               <a-input
                 v-model="formData.keyword"
                 placeholder="请输入机房名称"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item key="roomId" prop="roomId" class="flex-auto min-w-[170px]">
+              <a-input
+                v-model="formData.roomId"
+                placeholder="请输入机房编号"
                 size="large"
                 allowClear
               />
@@ -96,6 +104,7 @@ export default {
     return {
       formData: {
         keyword: '',
+        roomId: '',
         pageNum: 1,
         pageSize: 50
       },
@@ -131,6 +140,7 @@ export default {
       try {
         const res = await nuclearLabApi.roomList({
           keyword: this.formData.keyword,
+          roomId: this.formData.roomId,
           pageNum: this.formData.pageNum,
           pageSize: this.formData.pageSize
         })
