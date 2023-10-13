@@ -193,12 +193,12 @@ const asyncRouterMapAll = {
           component: () => import('@/views/nuclear_lab/Home'),
           meta: { title: '模型展示', icon: 'appstore', permission: ['modelShow'] }
         },
-        // WorkOrder
+        // RoomCheckShow
         {
-          path: '/work-order',
-          name: 'WorkOrder',
+          path: '/room-checkShow',
+          name: 'RoomCheckShow',
           component: () => import('@/views/nuclear_lab/WorkOrder'),
-          meta: { title: '工单管理', icon: 'table', permission: ['modelShow'] }
+          meta: { title: '机房核查展示', icon: 'table', permission: ['roomCheckShow'] }
         },
         // Permission
         {

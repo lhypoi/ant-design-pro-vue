@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
-// const url = 'https://api.ukshuxi.com/nrl/api/v1'
-const url = '/nrl/api/v1'
+const url = 'https://api.ukshuxi.com/nrl/api/v1'
+// const url = '/nrl/api/v1'
 export const uploadUrl = url + '/file/upload'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'
@@ -222,7 +222,8 @@ export function userDeleteById (id, parameter) {
 
 export function userLoginLog (parameter) {
   return request({
-    url: url + '/user/loginLog',
+    // url: url + '/user/loginLog/lsit',
+    url: url + '/user/loginLog/list',
     method: 'get',
     params: parameter
   })
@@ -233,6 +234,54 @@ export function roomCreate (parameter) {
     url: url + '/room/create',
     method: 'post',
     data: parameter
+  })
+}
+
+export function roomInfo (parameter) {
+  return request({
+    url: url + '/room/info',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function pointUpdateById (id, parameter) {
+  return request({
+    url: url + '/point/update/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function pointCreate (parameter) {
+  return request({
+    url: url + '/point/create',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function pointDeleteById (id, parameter) {
+  return request({
+    url: url + '/point/delete/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function roomDeleteById (id, parameter) {
+  return request({
+    url: url + '/room/delete/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderListDone (parameter) {
+  return request({
+    url: url + '/workOrder/listDone',
+    method: 'get',
+    params: parameter
   })
 }
 
@@ -268,5 +317,11 @@ export default {
   userById,
   userDeleteById,
   userLoginLog,
-  roomCreate
+  roomCreate,
+  roomInfo,
+  pointUpdateById,
+  pointCreate,
+  pointDeleteById,
+  roomDeleteById,
+  workOrderListDone
 }

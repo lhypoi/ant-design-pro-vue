@@ -53,7 +53,7 @@
     <template v-slot:footerRender>
       <global-footer />
     </template>
-    <router-view />
+    <router-view :key="$route.path" />
   </pro-layout>
 </template>
 

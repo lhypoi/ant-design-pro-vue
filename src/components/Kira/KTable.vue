@@ -3,13 +3,13 @@
     <el-table
       v-bind="$attrs"
       v-loading="localLoading"
-      :data="rows"
+      :data="dataRows || rows"
     >
       <template v-for="name in Object.keys($slots)" :slot="name">
         <slot :name="name" />
       </template>
     </el-table>
-    <div class="flex flex-row justify-end pt-3">
+    <div v-if="!hidePage" class="flex flex-row justify-end pt-3">
       <el-pagination
         class="-mr-3"
         :disabled="localLoading || sizeChangeFlag"
@@ -38,7 +38,15 @@ export default {
   props: Object.assign({}, T.props, {
     data: {
       type: Function,
-      required: true
+      default: () => ({})
+    },
+    hidePage: {
+      type: Boolean,
+      default: false
+    },
+    dataRows: {
+      type: Array,
+      required: false
     }
   }),
   data () {

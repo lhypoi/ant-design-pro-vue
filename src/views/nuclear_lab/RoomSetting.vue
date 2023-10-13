@@ -132,13 +132,14 @@
             <a-button
               class="h-8 rounded-md text-sm"
               type="primary"
+              @click="handleOpenPointModal(scope.row)"
             >
               机房点位修改
             </a-button>
             <a-button
               class="h-8 rounded-md text-sm"
               type="danger"
-              @click="delete1(scope)"
+              @click="handleRoomDelete(scope.row)"
             >
               数据删除
             </a-button>
@@ -220,6 +221,15 @@
                 </div>
               </a-upload-dragger>
             </a-form-model-item>
+            <a-form-model-item key="pointList" prop="pointList" label="点位映射">
+              <a-button
+                class="h-8 rounded-md text-sm"
+                type="primary"
+                @click="handleOpenPointModal(roomModalParams.formData)"
+              >
+                机房点位设置
+              </a-button>
+            </a-form-model-item>
             <a-form-model-item key="url" prop="url" label="模型url">
               <a-input
                 v-model="roomModalParams.formData.url"
@@ -255,100 +265,156 @@
     </a-modal>
     <a-modal
       v-if="pointModalParams.show"
-      :title="'新增机房'"
+      :title="pointModalParams.roomId ? '机房点位修改' : '机房点位设置'"
       :visible="true"
       :footer="null"
       :maskClosable="false"
-      :width="isMobile ? '90vw' : '640px'"
-      @cancel="roomModalParams.show = false"
+      :width="isMobile ? '90vw' : '1300px'"
+      @cancel="pointModalParams.show = false"
     >
-      <div class="pt-4">
-        <div class="link-style-form">
-          <a-form-model
-            ref="roomModalForm"
-            :model="roomModalParams.formData"
-            :rules="roomModalParams.formRules"
-            :label-col="{ span: 5 }"
-            :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
+      <div class="pt-4" v-loading="pointModalParams.loading">
+        <div>
+          <k-table
+            :dataRows="pointModalParams.rows"
+            border
+            :hidePage="true"
           >
-            <a-form-model-item key="name" prop="name" label="机房名">
-              <a-input
-                v-model="roomModalParams.formData.name"
-                placeholder="请输入"
-                size="large"
-                allowClear
-              />
-            </a-form-model-item>
-            <a-form-model-item key="img" prop="img" label="机房图">
-              <a-upload-dragger
-                class="dragUploader"
-                :multiple="true"
-                :action="nuclearLabApi.uploadUrl"
-                :headers="{
-                  'x-token': token
-                }"
-                accept="image/*"
-                :fileList="roomModalParams.formData.img"
-                @change="info => handleFormFileChange(info, roomModalParams.formData, 'img', true)"
-                @preview="file => handleImgPriview([file.uploadRes])"
+            <el-table-column
+              v-for="col in pointModalParams.cols"
+              :key="col.key"
+              :prop="col.key"
+              :label="col.label"
+              :align="'center'"
+              :width="col.width"
+              :min-width="col.minWidth"
+            >
+              <template
+                slot-scope="scope"
               >
-                <div class="rounded-md bg-sky-50 flex flex-col items-center pt-2 pb-2">
-                  <div>
-                    <span class="text-indigo-500">点击上传</span>
-                  </div>
-                </div>
-              </a-upload-dragger>
-            </a-form-model-item>
-            <a-form-model-item key="pointImg" prop="pointImg" label="机房点位图">
-              <a-upload-dragger
-                class="dragUploader"
-                :multiple="true"
-                :action="nuclearLabApi.uploadUrl"
-                :headers="{
-                  'x-token': token
-                }"
-                accept="image/*"
-                :fileList="roomModalParams.formData.pointImg"
-                @change="info => handleFormFileChange(info, roomModalParams.formData, 'pointImg', true)"
-                @preview="file => handleImgPriview([file.uploadRes])"
-              >
-                <div class="rounded-md bg-sky-50 flex flex-col items-center pt-2 pb-2">
-                  <div>
-                    <span class="text-indigo-500">点击上传</span>
-                  </div>
-                </div>
-              </a-upload-dragger>
-            </a-form-model-item>
-            <a-form-model-item key="url" prop="url" label="模型url">
-              <a-input
-                v-model="roomModalParams.formData.url"
-                placeholder="请输入"
-                size="large"
-                allowClear
-              />
-            </a-form-model-item>
-            <a-form-model-item key="remark" prop="remark" label="备注">
-              <a-input
-                v-model="roomModalParams.formData.remark"
-                placeholder="请输入"
-                size="large"
-                allowClear
-              />
-            </a-form-model-item>
-            <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
-              <div class="pt-4">
-                <a-button
-                  class="h-11 w-52 rounded-md text-base"
-                  type="primary"
-                  size="large"
-                  :loading="roomModalParams.submitting"
-                  @click="handleRoomModalFormUpdate"
+                <div
+                  v-if="col.editType === 'text'"
+                  v-loading="scope.row.tempLoading[col.key]"
+                  element-loading-spinner="el-icon-loading mt-3"
+                  element-loading-background="rgba(0, 0, 0, 0.8)"
                 >
-                  保存
+                  <a-input
+                    v-model="scope.row.tempRow[col.key]"
+                    @blur="handlePointModalTableRowInputSave(scope.row, col.key)"
+                  />
+                </div>
+                <div
+                  v-if="col.editType === 'number'"
+                  v-loading="scope.row.tempLoading[col.key]"
+                  element-loading-spinner="el-icon-loading mt-3"
+                  element-loading-background="rgba(0, 0, 0, 0.8)"
+                >
+                  <a-input-number
+                    v-model="scope.row.tempRow[col.key]"
+                    @blur="handlePointModalTableRowInputSave(scope.row, col.key)"
+                  />
+                </div>
+                <div
+                  v-else-if="col.editType === 'multiSelect'"
+                  v-loading="scope.row.tempLoading[col.key]"
+                  element-loading-spinner="el-icon-loading mt-3"
+                  element-loading-background="rgba(0, 0, 0, 0.8)"
+                >
+                  <a-checkbox-group
+                    v-model="scope.row.tempRow[col.key]"
+                    @change="handlePointModalTableRowCheckboxSave(scope.row, col.key)"
+                  >
+                    <a-row>
+                      <a-col
+                        v-for="item in col.editOptions"
+                        :key="item.label"
+                        :span="8"
+                        class="text-left"
+                      >
+                        <a-checkbox :value="item.key">
+                          {{ item.label }}
+                        </a-checkbox>
+                      </a-col>
+                    </a-row>
+                  </a-checkbox-group>
+                </div>
+                <div
+                  v-else-if="col.editType === 'radio'"
+                  v-loading="scope.row.tempLoading[col.key]"
+                  element-loading-spinner="el-icon-loading mt-3"
+                  element-loading-background="rgba(0, 0, 0, 0.8)"
+                >
+                  <a-radio-group
+                    v-model="scope.row.tempRow[col.key]"
+                    @change="handlePointModalTableRowCheckboxSave(scope.row, col.key)"
+                  >
+                    <a-row>
+                      <a-col
+                        v-for="item in col.editOptions"
+                        :key="item.label"
+                        :span="24"
+                        class="text-left"
+                      >
+                        <a-radio :value="item.key">
+                          {{ item.label }}
+                        </a-radio>
+                      </a-col>
+                    </a-row>
+                  </a-radio-group>
+                </div>
+                <div
+                  v-else-if="col.editType === 'img'"
+                  v-loading="scope.row.tempLoading[col.key]"
+                  element-loading-spinner="el-icon-loading mt-3"
+                  element-loading-background="rgba(0, 0, 0, 0.8)"
+                  class="link-style-form"
+                >
+                  <a-upload-dragger
+                    class="dragUploader"
+                    style="margin-bottom: 0;"
+                    :multiple="true"
+                    :action="nuclearLabApi.uploadUrl"
+                    :headers="{
+                      'x-token': token
+                    }"
+                    accept="image/*"
+                    :fileList="scope.row.tempRow[col.key]"
+                    @change="info => handleFormFileChange(info, scope.row.tempRow, col.key, false, () => handlePointModalTableRowImgSave(scope.row, col.key))"
+                    @preview="file => handleImgPriview([file.uploadRes])"
+                  >
+                    <div class="rounded-md bg-sky-50 flex flex-col items-center pt-2 pb-2">
+                      <div>
+                        <span class="text-indigo-500">点击上传</span>
+                      </div>
+                    </div>
+                  </a-upload-dragger>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="操作"
+              :align="'center'"
+              :width="100"
+            >
+              <div slot-scope="scope">
+                <a-button
+                  class="h-8 rounded-md text-sm"
+                  type="danger"
+                  @click="handlePointModalTableDeleteRow(scope.row)"
+                >
+                  删除
                 </a-button>
               </div>
-            </a-form-model-item>
-          </a-form-model>
+            </el-table-column>
+          </k-table>
+        </div>
+        <div class="pt-3 flex flex-row justify-end">
+          <a-button
+            class="h-8 rounded-md text-sm"
+            type="primary"
+            @click="handlePointModalTableAddRow"
+          >
+            新增点位
+          </a-button>
         </div>
       </div>
     </a-modal>
@@ -440,21 +506,6 @@ export default {
               }
             }
           ],
-          pointList: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value.length) {
-                    callback(new Error('请设置'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
           url: [
             {
               validator: (rule, value, callback) => {
@@ -474,50 +525,70 @@ export default {
       },
       pointModalParams: {
         show: false,
+        loading: false,
         roomId: '',
         cols: [
           {
             key: 'point',
             label: '编号',
-            edit: true,
             editType: 'text',
             width: 80
           },
           {
             key: 'location',
             label: '位置',
-            edit: true,
             editType: 'text',
-            width: 200
+            width: 100
+          },
+          {
+            key: 'name',
+            label: '名称',
+            editType: 'text',
+            width: 100
+          },
+          {
+            key: 'prompt',
+            label: '文字说明',
+            editType: 'text',
+            minWidth: 160
           },
           {
             key: 'judgeIdList',
             label: '判别选项',
-            edit: true,
-            editType: 'multiSelect',
+            editType: 'radio',
             editOptions: [
               {
-                key: '未判别',
-                label: '未判别'
+                key: [2],
+                label: '无'
               },
               {
-                key: '正常',
-                label: '正常'
+                key: [1, 3, 4],
+                label: '未判别 正常 异常'
               },
               {
-                key: '异常',
-                label: '异常'
-              },
-              {
-                key: '符合',
-                label: '符合'
-              },
-              {
-                key: '不符合',
-                label: '不符合'
+                key: [1, 5, 6],
+                label: '未判别 符合 不符合'
               }
             ],
-            width: 300
+            width: 180
+          },
+          {
+            key: 'imgList',
+            label: '图片',
+            editType: 'img',
+            width: 180
+          },
+          {
+            key: 'referImgList',
+            label: '参考图片',
+            editType: 'img',
+            width: 180
+          },
+          {
+            key: 'chkImgNum',
+            label: '核查图片数量',
+            editType: 'number',
+            width: 120
           }
         ],
         rows: []
@@ -635,7 +706,7 @@ export default {
         }
       }
     },
-    handleFormFileChange(info, formObj, itemKey, single) {
+    handleFormFileChange(info, formObj, itemKey, single, updateCallback) {
       let fileList = [...info.fileList]
       if (single) fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
@@ -645,6 +716,7 @@ export default {
         return file
       })
       formObj[itemKey] = fileList
+      if (updateCallback) updateCallback()
     },
     async handleRoomModalFormUpdate() {
       try {
@@ -659,7 +731,7 @@ export default {
           name: this.roomModalParams.formData.name,
           img: this.roomModalParams.formData.img[0].uploadRes,
           pointImg: this.roomModalParams.formData.pointImg[0].uploadRes,
-          pointList: [],
+          pointList: this.roomModalParams.formData.pointList || [],
           url: this.roomModalParams.formData.url,
           remark: this.roomModalParams.formData.remark
         }
@@ -676,6 +748,184 @@ export default {
         console.log(error)
       }
       this.roomModalParams.submitting = false
+    },
+    async handlePointModalTableAddRow() {
+      const lastRowPoint = this.pointModalParams.rows.length ? this.pointModalParams.rows[this.pointModalParams.rows.length - 1].point : '0'
+      const newRow = this.generatePointModalTableRow({
+        point: !isNaN(lastRowPoint) ? (Number(lastRowPoint) + 1) : (lastRowPoint + '_copy'),
+        name: '-',
+        prompt: '-',
+        judgeIdList: this.pointModalParams.cols.find(col => col.key === 'judgeIdList').editOptions[0].key
+      })
+      this.pointModalParams.rows.push(newRow)
+      if (!this.pointModalParams.roomId) {
+        this.roomModalParams.formData.pointList.push({
+          localId: newRow.localId,
+          ...this.pointModalParams.cols.reduce((pointObj, col) => Object.assign(pointObj, { [col.key]: newRow[col.key] }), {})
+        })
+      } else {
+        this.pointModalParams.loading = true
+        await nuclearLabApi.pointCreate({
+          roomId: this.pointModalParams.roomId,
+          ...this.pointModalParams.cols.reduce((pointObj, col) => Object.assign(pointObj, { [col.key]: newRow[col.key] }), {})
+        })
+        this.handleOpenPointModal({
+          id: this.pointModalParams.roomId,
+          pointList: this.pointModalParams.rows
+        })
+        this.pointModalParams.loading = false
+      }
+    },
+    generatePointModalTableRow(defaultRowData = {}) {
+      const newRow = {
+        localId: defaultRowData.id || defaultRowData.localId || Math.random(),
+        ...defaultRowData,
+        tempRow: {},
+        tempLoading: {}
+      }
+      this.pointModalParams.cols.map(col => {
+        if (col.editType === 'text' || col.editType === 'number') {
+          newRow[col.key] = newRow[col.key] || ''
+          newRow.tempRow[col.key] = newRow[col.key]
+          newRow.tempLoading[col.key] = false
+        } else if (col.editType === 'multiSelect') {
+          newRow[col.key] = newRow[col.key] || []
+          newRow.tempRow[col.key] = newRow[col.key]
+          newRow.tempLoading[col.key] = false
+        } else if (col.editType === 'radio') {
+          newRow[col.key] = newRow[col.key] || undefined
+          newRow.tempRow[col.key] = newRow[col.key]
+          newRow.tempLoading[col.key] = false
+        } else if (col.editType === 'img') {
+          newRow[col.key] = newRow[col.key] || []
+          newRow.tempRow[col.key] = newRow[col.key].map(name => ({
+            uid: name,
+            name: name.split('/').pop().replace(/-.+?\./, '.'),
+            status: 'done',
+            uploadRes: name
+          }))
+          newRow.tempLoading[col.key] = false
+        }
+      })
+      return newRow
+    },
+    async handlePointModalTableDeleteRow(curRow) {
+      this.$confirm({
+        title: '警告',
+        content: `确定删除该点位吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            this.pointModalParams.rows = this.pointModalParams.rows.filter(row => row.localId !== curRow.localId)
+            if (!this.pointModalParams.roomId) {
+              this.roomModalParams.formData.pointList = this.roomModalParams.formData.pointList.filter(row => row.localId !== curRow.localId)
+            } else {
+              this.pointModalParams.loading = true
+              await nuclearLabApi.pointDeleteById(curRow.id)
+              this.pointModalParams.loading = false
+            }
+            this.$message.success('删除成功')
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    async handleRoomDelete(curRow) {
+      this.$confirm({
+        title: '警告',
+        content: `确定删除该数据吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            this.$refs.table.localLoading = true
+            await nuclearLabApi.roomDeleteById(curRow.id)
+            this.$refs.table.localLoading = false
+            this.$message.success('删除成功')
+            this.handleSearch()
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    async handleOpenPointModal(roomForm) {
+      const defaultRowDatas = roomForm.pointList || []
+      this.pointModalParams = {
+        ...this.pointModalParams,
+        show: true,
+        loading: !!roomForm.id,
+        roomId: roomForm.id || '',
+        rows: defaultRowDatas.map((defaultRowData) => this.generatePointModalTableRow(defaultRowData))
+      }
+      if (roomForm.id) {
+        try {
+          const res = await nuclearLabApi.roomInfo({
+            roomId: roomForm.id
+          })
+          this.pointModalParams = {
+            ...this.pointModalParams,
+            loading: false,
+            rows: res.data.points.map((defaultRowData) => {
+              const judgeIdListTxt = defaultRowData.judgeList ? JSON.stringify(defaultRowData.judgeList.map(item => item.id)) : null
+              const judgeIdListOption = this.pointModalParams.cols.find(col => col.key === 'judgeIdList').editOptions.find(option => JSON.stringify(option.key) === judgeIdListTxt)
+              return this.generatePointModalTableRow({
+                ...defaultRowData,
+                judgeIdList: judgeIdListOption ? judgeIdListOption.key : undefined
+              })
+            })
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    },
+    async handlePointModalTableRowInputSave(curRow, colKey) {
+      curRow[colKey] = curRow.tempRow[colKey]
+      if (!this.pointModalParams.roomId) {
+        const roomModalFormPonitsRow = this.roomModalParams.formData.pointList.find(row => row.localId === curRow.localId)
+        roomModalFormPonitsRow[colKey] = curRow[colKey]
+      } else {
+        curRow.tempLoading[colKey] = true
+        await nuclearLabApi.pointUpdateById(curRow.id, {
+          [colKey]: curRow[colKey]
+        })
+        curRow.tempLoading[colKey] = false
+      }
+    },
+    async handlePointModalTableRowCheckboxSave(curRow, colKey) {
+      curRow[colKey] = curRow.tempRow[colKey]
+      if (!this.pointModalParams.roomId) {
+        const roomModalFormPonitsRow = this.roomModalParams.formData.pointList.find(row => row.localId === curRow.localId)
+        roomModalFormPonitsRow[colKey] = curRow[colKey]
+      } else {
+        curRow.tempLoading[colKey] = true
+        await nuclearLabApi.pointUpdateById(curRow.id, {
+          [colKey]: curRow[colKey]
+        })
+        curRow.tempLoading[colKey] = false
+      }
+    },
+    async handlePointModalTableRowImgSave(curRow, colKey) {
+      const isAllFileDone = curRow.tempRow[colKey].every(file => file.status === 'done')
+      if (!isAllFileDone) return
+      curRow[colKey] = curRow.tempRow[colKey].map(file => file.uploadRes)
+      if (!this.pointModalParams.roomId) {
+        const roomModalFormPonitsRow = this.roomModalParams.formData.pointList.find(row => row.localId === curRow.localId)
+        roomModalFormPonitsRow[colKey] = curRow[colKey]
+      } else {
+        curRow.tempLoading[colKey] = true
+        await nuclearLabApi.pointUpdateById(curRow.id, {
+          [colKey]: curRow[colKey]
+        })
+        curRow.tempLoading[colKey] = false
+      }
     }
   }
 }

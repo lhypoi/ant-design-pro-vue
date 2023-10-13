@@ -1,6 +1,6 @@
 <template>
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-5 sm:p-8">
-    <div class="flex flex-row items-center flex-wrap gap-3">
+    <!-- <div class="flex flex-row items-center flex-wrap gap-3 pb-5">
       <div class="flex-auto flex flex-row items-center sm:gap-16 flex-wrap">
         <div class="text-black text-lg font-bold w-full sm:w-auto">{{ `${userInfo.roleName}：${userInfo.username}` }}</div>
         <div class="text-black text-lg font-bold">{{ `待核查任务数：${unCheckTotal}` }}</div>
@@ -14,10 +14,10 @@
           发起任务
         </a-button>
       </div>
-    </div>
-    <div class="flex-auto pt-5">
+    </div> -->
+    <div class="flex-auto">
       <a-skeleton v-if="tabLoading" avatar active :paragraph="{ rows: 4 }" />
-      <a-tabs v-else :active-key="curTabKey" class="fullTab" @tabClick="tabKey => curTabKey = tabKey">
+      <a-tabs v-else :active-key="curTabKey" class="fullTab" :class="{ 'hiddenTabNav': !tabMode }" @tabClick="tabKey => curTabKey = tabKey">
         <a-tab-pane
           v-for="tab in tabOptions"
           :key="tab.key"
@@ -25,11 +25,19 @@
         >
           <div class="h-full px-2 pt-2 flex flex-col min-h-[70vh]">
             <template v-if="tab.key === ''">
-              <div class="link-style-form w-full pb-5 sm:pb-0" :class="{ 'link-style-form-sm': isMobile }">
+              <div class="link-style-form link-style-form-sm w-full pb-5 sm:pb-0" :class="{ 'link-style-form-sm': isMobile }">
                 <a-form-model
                   :model="formData[tab.key]"
                 >
-                  <div class="flex flex-row sm:flex-row items-start gap-2 sm:gap-4 overflow-x-auto">
+                  <div class="flex flex-row flex-wrap items-start gap-2 sm:gap-4 overflow-x-auto">
+                    <a-form-model-item key="title" prop="title" class="min-w-[160px]">
+                      <a-input
+                        v-model="formData[tab.key].title"
+                        placeholder="请输入工单名"
+                        size="large"
+                        allowClear
+                      />
+                    </a-form-model-item>
                     <a-form-model-item key="roomName" prop="roomName" class="min-w-[160px]">
                       <a-input
                         v-model="formData[tab.key].roomName"
@@ -360,6 +368,14 @@ export default {
     unCheckTotal() {
       const target = this.tabOptions.find(tab => tab.key === '0')
       return target ? target.total : '-'
+    },
+    routePermissions() {
+      return (this.$route.meta?.permission || []).reduce((resObj, permissionName) => {
+        return Object.assign(resObj, { [permissionName]: true })
+      }, {})
+    },
+    tabMode() {
+      return false
     }
   },
   created() {
@@ -372,9 +388,19 @@ export default {
     async initTab() {
       this.tabLoading = true
       try {
-        const res = await nuclearLabApi.workOrderTotal()
-        if (res && res.code === 200) {
-          const tabOptions = [
+        let resTabList = []
+        let resTotal = 0
+        const tempJudgeNeedTab = false
+        if (tempJudgeNeedTab) {
+          const res = await nuclearLabApi.workOrderTotal()
+          if (res && res.code === 200) {
+            resTabList = res.data.tabList
+            resTotal = res.data.total
+          } else {
+            throw new Error(res.message || '加载失败')
+          }
+        }
+        const tabOptions = [
             {
               key: '',
               value: '全 部'
@@ -385,40 +411,39 @@ export default {
                 value
               }
             ))
-          ]
-          tabOptions.forEach(tab => {
-            if (tab.key === '') {
-              tab.value = `${tab.value}（${res.data.total}）`
-            } else {
-              const totalConfig = res.data.list.find(item => item.orderStatus === tab.key)
-              if (totalConfig) {
-                tab.total = totalConfig.num
-                tab.value = `${tab.value}（${totalConfig.num}）`
-              }
+        ]
+        tabOptions.forEach(tab => {
+          if (tab.key === '') {
+            tab.value = `${tab.value}（${resTotal}）`
+          } else {
+            const totalConfig = resTabList.find(item => item.orderStatus === tab.key)
+            if (totalConfig) {
+              tab.total = totalConfig.num
+              tab.value = `${tab.value}（${totalConfig.num}）`
             }
-            let listMode = 'table'
-            if (tab.key === '0') {
-              listMode = 'card'
+          }
+          let listMode = 'table'
+          if (tab.key === '0') {
+            listMode = 'card'
+          }
+          tab.listMode = listMode
+        })
+        const formData = tabOptions.reduce((formData, tab) => {
+          formData[tab.key] = {}
+          if (tab.key === '') {
+            formData[tab.key] = {
+              title: '',
+              workOrderNo: '',
+              roomName: '',
+              timeRange: [],
+              userName: '',
+              orderStatus: undefined
             }
-            tab.listMode = listMode
-          })
-          const formData = tabOptions.reduce((formData, tab) => {
-            formData[tab.key] = {}
-            if (tab.key === '') {
-              formData[tab.key] = {
-                roomName: '',
-                orderStatus: undefined,
-                chkUserName: '',
-                timeRange: []
-              }
-            }
-            return formData
-          }, {})
-          this.tabOptions = tabOptions
-          this.formData = formData
-        } else {
-          throw new Error(res.message || '加载失败')
-        }
+          }
+          return formData
+        }, {})
+        this.tabOptions = tabOptions
+        this.formData = formData
       } catch (error) {
         console.log(error)
         this.$message.error(error.message)
@@ -629,6 +654,12 @@ export default {
 
   :deep(.ant-tabs-content) {
     @apply flex-auto;
+  }
+
+  &.hiddenTabNav {
+    :deep(.ant-tabs-bar) {
+      @apply hidden;
+    }
   }
 }
 </style>

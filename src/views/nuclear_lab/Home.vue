@@ -83,7 +83,7 @@
       width="90vw"
       @cancel="labModalParams.show = false"
     >
-      <div class="h-[75vh] sm:h-[80vh] pt-6">
+      <div class="h-[75vh] sm:h-[80vh]">
         <iframe
           :src="labModalParams.url"
           class="w-full h-full"
@@ -95,6 +95,7 @@
 
 <script>
 import nuclearLabApi from '@/api/nuclearLab'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -119,6 +120,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['token'])
   },
   created() {
   },
@@ -158,7 +160,11 @@ export default {
     },
     handleOpenLab(labData) {
       this.labModalParams.labData = labData
-      this.labModalParams.url = 'http://wjw.sz.gov.cn/wsjd/fszlcs/1_dr/'
+      // url参数：token，workNumber，roomId
+      const url = new URL('http://159.75.246.27:66/')
+      url.searchParams.append('token', this.token)
+      url.searchParams.append('roomId', labData.id)
+      this.labModalParams.url = url.toString()
       this.labModalParams.show = true
     }
   }
