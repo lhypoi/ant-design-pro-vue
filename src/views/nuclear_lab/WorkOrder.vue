@@ -67,13 +67,13 @@
                         allowClear
                       />
                     </a-form-model-item>
-                    <!-- <a-form-model-item v-show="formData[tab.key].formExpand" key="orderStatus" prop="orderStatus" class="min-w-[180px] -mt-4">
+                    <a-form-model-item v-show="formData[tab.key].formExpand" key="orderStatus" prop="orderStatus" class="min-w-[180px] -mt-4">
                       <a-select v-model="formData[tab.key].orderStatus" size="large" placeholder="请选择工单状态" allowClear>
                         <a-select-option v-for="item in orderStatusOptions" :key="item.key" :value="item.key">
                           {{ item.value }}
                         </a-select-option>
                       </a-select>
-                    </a-form-model-item> -->
+                    </a-form-model-item>
                     <a-form-model-item class="-mt-4">
                       <div class="flex flex-row items-center">
                         <a-button
@@ -110,28 +110,93 @@
                 class="flex-auto"
               >
                 <el-table-column prop="workOrderNo" label="工单号" :align="'center'" :width="200" />
-                <el-table-column prop="roomName" label="机房名称" :align="'center'" width="auto" />
-                <el-table-column prop="chkTime" label="核查时间" :align="'center'" :width="200" />
-                <el-table-column prop="chkUserName" label="核查员" :align="'center'" :width="200" />
-                <el-table-column prop="orderStatusName" label="工单状态" :align="'center'" width="auto" />
+                <el-table-column prop="title" label="工单名" :align="'center'" :width="200" />
+                <el-table-column prop="roomName" label="机房名" :align="'center'" :min-width="150" />
+                <el-table-column prop="createTime" label="工单创建时间" :align="'center'" :width="200" />
+                <el-table-column prop="orderStatusName" label="工单状态" :align="'center'" :min-width="150" />
+                <el-table-column prop="round" label="核查次数" :align="'center'" :width="100" />
+                <el-table-column prop="creatorName" label="创建人" :align="'center'" :width="150">
+                  <div slot-scope="scope">
+                    <a-popover v-if="scope.row['creatorName']" title="手机号码" trigger="click">
+                      <template slot="content">
+                        <p>{{ scope.row['creatorPhoneNumber'] }}</p>
+                      </template>
+                      <div class="text-blue-400 cursor-pointer">{{ scope.row['creatorName'] }}</div>
+                    </a-popover>
+                    <div v-else>-</div>
+                  </div>
+                </el-table-column>
+                <el-table-column prop="chkUserList" label="核查员" :align="'center'" :width="150">
+                  <div slot-scope="scope" class="flex flex-col gap-1 justify-center">
+                    <template v-if="scope.row['chkUserList'] && scope.row['chkUserList'].length">
+                      <a-popover
+                        v-for="chkUser in scope.row['chkUserList']"
+                        :key="chkUser.userId"
+                        title="手机号码"
+                        trigger="click"
+                      >
+                        <template slot="content">
+                          <p>{{ chkUser.phoneNumber }}</p>
+                        </template>
+                        <div class="text-blue-400 cursor-pointer">{{ chkUser.userName }}</div>
+                      </a-popover>
+                    </template>
+                    <div v-else>-</div>
+                  </div>
+                </el-table-column>
+                <el-table-column prop="auditorName" label="审核员" :align="'center'" :width="150">
+                  <div slot-scope="scope">
+                    <a-popover v-if="scope.row['auditorName']" title="手机号码" trigger="click">
+                      <template slot="content">
+                        <p>{{ scope.row['creatorPhoneNumber'] }}</p>
+                      </template>
+                      <div class="text-blue-400 cursor-pointer">{{ scope.row['auditorName'] }}</div>
+                    </a-popover>
+                    <div v-else>-</div>
+                  </div>
+                </el-table-column>
+                <el-table-column prop="reauditorName" label="复核员" :align="'center'" :width="150">
+                  <div slot-scope="scope">
+                    <a-popover v-if="scope.row['reauditorName']" title="手机号码" trigger="click">
+                      <template slot="content">
+                        <p>{{ scope.row['creatorPhoneNumber'] }}</p>
+                      </template>
+                      <div class="text-blue-400 cursor-pointer">{{ scope.row['reauditorName'] }}</div>
+                    </a-popover>
+                    <div v-else>-</div>
+                  </div>
+                </el-table-column>
+                <el-table-column prop="remark" label="备注" :align="'center'" :width="200" />
                 <el-table-column
                   label="操作"
                   :align="'center'"
                   :width="250"
                 >
-                  <div slot-scope="scope" class="flex flex-row gap-4 justify-center">
+                  <div slot-scope="scope" class="flex flex-row flex-wrap gap-3 justify-center">
                     <a-button
                       class="h-8 rounded-md text-sm"
                       type="primary"
                     >
-                      查看详情
+                      修改任务
                     </a-button>
                     <a-button
                       class="h-8 rounded-md text-sm"
                       type="primary"
-                      @click="handleOpenLab(scope.row)"
                     >
-                      查看机房
+                      取消工单
+                    </a-button>
+                    <a-button
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                      @click="handleOpenOrderLab(scope.row)"
+                    >
+                      三维查看
+                    </a-button>
+                    <a-button
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                    >
+                      表单查看
                     </a-button>
                   </div>
                 </el-table-column>
@@ -142,7 +207,7 @@
                 :ref="`tab_${tab.key}_table`"
                 :data="(params) => getWorkOrderList(tab.key, params)"
                 class="flex-auto h-0"
-                @clickRoomImg="handleClickRoomImg"
+                @clickRoomImg="handleOpenOrderLab"
                 @editTask="handleOpenTaskModal"
               />
             </template>
@@ -546,7 +611,7 @@ export default {
       }
       this.taskModalParams.optionsLoading = false
     },
-    handleClickRoomImg(workOrder) {
+    handleOpenOrderLab(workOrder) {
       this.labModalParams.labData = {
         name: workOrder.roomName
       }
@@ -687,15 +752,6 @@ export default {
     },
     handleSearch(tabKey) {
       this.$refs[`tab_${tabKey}_table`][0].refresh()
-    },
-    handleOpenLab(labData) {
-      this.labModalParams.labData = labData
-      // url参数：token，workNumber，roomId
-      const url = new URL('http://159.75.246.27:66/')
-      url.searchParams.append('token', this.token)
-      url.searchParams.append('roomId', labData.id)
-      this.labModalParams.url = url.toString()
-      this.labModalParams.show = true
     }
   }
 }

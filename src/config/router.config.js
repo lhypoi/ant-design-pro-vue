@@ -200,6 +200,13 @@ const asyncRouterMapAll = {
           component: () => import('@/views/nuclear_lab/WorkOrder'),
           meta: { title: '机房核查展示', icon: 'table', permission: ['roomCheckShow'] }
         },
+        // OrderSearch
+        {
+          path: '/order-search',
+          name: 'OrderSearch',
+          component: () => import('@/views/nuclear_lab/WorkOrder'),
+          meta: { title: '工单查询', icon: 'table', permission: ['orderSearch'] }
+        },
         // Permission
         {
           path: '/permission',
