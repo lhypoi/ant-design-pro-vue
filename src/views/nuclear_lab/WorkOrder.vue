@@ -25,12 +25,12 @@
         >
           <div class="h-full px-2 pt-2 flex flex-col min-h-[70vh]">
             <template v-if="tab.key === ''">
-              <div class="link-style-form link-style-form-sm w-full pb-5 sm:pb-0" :class="{ 'link-style-form-sm': isMobile }">
+              <div class="link-style-form link-style-form-sm w-full">
                 <a-form-model
                   :model="formData[tab.key]"
                 >
-                  <div class="flex flex-row flex-wrap items-start gap-2 sm:gap-4 overflow-x-auto">
-                    <a-form-model-item key="title" prop="title" class="min-w-[160px]">
+                  <div class="flex flex-row flex-wrap items-start gap-4 pt-4 pb-2 overflow-x-auto">
+                    <a-form-model-item key="title" prop="title" class="w-[150px] -mt-4">
                       <a-input
                         v-model="formData[tab.key].title"
                         placeholder="请输入工单名"
@@ -38,7 +38,15 @@
                         allowClear
                       />
                     </a-form-model-item>
-                    <a-form-model-item key="roomName" prop="roomName" class="min-w-[160px]">
+                    <a-form-model-item key="workOrderNo" prop="workOrderNo" class="w-[150px] -mt-4">
+                      <a-input
+                        v-model="formData[tab.key].workOrderNo"
+                        placeholder="请输入工单号"
+                        size="large"
+                        allowClear
+                      />
+                    </a-form-model-item>
+                    <a-form-model-item v-show="formData[tab.key].formExpand" key="roomName" prop="roomName" class="w-[150px] -mt-4">
                       <a-input
                         v-model="formData[tab.key].roomName"
                         placeholder="请输入机房名"
@@ -46,35 +54,49 @@
                         allowClear
                       />
                     </a-form-model-item>
-                    <a-form-model-item key="orderStatus" prop="orderStatus" class="min-w-[180px]">
+                    <a-form-model-item v-show="formData[tab.key].formExpand" key="timeRange" prop="timeRange" class="min-w-[240px] -mt-4">
+                      <a-range-picker v-model="formData[tab.key].timeRange" size="large" allowClear>
+                        <a-icon slot="suffixIcon" type="calendar" />
+                      </a-range-picker>
+                    </a-form-model-item>
+                    <a-form-model-item v-show="formData[tab.key].formExpand" key="userName" prop="userName" class="w-[150px] -mt-4">
+                      <a-input
+                        v-model="formData[tab.key].userName"
+                        placeholder="请输入人员"
+                        size="large"
+                        allowClear
+                      />
+                    </a-form-model-item>
+                    <!-- <a-form-model-item v-show="formData[tab.key].formExpand" key="orderStatus" prop="orderStatus" class="min-w-[180px] -mt-4">
                       <a-select v-model="formData[tab.key].orderStatus" size="large" placeholder="请选择工单状态" allowClear>
                         <a-select-option v-for="item in orderStatusOptions" :key="item.key" :value="item.key">
                           {{ item.value }}
                         </a-select-option>
                       </a-select>
+                    </a-form-model-item> -->
+                    <a-form-model-item class="-mt-4">
+                      <div class="flex flex-row items-center">
+                        <a-button
+                          class="h-11 rounded-md text-base"
+                          type="primary"
+                          icon="search"
+                          size="large"
+                          @click="handleSearch(tab.key)"
+                        >
+                          查询
+                        </a-button>
+                        <div class="flex flex-row items-center ml-4 gap-1 cursor-pointer text-blue-400" @click="formData[tab.key].formExpand = !formData[tab.key].formExpand">
+                          <template v-if="formData[tab.key].formExpand">
+                            收起
+                            <a-icon type="up" />
+                          </template>
+                          <template v-else>
+                            展开
+                            <a-icon type="down" />
+                          </template>
+                        </div>
+                      </div>
                     </a-form-model-item>
-                    <a-form-model-item key="timeRange" prop="timeRange" class="min-w-[240px]">
-                      <a-range-picker v-model="formData[tab.key].timeRange" size="large" allowClear>
-                        <a-icon slot="suffixIcon" type="calendar" />
-                      </a-range-picker>
-                    </a-form-model-item>
-                    <a-form-model-item key="chkUserName" prop="chkUserName" class="min-w-[160px]">
-                      <a-input
-                        v-model="formData[tab.key].chkUserName"
-                        placeholder="请输入核查员"
-                        size="large"
-                        allowClear
-                      />
-                    </a-form-model-item>
-                    <a-button
-                      class="h-11 rounded-md text-base"
-                      type="primary"
-                      icon="search"
-                      size="large"
-                      @click="handleSearch(tab.key)"
-                    >
-                      查询
-                    </a-button>
                   </div>
                 </a-form-model>
               </div>
@@ -120,6 +142,7 @@
                 :ref="`tab_${tab.key}_table`"
                 :data="(params) => getWorkOrderList(tab.key, params)"
                 class="flex-auto h-0"
+                @clickRoomImg="handleClickRoomImg"
                 @editTask="handleOpenTaskModal"
               />
             </template>
@@ -137,7 +160,7 @@
       width="90vw"
       @cancel="labModalParams.show = false"
     >
-      <div class="h-[75vh] sm:h-[80vh] pt-6">
+      <div class="h-[75vh] sm:h-[80vh]">
         <iframe
           :src="labModalParams.url"
           class="w-full h-full"
@@ -352,6 +375,7 @@ export default {
   },
   computed: {
     ...mapGetters(['userInfo']),
+    ...mapGetters(['token']),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
     }),
@@ -381,8 +405,11 @@ export default {
   created() {
   },
   async mounted() {
-    this.initTab()
-    this.initTaskModalRoomOptions()
+    // 因为layout层更新的isMobile的时机问题，初次渲染时用settimeout延迟
+    setTimeout(() => {
+      this.initTab()
+      this.initTaskModalRoomOptions()
+    }, 0)
   },
   methods: {
     async initTab() {
@@ -423,7 +450,9 @@ export default {
             }
           }
           let listMode = 'table'
-          if (tab.key === '0') {
+          if (this.routePermissions.roomCheckShow) {
+            listMode = 'card'
+          } else if (tab.key === '0') {
             listMode = 'card'
           }
           tab.listMode = listMode
@@ -432,6 +461,7 @@ export default {
           formData[tab.key] = {}
           if (tab.key === '') {
             formData[tab.key] = {
+              formExpand: !this.isMobile,
               title: '',
               workOrderNo: '',
               roomName: '',
@@ -515,6 +545,18 @@ export default {
         ])
       }
       this.taskModalParams.optionsLoading = false
+    },
+    handleClickRoomImg(workOrder) {
+      this.labModalParams.labData = {
+        name: workOrder.roomName
+      }
+      // url参数：token，workNumber，roomId
+      const url = new URL('http://159.75.246.27:66/')
+      url.searchParams.append('token', this.token)
+      url.searchParams.append('roomId', workOrder.roomId)
+      url.searchParams.append('workNumber', workOrder.workOrderNo)
+      this.labModalParams.url = url.toString()
+      this.labModalParams.show = true
     },
     handleOpenTaskModal(task) {
       this.taskModalParams = {
@@ -602,6 +644,7 @@ export default {
         rows: [],
         total: 0
       }
+      let res = null
       try {
         const orderStatus = this.formData[tabKey].orderStatus
         let reqParams = {
@@ -611,11 +654,13 @@ export default {
         if (tabKey === '') {
           reqParams = {
             ...reqParams,
+            title: this.formData[tabKey].title || undefined,
+            workOrderNo: this.formData[tabKey].workOrderNo || undefined,
             roomName: this.formData[tabKey].roomName || undefined,
-            chkUserName: this.formData[tabKey].chkUserName || undefined,
-            orderStatus: orderStatus === undefined ? undefined : [orderStatus].join(','),
             beginTime: this.formData[tabKey].timeRange[0] ? this.formData[tabKey].timeRange[0].startOf('day').valueOf() : undefined,
-            endTime: this.formData[tabKey].timeRange[1] ? this.formData[tabKey].timeRange[1].endOf('day').valueOf() : undefined
+            endTime: this.formData[tabKey].timeRange[1] ? this.formData[tabKey].timeRange[1].endOf('day').valueOf() : undefined,
+            userName: this.formData[tabKey].userName || undefined,
+            orderStatus: orderStatus === undefined ? undefined : [orderStatus].join(',')
           }
         } else {
           reqParams = {
@@ -623,7 +668,11 @@ export default {
             orderStatus: [tabKey].join(',')
           }
         }
-        const res = await nuclearLabApi.workOrderList(reqParams)
+        if (this.routePermissions['roomCheckShow']) {
+          res = await nuclearLabApi.workOrderListDone(reqParams)
+        } else {
+          res = await nuclearLabApi.workOrderList(reqParams)
+        }
         if (res && res.code === 200) {
           tableData.rows = res.data.list
           tableData.total = res.data.total
@@ -641,7 +690,11 @@ export default {
     },
     handleOpenLab(labData) {
       this.labModalParams.labData = labData
-      this.labModalParams.url = 'http://wjw.sz.gov.cn/wsjd/fszlcs/1_dr/'
+      // url参数：token，workNumber，roomId
+      const url = new URL('http://159.75.246.27:66/')
+      url.searchParams.append('token', this.token)
+      url.searchParams.append('roomId', labData.id)
+      this.labModalParams.url = url.toString()
       this.labModalParams.show = true
     }
   }

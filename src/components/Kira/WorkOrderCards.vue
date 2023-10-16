@@ -9,13 +9,19 @@
           <div
             v-for="workOrder in rows"
             :key="workOrder.workOrderNo"
-            class="flex flex-col px-3 pt-3 pb-2 border border-solid border-gray-400 rounded-md cursor-pointer hover:text-blue-400 hover:border-blue-400 hover:shadow-lg"
+            class="flex flex-col px-3 pt-3 pb-2 border border-solid border-gray-400 rounded-md hover:text-blue-400 hover:border-blue-400 hover:shadow-lg"
           >
-            <div class="flex flex-row items-center pb-2">
+            <div class="relative pr-[100%] pb-[66%] cursor-pointer" @click="() => $emit('clickRoomImg', workOrder)">
+              <el-image
+                class="absolute w-full h-full"
+                :src="workOrder.roomImg"
+              />
+            </div>
+            <div class="flex flex-row items-center pt-3 pb-2">
               <div class="flex-auto font-bold">
                 {{ workOrder.title || '无标题' }}
               </div>
-              <div>
+              <!-- <div>
                 <a-button
                   class="h-7 rounded-md text-sm"
                   type="primary"
@@ -23,22 +29,31 @@
                 >
                   修改任务
                 </a-button>
-              </div>
+              </div> -->
             </div>
             <div>
-              {{ `分配机房：${workOrder.roomName || '-'}` }}
+              {{ `机房名：${workOrder.roomName || '-'}` }}
             </div>
             <div>
-              {{ `任务分配时间：${workOrder.createTime || '-'}` }}
-            </div>
-            <div class="pt-2">
-              {{ `分配核查员：${workOrder.chkUserName || '-'}` }}
+              {{ `工单号：${workOrder.workOrderNo || '-'}` }}
             </div>
             <div>
-              {{ `分配审批员：${workOrder.auditorName || '-'}` }}
+              {{ `创建人：${workOrder.creatorName || '-'}` }}
             </div>
             <div>
-              {{ `分配审定员：${workOrder.reauditorName || '-'}` }}
+              {{ `核查员：${workOrder.chkUserList.map(chkUser => chkUser.userName).join('、') || '-'}` }}
+            </div>
+            <div>
+              {{ `审核员：${workOrder.auditorName || '-'}` }}
+            </div>
+            <div>
+              {{ `复核员：${workOrder.reauditorName || '-'}` }}
+            </div>
+            <div>
+              {{ `工单创建时间：${workOrder.createTime || '-'}` }}
+            </div>
+            <div>
+              {{ `审批完成时间：${workOrder.finishTime || '-'}` }}
             </div>
           </div>
         </div>
