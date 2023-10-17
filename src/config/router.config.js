@@ -207,6 +207,13 @@ const asyncRouterMapAll = {
           component: () => import('@/views/nuclear_lab/WorkOrder'),
           meta: { title: '工单查询', icon: 'table', permission: ['orderSearch'] }
         },
+        // AdminOrderHandle
+        {
+          path: '/admin-order-handle',
+          name: 'AdminOrderHandle',
+          component: () => import('@/views/nuclear_lab/WorkOrder'),
+          meta: { title: '管理员任务管理', icon: 'table', permission: ['adminOrderHandle'] }
+        },
         // Permission
         {
           path: '/permission',

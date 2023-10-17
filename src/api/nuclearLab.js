@@ -158,7 +158,7 @@ export function roomUserInfoById (id, parameter) {
 
 export function workOrderUpdateInfoById (id, parameter) {
   return request({
-    url: url + '/workOrder/update/updateInfo/' + id,
+    url: url + '/workOrder/update/' + id,
     method: 'post',
     data: parameter
   })

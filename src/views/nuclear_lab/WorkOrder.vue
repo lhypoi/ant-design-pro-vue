@@ -1,12 +1,12 @@
 <template>
   <div class="flex-auto flex flex-col bg-white rounded-3xl p-5 sm:p-8">
-    <!-- <div class="flex flex-row items-center flex-wrap gap-3 pb-5">
+    <div v-if="topDescBoxMode" class="flex flex-row items-center flex-wrap gap-3 pb-6">
       <div class="flex-auto flex flex-row items-center sm:gap-16 flex-wrap">
         <div class="text-black text-lg font-bold w-full sm:w-auto">{{ `${userInfo.roleName}：${userInfo.username}` }}</div>
-        <div class="text-black text-lg font-bold">{{ `待核查任务数：${unCheckTotal}` }}</div>
       </div>
       <div>
         <a-button
+          v-if="showPubTaskBtn"
           class="h-9 rounded-md text-base"
           type="primary"
           @click="handleOpenTaskModal"
@@ -14,96 +14,95 @@
           发起任务
         </a-button>
       </div>
-    </div> -->
+    </div>
+    <template v-if="formData">
+      <div class="link-style-form link-style-form-sm w-full">
+        <a-form-model
+          :model="formData"
+        >
+          <div class="flex flex-row flex-wrap items-start gap-4 pt-4 pb-2 overflow-x-auto">
+            <a-form-model-item key="title" prop="title" class="w-[150px] -mt-4">
+              <a-input
+                v-model="formData.title"
+                placeholder="请输入工单名"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item key="workOrderNo" prop="workOrderNo" class="w-[150px] -mt-4">
+              <a-input
+                v-model="formData.workOrderNo"
+                placeholder="请输入工单号"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item v-show="formData.formExpand" key="roomName" prop="roomName" class="w-[150px] -mt-4">
+              <a-input
+                v-model="formData.roomName"
+                placeholder="请输入机房名"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item v-show="formData.formExpand" key="timeRange" prop="timeRange" class="min-w-[240px] -mt-4">
+              <a-range-picker v-model="formData.timeRange" size="large" allowClear>
+                <a-icon slot="suffixIcon" type="calendar" />
+              </a-range-picker>
+            </a-form-model-item>
+            <a-form-model-item v-show="formData.formExpand" key="userName" prop="userName" class="w-[150px] -mt-4">
+              <a-input
+                v-model="formData.userName"
+                placeholder="请输入人员"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item v-show="formData.formExpand" key="orderStatus" prop="orderStatus" class="min-w-[180px] -mt-4">
+              <a-select v-model="formData.orderStatus" size="large" placeholder="请选择工单状态" allowClear>
+                <a-select-option v-for="item in orderStatusOptions" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item class="-mt-4">
+              <div class="flex flex-row items-center">
+                <a-button
+                  class="h-11 rounded-md text-base"
+                  type="primary"
+                  icon="search"
+                  size="large"
+                  @click="handleSearch"
+                >
+                  查询
+                </a-button>
+                <div class="flex flex-row items-center ml-4 gap-1 cursor-pointer text-blue-400" @click="formData.formExpand = !formData.formExpand">
+                  <template v-if="formData.formExpand">
+                    收起
+                    <a-icon type="up" />
+                  </template>
+                  <template v-else>
+                    展开
+                    <a-icon type="down" />
+                  </template>
+                </div>
+              </div>
+            </a-form-model-item>
+          </div>
+        </a-form-model>
+      </div>
+    </template>
     <div class="flex-auto">
       <a-skeleton v-if="tabLoading" avatar active :paragraph="{ rows: 4 }" />
-      <a-tabs v-else :active-key="curTabKey" class="fullTab" :class="{ 'hiddenTabNav': !tabMode }" @tabClick="tabKey => curTabKey = tabKey">
+      <a-tabs v-else :active-key="curTabKey" class="fullTab" :class="{ 'hiddenTabNav': !tabMode }" @tabClick="handleTabClick">
         <a-tab-pane
           v-for="tab in tabOptions"
           :key="tab.key"
-          :tab="tab.value"
+          :tab="`${tab.value}（${tab.num}）`"
         >
           <div class="h-full px-2 pt-2 flex flex-col min-h-[70vh]">
-            <template v-if="tab.key === ''">
-              <div class="link-style-form link-style-form-sm w-full">
-                <a-form-model
-                  :model="formData[tab.key]"
-                >
-                  <div class="flex flex-row flex-wrap items-start gap-4 pt-4 pb-2 overflow-x-auto">
-                    <a-form-model-item key="title" prop="title" class="w-[150px] -mt-4">
-                      <a-input
-                        v-model="formData[tab.key].title"
-                        placeholder="请输入工单名"
-                        size="large"
-                        allowClear
-                      />
-                    </a-form-model-item>
-                    <a-form-model-item key="workOrderNo" prop="workOrderNo" class="w-[150px] -mt-4">
-                      <a-input
-                        v-model="formData[tab.key].workOrderNo"
-                        placeholder="请输入工单号"
-                        size="large"
-                        allowClear
-                      />
-                    </a-form-model-item>
-                    <a-form-model-item v-show="formData[tab.key].formExpand" key="roomName" prop="roomName" class="w-[150px] -mt-4">
-                      <a-input
-                        v-model="formData[tab.key].roomName"
-                        placeholder="请输入机房名"
-                        size="large"
-                        allowClear
-                      />
-                    </a-form-model-item>
-                    <a-form-model-item v-show="formData[tab.key].formExpand" key="timeRange" prop="timeRange" class="min-w-[240px] -mt-4">
-                      <a-range-picker v-model="formData[tab.key].timeRange" size="large" allowClear>
-                        <a-icon slot="suffixIcon" type="calendar" />
-                      </a-range-picker>
-                    </a-form-model-item>
-                    <a-form-model-item v-show="formData[tab.key].formExpand" key="userName" prop="userName" class="w-[150px] -mt-4">
-                      <a-input
-                        v-model="formData[tab.key].userName"
-                        placeholder="请输入人员"
-                        size="large"
-                        allowClear
-                      />
-                    </a-form-model-item>
-                    <a-form-model-item v-show="formData[tab.key].formExpand" key="orderStatus" prop="orderStatus" class="min-w-[180px] -mt-4">
-                      <a-select v-model="formData[tab.key].orderStatus" size="large" placeholder="请选择工单状态" allowClear>
-                        <a-select-option v-for="item in orderStatusOptions" :key="item.key" :value="item.key">
-                          {{ item.value }}
-                        </a-select-option>
-                      </a-select>
-                    </a-form-model-item>
-                    <a-form-model-item class="-mt-4">
-                      <div class="flex flex-row items-center">
-                        <a-button
-                          class="h-11 rounded-md text-base"
-                          type="primary"
-                          icon="search"
-                          size="large"
-                          @click="handleSearch(tab.key)"
-                        >
-                          查询
-                        </a-button>
-                        <div class="flex flex-row items-center ml-4 gap-1 cursor-pointer text-blue-400" @click="formData[tab.key].formExpand = !formData[tab.key].formExpand">
-                          <template v-if="formData[tab.key].formExpand">
-                            收起
-                            <a-icon type="up" />
-                          </template>
-                          <template v-else>
-                            展开
-                            <a-icon type="down" />
-                          </template>
-                        </div>
-                      </div>
-                    </a-form-model-item>
-                  </div>
-                </a-form-model>
-              </div>
-            </template>
-            <template v-if="tab.listMode === 'table'">
+            <template v-if="listShowMode === 'table'">
               <k-table
-                :ref="`tab_${tab.key}_table`"
                 :data="(params) => getWorkOrderList(tab.key, params)"
                 border
                 height="100%"
@@ -119,7 +118,7 @@
                   <div slot-scope="scope">
                     <a-popover v-if="scope.row['creatorName']" title="手机号码" trigger="click">
                       <template slot="content">
-                        <p>{{ scope.row['creatorPhoneNumber'] }}</p>
+                        <p>{{ scope.row['createPhoneNumber'] }}</p>
                       </template>
                       <div class="text-blue-400 cursor-pointer">{{ scope.row['creatorName'] }}</div>
                     </a-popover>
@@ -130,8 +129,8 @@
                   <div slot-scope="scope" class="flex flex-col gap-1 justify-center">
                     <template v-if="scope.row['chkUserList'] && scope.row['chkUserList'].length">
                       <a-popover
-                        v-for="chkUser in scope.row['chkUserList']"
-                        :key="chkUser.userId"
+                        v-for="(chkUser, index) in scope.row['chkUserList']"
+                        :key="chkUser.userId + index"
                         title="手机号码"
                         trigger="click"
                       >
@@ -148,7 +147,7 @@
                   <div slot-scope="scope">
                     <a-popover v-if="scope.row['auditorName']" title="手机号码" trigger="click">
                       <template slot="content">
-                        <p>{{ scope.row['creatorPhoneNumber'] }}</p>
+                        <p>{{ scope.row['auditPhoneNumber'] }}</p>
                       </template>
                       <div class="text-blue-400 cursor-pointer">{{ scope.row['auditorName'] }}</div>
                     </a-popover>
@@ -159,7 +158,7 @@
                   <div slot-scope="scope">
                     <a-popover v-if="scope.row['reauditorName']" title="手机号码" trigger="click">
                       <template slot="content">
-                        <p>{{ scope.row['creatorPhoneNumber'] }}</p>
+                        <p>{{ scope.row['reauditPhoneNumber'] }}</p>
                       </template>
                       <div class="text-blue-400 cursor-pointer">{{ scope.row['reauditorName'] }}</div>
                     </a-popover>
@@ -174,14 +173,25 @@
                 >
                   <div slot-scope="scope" class="flex flex-row flex-wrap gap-3 justify-center">
                     <a-button
+                      v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] !== '4'"
                       class="h-8 rounded-md text-sm"
                       type="primary"
+                      @click="handleOpenTaskModal(scope.row)"
                     >
                       修改任务
                     </a-button>
                     <a-button
+                      v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] === '4'"
                       class="h-8 rounded-md text-sm"
                       type="primary"
+                    >
+                      数据修改
+                    </a-button>
+                    <a-button
+                      v-if="scope.row['canEdit'] === 1"
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                      @click="handleTaskDelete(scope.row)"
                     >
                       取消工单
                     </a-button>
@@ -202,9 +212,8 @@
                 </el-table-column>
               </k-table>
             </template>
-            <template v-if="tab.listMode === 'card'">
+            <template v-if="listShowMode === 'card'">
               <work-order-cards
-                :ref="`tab_${tab.key}_table`"
                 :data="(params) => getWorkOrderList(tab.key, params)"
                 class="flex-auto h-0"
                 @clickRoomImg="handleOpenOrderLab"
@@ -253,38 +262,53 @@
             <a-form-model-item key="title" prop="title" label="任务标题">
               <a-input
                 v-model="taskModalParams.formData.title"
-                placeholder="请输入"
+                placeholder="建议命名格式：地点-机房名-时间"
                 size="large"
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item key="roomId" prop="roomId" label="核查机房">
+            <a-form-model-item key="roomId" prop="roomId" label="机房名">
               <a-select v-model="taskModalParams.formData.roomId" size="large" placeholder="请选择" allowClear @change="handleTaskModalRoomChange">
                 <a-select-option v-for="item in taskModalParams.options['roomId']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item key="chkUserId" prop="chkUserId" label="分配核查员">
+            <a-form-model-item key="chkUserId" prop="chkUserId" label="核查员一">
               <a-select v-model="taskModalParams.formData.chkUserId" size="large" placeholder="请选择" allowClear>
                 <a-select-option v-for="item in taskModalParams.options['chkUserId']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item key="auditorId" prop="auditorId" label="分配审核员">
+            <a-form-model-item key="chkUserId2" prop="chkUserId2" label="核查员二">
+              <a-select v-model="taskModalParams.formData.chkUserId2" size="large" placeholder="请选择" allowClear>
+                <a-select-option v-for="item in taskModalParams.options['chkUserId']" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item key="auditorId" prop="auditorId" label="审核员">
               <a-select v-model="taskModalParams.formData.auditorId" size="large" placeholder="请选择" allowClear>
                 <a-select-option v-for="item in taskModalParams.options['auditorId']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item key="reauditorId" prop="reauditorId" label="分配审定员">
+            <a-form-model-item key="reauditorId" prop="reauditorId" label="复核员">
               <a-select v-model="taskModalParams.formData.reauditorId" size="large" placeholder="请选择" allowClear>
                 <a-select-option v-for="item in taskModalParams.options['reauditorId']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-select-option>
               </a-select>
+            </a-form-model-item>
+            <a-form-model-item key="remark" prop="remark" label="备注">
+              <a-input
+                v-model="taskModalParams.formData.remark"
+                placeholder="请输入"
+                size="large"
+                allowClear
+              />
             </a-form-model-item>
             <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
               <div class="pt-4">
@@ -296,15 +320,6 @@
                   @click="handleTaskModalFormUpdate"
                 >
                   保存
-                </a-button>
-                <a-button
-                  v-if="taskModalParams.taskId"
-                  class="h-11 w-52 rounded-md text-base mt-4"
-                  type="danger"
-                  size="large"
-                  @click="handleTaskModalFormDelete"
-                >
-                  删除任务
                 </a-button>
               </div>
             </a-form-model-item>
@@ -331,10 +346,10 @@ export default {
   },
   data() {
     return {
+      formData: null,
       tabLoading: false,
       tabOptions: [],
       curTabKey: '',
-      formData: {},
       labModalParams: {
         show: false,
         labData: null,
@@ -349,8 +364,10 @@ export default {
           title: '',
           roomId: undefined,
           chkUserId: undefined,
+          chkUserId2: undefined,
           auditorId: undefined,
-          reauditorId: undefined
+          reauditorId: undefined,
+          remark: ''
         },
         options: {
           roomId: [],
@@ -388,51 +405,6 @@ export default {
                 callback()
               }
             }
-          ],
-          chkUserId: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value) {
-                    callback(new Error('请选择'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
-          auditorId: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value) {
-                    callback(new Error('请选择'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
-          reauditorId: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value) {
-                    callback(new Error('请选择'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
           ]
         }
       }
@@ -454,96 +426,125 @@ export default {
         ))
       ]
     },
-    unCheckTotal() {
-      const target = this.tabOptions.find(tab => tab.key === '0')
-      return target ? target.total : '-'
-    },
     routePermissions() {
       return (this.$route.meta?.permission || []).reduce((resObj, permissionName) => {
         return Object.assign(resObj, { [permissionName]: true })
       }, {})
     },
     tabMode() {
-      return false
+      return this.routePermissions.adminOrderHandle
+    },
+    topDescBoxMode() {
+      return this.routePermissions.adminOrderHandle
+    },
+    showPubTaskBtn() {
+      return this.routePermissions.adminOrderHandle
+    },
+    listShowMode() {
+      if (this.routePermissions.roomCheckShow) {
+        return 'card'
+      }
+      return 'table'
     }
-  },
-  created() {
   },
   async mounted() {
     // 因为layout层更新的isMobile的时机问题，初次渲染时用settimeout延迟
     setTimeout(() => {
-      this.initTab()
+      this.initFormData()
+      this.updateTab()
       this.initTaskModalRoomOptions()
     }, 0)
   },
   methods: {
-    async initTab() {
+    initFormData() {
+      this.formData = {
+        formExpand: !this.isMobile,
+        title: '',
+        workOrderNo: '',
+        roomName: '',
+        timeRange: [],
+        userName: '',
+        orderStatus: undefined
+      }
+    },
+    async updateTab() {
       this.tabLoading = true
       try {
-        let resTabList = []
-        let resTotal = 0
-        const tempJudgeNeedTab = false
-        if (tempJudgeNeedTab) {
-          const res = await nuclearLabApi.workOrderTotal()
+        let resTab = {
+          total: 0,
+          tabList: []
+        }
+        if (this.tabMode) {
+          const res = await nuclearLabApi.workOrderTotal({
+            title: this.formData.title || undefined,
+            workOrderNo: this.formData.workOrderNo || undefined,
+            roomName: this.formData.roomName || undefined,
+            beginTime: this.formData.timeRange[0] ? this.formData.timeRange[0].startOf('day').valueOf() : undefined,
+            endTime: this.formData.timeRange[1] ? this.formData.timeRange[1].endOf('day').valueOf() : undefined,
+            userName: this.formData.userName || undefined,
+            orderStatus: this.formData.orderStatus || undefined
+          })
           if (res && res.code === 200) {
-            resTabList = res.data.tabList
-            resTotal = res.data.total
+            resTab = res.data
           } else {
             throw new Error(res.message || '加载失败')
           }
         }
         const tabOptions = [
+          {
+            key: '',
+            value: '全 部',
+            num: resTab.total
+          },
+          ...resTab.tabList.map((item) => (
             {
-              key: '',
-              value: '全 部'
-            },
-            ...Object.entries(this.codeDict.work_order?.orderStatus || {}).map(([key, value]) => (
-              {
-                key,
-                value
-              }
-            ))
+              key: item.orderStatus,
+              value: item.name,
+              num: item.num
+            }
+          ))
         ]
-        tabOptions.forEach(tab => {
-          if (tab.key === '') {
-            tab.value = `${tab.value}（${resTotal}）`
-          } else {
-            const totalConfig = resTabList.find(item => item.orderStatus === tab.key)
-            if (totalConfig) {
-              tab.total = totalConfig.num
-              tab.value = `${tab.value}（${totalConfig.num}）`
-            }
-          }
-          let listMode = 'table'
-          if (this.routePermissions.roomCheckShow) {
-            listMode = 'card'
-          } else if (tab.key === '0') {
-            listMode = 'card'
-          }
-          tab.listMode = listMode
-        })
-        const formData = tabOptions.reduce((formData, tab) => {
-          formData[tab.key] = {}
-          if (tab.key === '') {
-            formData[tab.key] = {
-              formExpand: !this.isMobile,
-              title: '',
-              workOrderNo: '',
-              roomName: '',
-              timeRange: [],
-              userName: '',
-              orderStatus: undefined
-            }
-          }
-          return formData
-        }, {})
         this.tabOptions = tabOptions
-        this.formData = formData
       } catch (error) {
         console.log(error)
         this.$message.error(error.message)
       }
       this.tabLoading = false
+    },
+    async getWorkOrderList(tabKey, params) {
+      const tableData = {
+        rows: [],
+        total: 0
+      }
+      let res = null
+      try {
+        const reqParams = {
+          pageNum: params.pageNum,
+          pageSize: params.pageSize,
+          title: this.formData.title || undefined,
+          workOrderNo: this.formData.workOrderNo || undefined,
+          roomName: this.formData.roomName || undefined,
+          beginTime: this.formData.timeRange[0] ? this.formData.timeRange[0].startOf('day').valueOf() : undefined,
+          endTime: this.formData.timeRange[1] ? this.formData.timeRange[1].endOf('day').valueOf() : undefined,
+          userName: this.formData.userName || undefined,
+          orderStatus: tabKey || undefined
+        }
+        if (this.routePermissions['roomCheckShow']) {
+          res = await nuclearLabApi.workOrderListDone(reqParams)
+        } else {
+          res = await nuclearLabApi.workOrderList(reqParams)
+        }
+        if (res && res.code === 200) {
+          tableData.rows = res.data.list
+          tableData.total = res.data.total
+        } else {
+          throw new Error(res.message || '加载失败')
+        }
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      }
+      return tableData
     },
     async initTaskModalRoomOptions() {
       try {
@@ -565,6 +566,7 @@ export default {
     async handleTaskModalRoomChange() {
       this.taskModalParams.optionsLoading = true
       let chkUserId
+      let chkUserId2
       let chkUserList = []
       let auditorId
       let auditorList = []
@@ -587,6 +589,7 @@ export default {
               return [newKey, newList]
             }
             [chkUserId, chkUserList] = getNewOptionsItem(this.taskModalParams.formData.chkUserId, res.data.chkUserList)
+            ;[chkUserId2] = getNewOptionsItem(this.taskModalParams.formData.chkUserId2, res.data.chkUserList)
             ;[auditorId, auditorList] = getNewOptionsItem(this.taskModalParams.formData.auditorId, res.data.auditorList)
             ;[reauditorId, reauditorList] = getNewOptionsItem(this.taskModalParams.formData.reauditorId, res.data.reauditorList)
           } else {
@@ -597,6 +600,7 @@ export default {
         console.log(error)
       }
       this.taskModalParams.formData.chkUserId = chkUserId
+      this.taskModalParams.formData.chkUserId2 = chkUserId2
       this.taskModalParams.options.chkUserId = chkUserList
       this.taskModalParams.formData.auditorId = auditorId
       this.taskModalParams.options.auditorId = auditorList
@@ -605,6 +609,7 @@ export default {
       if (this.$refs.taskModalForm) {
         this.$refs.taskModalForm.clearValidate([
           'chkUserId',
+          'chkUserId2',
           'auditorId',
           'reauditorId'
         ])
@@ -633,9 +638,11 @@ export default {
         formData: {
           title: task?.title || '',
           roomId: task?.roomId,
-          chkUserId: task?.chkUserId,
+          chkUserId: task?.chkUserList && task.chkUserList[0] && task.chkUserList[0].userId,
+          chkUserId2: task?.chkUserList && task.chkUserList[1] && task.chkUserList[1].userId,
           auditorId: task?.auditorId,
-          reauditorId: task?.reauditorId
+          reauditorId: task?.reauditorId,
+          remark: task?.remark || ''
         },
         options: {
           ...this.taskModalParams.options,
@@ -658,19 +665,17 @@ export default {
         const params = {
           title: this.taskModalParams.formData.title,
           roomId: this.taskModalParams.formData.roomId,
-          roomName: this.taskModalParams.options.roomId.find(item => item.key === this.taskModalParams.formData.roomId).value,
-          chkUserId: this.taskModalParams.formData.chkUserId,
-          chkUserName: this.taskModalParams.options.chkUserId.find(item => item.key === this.taskModalParams.formData.chkUserId).value,
-          auditorId: this.taskModalParams.formData.auditorId,
-          auditorName: this.taskModalParams.options.auditorId.find(item => item.key === this.taskModalParams.formData.auditorId).value,
-          reauditorId: this.taskModalParams.formData.reauditorId,
-          reauditorName: this.taskModalParams.options.reauditorId.find(item => item.key === this.taskModalParams.formData.reauditorId).value
+          chkUserId: this.taskModalParams.formData.chkUserId || 0,
+          chkUserId2: this.taskModalParams.formData.chkUserId2 || 0,
+          auditorId: this.taskModalParams.formData.auditorId || 0,
+          reauditorId: this.taskModalParams.formData.reauditorId || 0,
+          remark: this.taskModalParams.formData.remark
         }
         const res = this.taskModalParams.taskId ? await nuclearLabApi.workOrderUpdateInfoById(this.taskModalParams.taskId, params) : await nuclearLabApi.workOrderCreate(params)
         if (res && res.code === 200) {
           this.$message.success('保存成功')
           this.taskModalParams.show = false
-          this.handleSearch(this.curTabKey)
+          this.handleSearch()
         } else {
           throw new Error(res.message || '保存失败')
         }
@@ -680,20 +685,20 @@ export default {
       }
       this.taskModalParams.submitting = false
     },
-    handleTaskModalFormDelete() {
+    handleTaskDelete(row) {
       this.$confirm({
         title: '警告',
-        content: `确定删除该任务吗?`,
+        content: `确定删除工单数据?`,
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
         onOk: async () => {
           try {
-            const res = await nuclearLabApi.workOrderDeleteById(this.taskModalParams.taskId)
+            const res = await nuclearLabApi.workOrderDeleteById(row.workOrderNo)
             if (res && res.code === 200) {
               this.$message.success('删除成功')
               this.taskModalParams.show = false
-              this.handleSearch(this.curTabKey)
+              this.handleSearch()
             } else {
               throw new Error(res.message || '删除失败')
             }
@@ -704,54 +709,13 @@ export default {
         }
       })
     },
-    async getWorkOrderList(tabKey, params) {
-      const tableData = {
-        rows: [],
-        total: 0
-      }
-      let res = null
-      try {
-        const orderStatus = this.formData[tabKey].orderStatus
-        let reqParams = {
-          pageNum: params.pageNum,
-          pageSize: params.pageSize
-        }
-        if (tabKey === '') {
-          reqParams = {
-            ...reqParams,
-            title: this.formData[tabKey].title || undefined,
-            workOrderNo: this.formData[tabKey].workOrderNo || undefined,
-            roomName: this.formData[tabKey].roomName || undefined,
-            beginTime: this.formData[tabKey].timeRange[0] ? this.formData[tabKey].timeRange[0].startOf('day').valueOf() : undefined,
-            endTime: this.formData[tabKey].timeRange[1] ? this.formData[tabKey].timeRange[1].endOf('day').valueOf() : undefined,
-            userName: this.formData[tabKey].userName || undefined,
-            orderStatus: orderStatus === undefined ? undefined : [orderStatus].join(',')
-          }
-        } else {
-          reqParams = {
-            ...reqParams,
-            orderStatus: [tabKey].join(',')
-          }
-        }
-        if (this.routePermissions['roomCheckShow']) {
-          res = await nuclearLabApi.workOrderListDone(reqParams)
-        } else {
-          res = await nuclearLabApi.workOrderList(reqParams)
-        }
-        if (res && res.code === 200) {
-          tableData.rows = res.data.list
-          tableData.total = res.data.total
-        } else {
-          throw new Error(res.message || '加载失败')
-        }
-      } catch (error) {
-        console.log(error)
-        this.$message.error(error.message)
-      }
-      return tableData
+    handleSearch() {
+      this.updateTab()
     },
-    handleSearch(tabKey) {
-      this.$refs[`tab_${tabKey}_table`][0].refresh()
+    handleTabClick(tabKey) {
+      if (tabKey !== this.curTabKey) {
+        this.curTabKey = tabKey
+      }
     }
   }
 }
