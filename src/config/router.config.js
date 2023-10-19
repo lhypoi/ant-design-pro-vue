@@ -214,19 +214,33 @@ const asyncRouterMapAll = {
           component: () => import('@/views/nuclear_lab/WorkOrder'),
           meta: { title: '管理员任务管理', icon: 'table', permission: ['adminOrderHandle'] }
         },
+        // CheckOrderHandle
+        {
+          path: '/check-order-handle',
+          name: 'CheckOrderHandle',
+          component: () => import('@/views/nuclear_lab/WorkOrder'),
+          meta: { title: '核查员任务管理', icon: 'table', permission: ['checkOrderHandle'] }
+        },
+        // AuditOrderHandle
+        {
+          path: '/audit-order-handle',
+          name: 'AuditOrderHandle',
+          component: () => import('@/views/nuclear_lab/WorkOrder'),
+          meta: { title: '审核员任务管理', icon: 'table', permission: ['auditOrderHandle'] }
+        },
         // Permission
         {
           path: '/permission',
           name: 'Permission',
           component: () => import('@/views/nuclear_lab/Permission'),
-          meta: { title: '权限管理', icon: 'database', permission: ['modelShow'] }
+          meta: { title: '权限管理', icon: 'database', permission: ['permission'] }
         },
         // LoginLog
         {
           path: '/login-log',
           name: 'LoginLog',
           component: () => import('@/views/nuclear_lab/LoginLog'),
-          meta: { title: '登录日志', icon: 'solution', permission: ['modelShow'] }
+          meta: { title: '登录日志', icon: 'solution', permission: ['loginLog'] }
         },
         // RoomSetting
         {

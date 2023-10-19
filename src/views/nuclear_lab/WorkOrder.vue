@@ -37,7 +37,7 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item v-show="formData.formExpand" key="roomName" prop="roomName" class="w-[150px] -mt-4">
+            <a-form-model-item v-show="!shortFormMode && formData.formExpand" key="roomName" prop="roomName" class="w-[150px] -mt-4">
               <a-input
                 v-model="formData.roomName"
                 placeholder="请输入机房名"
@@ -45,12 +45,12 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item v-show="formData.formExpand" key="timeRange" prop="timeRange" class="min-w-[240px] -mt-4">
+            <a-form-model-item v-show="!shortFormMode && formData.formExpand" key="timeRange" prop="timeRange" class="min-w-[240px] -mt-4">
               <a-range-picker v-model="formData.timeRange" size="large" allowClear>
                 <a-icon slot="suffixIcon" type="calendar" />
               </a-range-picker>
             </a-form-model-item>
-            <a-form-model-item v-show="formData.formExpand" key="userName" prop="userName" class="w-[150px] -mt-4">
+            <a-form-model-item v-show="!shortFormMode && formData.formExpand" key="userName" prop="userName" class="w-[150px] -mt-4">
               <a-input
                 v-model="formData.userName"
                 placeholder="请输入人员"
@@ -58,7 +58,7 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item v-show="formData.formExpand" key="orderStatus" prop="orderStatus" class="min-w-[180px] -mt-4">
+            <a-form-model-item v-show="!shortFormMode && formData.formExpand" key="orderStatus" prop="orderStatus" class="min-w-[180px] -mt-4">
               <a-select v-model="formData.orderStatus" size="large" placeholder="请选择工单状态" allowClear>
                 <a-select-option v-for="item in orderStatusOptions" :key="item.key" :value="item.key">
                   {{ item.value }}
@@ -76,7 +76,7 @@
                 >
                   查询
                 </a-button>
-                <div class="flex flex-row items-center ml-4 gap-1 cursor-pointer text-blue-400" @click="formData.formExpand = !formData.formExpand">
+                <div v-if="!shortFormMode" class="flex flex-row items-center ml-4 gap-1 cursor-pointer text-blue-400" @click="formData.formExpand = !formData.formExpand">
                   <template v-if="formData.formExpand">
                     收起
                     <a-icon type="up" />
@@ -217,8 +217,8 @@
               <work-order-cards
                 :data="(params) => getWorkOrderList(tab.key, params)"
                 class="flex-auto h-0"
+                :updatingMode="orderCardsUpdatingMode"
                 @clickRoomImg="handleOpenOrderLab"
-                @editTask="handleOpenTaskModal"
               />
             </template>
           </div>
@@ -450,20 +450,26 @@ export default {
         return Object.assign(resObj, { [permissionName]: true })
       }, {})
     },
-    tabMode() {
-      return this.routePermissions.adminOrderHandle
-    },
     topDescBoxMode() {
-      return this.routePermissions.adminOrderHandle
+      return this.routePermissions.adminOrderHandle || this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
     },
     showPubTaskBtn() {
       return this.routePermissions.adminOrderHandle
     },
+    shortFormMode() {
+      return this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
+    },
+    tabMode() {
+      return this.routePermissions.adminOrderHandle || this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
+    },
     listShowMode() {
-      if (this.routePermissions.roomCheckShow) {
+      if (this.routePermissions.roomCheckShow || this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle) {
         return 'card'
       }
       return 'table'
+    },
+    orderCardsUpdatingMode() {
+      return this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
     }
   },
   async mounted() {
