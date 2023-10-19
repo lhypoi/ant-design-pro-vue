@@ -285,6 +285,14 @@ export function workOrderListDone (parameter) {
   })
 }
 
+export function workOrderDetail (parameter) {
+  return request({
+    url: url + '/workOrder/detail',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -323,5 +331,6 @@ export default {
   pointCreate,
   pointDeleteById,
   roomDeleteById,
-  workOrderListDone
+  workOrderListDone,
+  workOrderDetail
 }

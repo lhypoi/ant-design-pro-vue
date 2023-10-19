@@ -130,6 +130,7 @@ Vue.use(PermissionHelper)
 Vue.use(VueCropper)
 
 // element ui
+Vue.prototype.$ELEMENT = { zIndex: 10000 }
 Vue.use(Image)
 Vue.use(Loading.directive)
 Vue.use(ETable)

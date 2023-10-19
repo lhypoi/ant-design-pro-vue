@@ -1,0 +1,654 @@
+<template>
+  <div>
+    <a-modal
+      v-if="workOrderDetailModalParams.show"
+      :title="workOrderDetailModalParams.title"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '1200px'"
+      @cancel="workOrderDetailModalParams.show = false"
+    >
+      <div v-loading="workOrderDetailModalParams.modalLoading">
+        <div v-if="workOrderDetailModalParams.detailData">
+          <div class="flex flex-row justify-end -mb-4 sm:-mb-8">
+            <a-button
+              class="h-8 rounded-md text-sm"
+              type="primary"
+            >
+              三维界面
+            </a-button>
+          </div>
+          <div class="flex flex-row">
+            <div class="flex-auto flex flex-row flex-wrap gap-x-5 sm:gap-x-10 gap-y-2 whitespace-nowrap">
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">工单号：</span>
+                {{ workOrderDetailModalParams.detailData.workOrderNo }}
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">工单名：</span>
+                {{ workOrderDetailModalParams.detailData.title }}
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">审批完成时间：</span>
+                {{ workOrderDetailModalParams.detailData.finishTime || '-' }}
+              </div>
+              <div class="flex flex-rowmin-w-[140px] sm:min-w-[320px]">
+                <div class="font-bold">创建人：</div>
+                <a-popover v-if="workOrderDetailModalParams.detailData.creatorName" title="手机号码" trigger="click">
+                  <template slot="content">
+                    <p>{{ workOrderDetailModalParams.detailData.createPhoneNumber }}</p>
+                  </template>
+                  <div class="text-blue-400 cursor-pointer">{{ workOrderDetailModalParams.detailData.creatorName }}</div>
+                </a-popover>
+                <div v-else>-</div>
+              </div>
+              <div class="flex flex-row min-w-[140px] sm:min-w-[320px]">
+                <div class="font-bold">核查员：</div>
+                <template v-if="workOrderDetailModalParams.detailData['chkUserList'] && workOrderDetailModalParams.detailData['chkUserList'].length">
+                  <a-popover
+                    v-for="(chkUser, index) in workOrderDetailModalParams.detailData['chkUserList']"
+                    :key="chkUser.userId + index"
+                    title="手机号码"
+                    trigger="click"
+                  >
+                    <template slot="content">
+                      <p>{{ chkUser.phoneNumber }}</p>
+                    </template>
+                    <span class="text-blue-400 cursor-pointer">{{ chkUser.userName }}</span>
+                    <span v-if="index !== workOrderDetailModalParams.detailData['chkUserList'].length - 1">、</span>
+                  </a-popover>
+                </template>
+                <div v-else>-</div>
+              </div>
+              <div class="flex flex-row min-w-[140px] sm:min-w-[320px]">
+                <div class="font-bold">审核员：</div>
+                <a-popover v-if="workOrderDetailModalParams.detailData.auditorName" title="手机号码" trigger="click">
+                  <template slot="content">
+                    <p>{{ workOrderDetailModalParams.detailData.auditPhoneNumber }}</p>
+                  </template>
+                  <div class="text-blue-400 cursor-pointer">{{ workOrderDetailModalParams.detailData.auditorName }}</div>
+                </a-popover>
+                <div v-else>-</div>
+              </div>
+              <div class="flex flex-row min-w-[140px] sm:min-w-[320px]">
+                <div class="font-bold">复核员：</div>
+                <a-popover v-if="workOrderDetailModalParams.detailData.reauditorName" title="手机号码" trigger="click">
+                  <template slot="content">
+                    <p>{{ workOrderDetailModalParams.detailData.reauditPhoneNumber }}</p>
+                  </template>
+                  <div class="text-blue-400 cursor-pointer">{{ workOrderDetailModalParams.detailData.reauditorName }}</div>
+                </a-popover>
+                <div v-else>-</div>
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">机房名：</span>
+                {{ workOrderDetailModalParams.detailData.roomName }}
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">机房点位图：</span>
+                <span class="text-blue-400 cursor-pointer">查看</span>
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">核查视频：</span>
+                <span class="text-blue-400 cursor-pointer">查看</span>
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">工单状态：</span>
+                {{ workOrderDetailModalParams.detailData.orderStatusName }}
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">核查轮次：</span>
+                {{ workOrderDetailModalParams.detailData.round }}
+              </div>
+            </div>
+          </div>
+          <div class="pt-6">
+            <k-table
+              :dataRows="workOrderDetailModalParams.detailData.logList"
+              border
+              :hidePage="true"
+            >
+              <el-table-column prop="chkStartTime" label="开始核查时间" :align="'center'" :width="200" />
+              <el-table-column prop="chkTime" label="核查提交时间" :align="'center'" :width="200" />
+              <el-table-column prop="chkUserName" label="核查员" :align="'center'" :width="150">
+                <div slot-scope="scope">
+                  <a-popover v-if="scope.row['chkUserName']" title="手机号码" trigger="click">
+                    <template slot="content">
+                      <p>{{ scope.row['chkPhoneNumber'] }}</p>
+                    </template>
+                    <div class="text-blue-400 cursor-pointer">{{ scope.row['chkUserName'] }}</div>
+                  </a-popover>
+                  <div v-else>-</div>
+                </div>
+              </el-table-column>
+              <el-table-column prop="auditStartTime" label="审核开始时间" :align="'center'" :width="200" />
+              <el-table-column prop="auditTime" label="审核完成时间" :align="'center'" :width="200" />
+              <el-table-column prop="auditorName" label="审核员" :align="'center'" :width="150">
+                <div slot-scope="scope">
+                  <a-popover v-if="scope.row['auditorName']" title="手机号码" trigger="click">
+                    <template slot="content">
+                      <p>{{ scope.row['auditPhoneNumber'] }}</p>
+                    </template>
+                    <div class="text-blue-400 cursor-pointer">{{ scope.row['auditorName'] }}</div>
+                  </a-popover>
+                  <div v-else>-</div>
+                </div>
+              </el-table-column>
+              <el-table-column prop="reauditStartTime" label="复核开始时间" :align="'center'" :width="200" />
+              <el-table-column prop="reauditTime" label="复核完成时间" :align="'center'" :width="200" />
+              <el-table-column prop="reauditorName" label="复核员" :align="'center'" :width="150">
+                <div slot-scope="scope">
+                  <a-popover v-if="scope.row['reauditorName']" title="手机号码" trigger="click">
+                    <template slot="content">
+                      <p>{{ scope.row['reauditPhoneNumber'] }}</p>
+                    </template>
+                    <div class="text-blue-400 cursor-pointer">{{ scope.row['reauditorName'] }}</div>
+                  </a-popover>
+                  <div v-else>-</div>
+                </div>
+              </el-table-column>
+            </k-table>
+          </div>
+          <div class="pt-6">
+            <k-table
+              :dataRows="workOrderDetailModalParams.pointsTableRows"
+              border
+              :hidePage="true"
+            >
+              <el-table-column
+                v-for="col in workOrderDetailModalParams.pointsTableCols"
+                :key="col.key"
+                :prop="col.key"
+                :label="col.label"
+                :align="'center'"
+                :width="col.width"
+                :min-width="col.minWidth"
+              >
+                <template
+                  slot-scope="scope"
+                >
+                  <div
+                    v-if="col.editType === 'text'"
+                    v-loading="scope.row.tempLoading[col.key]"
+                    element-loading-spinner="el-icon-loading mt-3"
+                    element-loading-background="rgba(0, 0, 0, 0.8)"
+                  >
+                    <a-input
+                      v-model="scope.row.tempRow[col.key]"
+                      @blur="handlePointTableRowInputSave(scope.row, col.key)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="col.editType === 'number'"
+                    v-loading="scope.row.tempLoading[col.key]"
+                    element-loading-spinner="el-icon-loading mt-3"
+                    element-loading-background="rgba(0, 0, 0, 0.8)"
+                  >
+                    <a-input-number
+                      v-model="scope.row.tempRow[col.key]"
+                      @blur="handlePointTableRowInputSave(scope.row, col.key)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="col.editType === 'radio'"
+                    v-loading="scope.row.tempLoading[col.key]"
+                    element-loading-spinner="el-icon-loading mt-3"
+                    element-loading-background="rgba(0, 0, 0, 0.8)"
+                  >
+                    <a-radio-group
+                      v-model="scope.row.tempRow[col.key]"
+                      @change="handlePointTableRowCheckboxSave(scope.row, col.key)"
+                    >
+                      <a-row>
+                        <a-col
+                          v-for="item in (col.editOptionsFun ? col.editOptionsFun(scope.row) : col.editOptions)"
+                          :key="item.label"
+                          :span="24"
+                          class="text-left"
+                        >
+                          <a-radio :value="item.key">
+                            {{ item.label }}
+                          </a-radio>
+                        </a-col>
+                      </a-row>
+                    </a-radio-group>
+                  </div>
+                  <div
+                    v-else-if="col.editType === 'img'"
+                    v-loading="scope.row.tempLoading[col.key]"
+                    element-loading-spinner="el-icon-loading mt-3"
+                    element-loading-background="rgba(0, 0, 0, 0.8)"
+                    class="link-style-form"
+                  >
+                    <a-upload-dragger
+                      class="dragUploader"
+                      style="margin-bottom: 0;"
+                      :multiple="true"
+                      :action="nuclearLabApi.uploadUrl"
+                      :headers="{
+                        'x-token': token
+                      }"
+                      accept="image/*"
+                      :fileList="scope.row.tempRow[col.key]"
+                      @change="info => handleFormFileChange(info, scope.row.tempRow, col.key, false, () => handlePointTableRowImgSave(scope.row, col.key))"
+                      @preview="file => handleImgPriview([file.uploadRes])"
+                    >
+                      <div v-if="!col.editImgHideUpload" class="rounded-md bg-sky-50 flex flex-col items-center pt-2 pb-2">
+                        <div>
+                          <span class="text-indigo-500">点击上传</span>
+                        </div>
+                      </div>
+                    </a-upload-dragger>
+                  </div>
+                  <div
+                    v-else-if="col.editType === 'remarkModal'"
+                    v-loading="scope.row.tempLoading[col.key]"
+                    element-loading-spinner="el-icon-loading mt-3"
+                    element-loading-background="rgba(0, 0, 0, 0.8)"
+                  >
+                    <div class="w-full flex flex-row">
+                      <div class="flex-auto">
+                        {{ scope.row[col.editRemarkModalConfig.statusNameKey] }}
+                        {{ scope.row[col.editRemarkModalConfig.remarkKey] ? '，' + scope.row[col.editRemarkModalConfig.remarkKey] : scope.row[col.editRemarkModalConfig.remarkKey] }}
+                      </div>
+                      <div class="pl-3">
+                        <a-button
+                          class="h-8 rounded-md text-sm"
+                          type="primary"
+                          @click="handleOpenEditRemarkModal(scope.row, col)"
+                        >
+                          编辑
+                        </a-button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    v-else
+                  >
+                    {{ scope.row[col.key] }}
+                  </div>
+                </template>
+              </el-table-column>
+            </k-table>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+    <a-modal
+      v-if="editRemarkModal.show"
+      :title="editRemarkModal.title"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '640px'"
+      @cancel="editRemarkModal.show = false"
+    >
+      <div v-loading="editRemarkModal.loading">
+        <div class="link-style-form" ref="editRemarkModalForm">
+          <a-form-model
+            :model="editRemarkModal"
+            :label-col="{ span: 5 }"
+            :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
+          >
+            <a-form-model-item
+              key="status"
+              prop="status"
+              :label="editRemarkModal.statusLabel"
+            >
+              <a-select v-model="editRemarkModal['status']" size="large" placeholder="请选择" allowClear :getPopupContainer="() => $refs.editRemarkModalForm">
+                <a-select-option v-for="item in editRemarkModal.statusOptions" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item
+              key="remark"
+              prop="remark"
+              label="说明"
+            >
+              <a-input
+                v-model="editRemarkModal['remark']"
+                placeholder="请输入"
+                size="large"
+                allowClear
+              />
+            </a-form-model-item>
+            <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
+              <div class="pt-4 flex flex-row gap-20">
+                <a-button
+                  class="h-11 w-24 rounded-md text-base"
+                  type="primary"
+                  size="large"
+                  @click="handlePointTableRowRemarkModalSave"
+                >
+                  确定
+                </a-button>
+                <a-button
+                  class="h-11 w-24 rounded-md text-base"
+                  type="primary"
+                  size="large"
+                  @click="editRemarkModal.show = false"
+                >
+                  取消
+                </a-button>
+              </div>
+            </a-form-model-item>
+          </a-form-model>
+        </div>
+      </div>
+    </a-modal>
+  </div>
+</template>
+
+<script>
+import { baseMixin } from '@/store/app-mixin'
+import nuclearLabApi from '@/api/nuclearLab'
+import KTable from '@/components/Kira/KTable'
+import { mapGetters } from 'vuex'
+
+export default {
+  name: 'WorkOrderDetail',
+  mixins: [baseMixin],
+  components: {
+    KTable
+  },
+  props: {
+  },
+  data () {
+    return {
+      nuclearLabApi,
+      workOrderDetailModalParams: {
+        show: false,
+        workOrderNo: '',
+        title: '',
+        modalLoading: false,
+        detailData: null,
+        pointsTableRows: [],
+        pointsTableCols: []
+      },
+      editRemarkModal: {
+        show: false,
+        loading: false,
+        title: '',
+        statusLabel: '',
+        statusNameKey: '',
+        statusKey: '',
+        status: undefined,
+        statusOptions: [],
+        remarkKey: '',
+        remark: '',
+        sourceRow: null
+      }
+    }
+  },
+  computed: {
+    ...mapGetters('asyncConfig', {
+      codeDict: 'codeDict'
+    }),
+    ...mapGetters(['token'])
+  },
+  methods: {
+    async openWorkOrderDetailModal(rowData) {
+      this.workOrderDetailModalParams = {
+        ...this.workOrderDetailModalParams,
+        show: true,
+        workOrderNo: rowData.workOrderNo,
+        title: rowData.title,
+        modalLoading: true,
+        detailData: null,
+        pointsTableRows: []
+      }
+      try {
+        const res = await nuclearLabApi.workOrderDetail({
+          workOrderNo: rowData.workOrderNo
+        })
+        if (res && res.code === 200) {
+          this.workOrderDetailModalParams.detailData = res.data
+          const canEdit = this.workOrderDetailModalParams.detailData.canEdit === 1
+          this.workOrderDetailModalParams.pointsTableCols = [
+            {
+              key: 'point',
+              label: '编号',
+              width: 80
+            },
+            {
+              key: 'location',
+              label: '位置',
+              editType: canEdit ? 'text' : '',
+              width: 100
+            },
+            {
+              key: 'name',
+              label: '名称',
+              editType: canEdit ? 'text' : '',
+              width: 100
+            },
+            {
+              key: 'prompt',
+              label: '文字说明',
+              editType: canEdit ? 'text' : '',
+              minWidth: 160
+            },
+            {
+              key: 'chkJudgeId',
+              label: '判别',
+              editType: canEdit ? 'radio' : '',
+              editOptionsFun: (row) => {
+                return row.chkJudgeList.map(item => ({
+                  key: item.id,
+                  label: item.name
+                })) || []
+              },
+              width: 100
+            },
+            {
+              key: 'referImgList',
+              label: '参考图片',
+              editType: 'img',
+              editImgHideUpload: true,
+              width: 180
+            },
+            {
+              key: 'chkImgList',
+              label: '图片',
+              editType: 'img',
+              width: 180
+            },
+            {
+              key: 'chkConfirm',
+              label: '核查确认',
+              width: 100
+            },
+            {
+              key: 'chkAnswer',
+              label: '核查回复',
+              editType: canEdit ? 'text' : '',
+              minWidth: 180
+            },
+            {
+              key: 'auditRemark',
+              label: '审核意见',
+              editType: 'remarkModal',
+              editRemarkModalConfig: {
+                title: '审核意见',
+                statusLabel: '审核',
+                statusNameKey: 'auditStatusName',
+                statusKey: 'auditStatus',
+                statusOptions: Object.entries(this.codeDict.work_order_point.auditStatus).map(([key, value]) => (
+                  {
+                    key,
+                    value
+                  }
+                )),
+                remarkKey: 'auditRemark'
+              },
+              width: 180
+            },
+            {
+              key: 'reauditRemark',
+              label: '复核意见',
+              editType: 'remarkModal',
+              editRemarkModalConfig: {
+                title: '复核意见',
+                statusLabel: '复核',
+                statusNameKey: 'reauditStatusName',
+                statusKey: 'reauditStatus',
+                statusOptions: Object.entries(this.codeDict.work_order_point.reauditStatus).map(([key, value]) => (
+                  {
+                    key,
+                    value
+                  }
+                )),
+                remarkKey: 'reauditRemark'
+              },
+              width: 180
+            }
+          ]
+          this.workOrderDetailModalParams.pointsTableRows = res.data.pointList.map((defaultRowData) => {
+            return this.generatePointTableRow({
+              ...defaultRowData
+            })
+          })
+        } else {
+          throw new Error(res.message || '加载失败')
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
+      }
+      this.workOrderDetailModalParams.modalLoading = false
+    },
+    generatePointTableRow(defaultRowData = {}) {
+      const newRow = {
+        localId: defaultRowData.id || defaultRowData.localId || Math.random(),
+        ...defaultRowData,
+        tempRow: {},
+        tempLoading: {}
+      }
+      this.workOrderDetailModalParams.pointsTableCols.map(col => {
+        if (col.editType === 'text' || col.editType === 'number') {
+          newRow[col.key] = newRow[col.key] || ''
+          newRow.tempRow[col.key] = newRow[col.key]
+          newRow.tempLoading[col.key] = false
+        } else if (col.editType === 'multiSelect') {
+          newRow[col.key] = newRow[col.key] || []
+          newRow.tempRow[col.key] = newRow[col.key]
+          newRow.tempLoading[col.key] = false
+        } else if (col.editType === 'radio') {
+          newRow[col.key] = newRow[col.key] || undefined
+          newRow.tempRow[col.key] = newRow[col.key]
+          newRow.tempLoading[col.key] = false
+        } else if (col.editType === 'img') {
+          newRow[col.key] = newRow[col.key] || []
+          newRow.tempRow[col.key] = newRow[col.key].map(name => ({
+            uid: name,
+            name: name.split('/').pop().replace(/-.+?\./, '.'),
+            status: 'done',
+            uploadRes: name
+          }))
+          newRow.tempLoading[col.key] = false
+        }
+      })
+      return newRow
+    },
+    async handlePointTableRowInputSave(curRow, colKey) {
+      curRow[colKey] = curRow.tempRow[colKey]
+      curRow.tempLoading[colKey] = true
+      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
+        pointList: [
+          {
+            point: curRow.point,
+            [colKey]: curRow[colKey]
+          }
+        ]
+      })
+      curRow.tempLoading[colKey] = false
+      this.$emit('reloadWorkOrderList')
+    },
+    async handlePointTableRowCheckboxSave(curRow, colKey) {
+      curRow[colKey] = curRow.tempRow[colKey]
+      curRow.tempLoading[colKey] = true
+      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
+        pointList: [
+          {
+            point: curRow.point,
+            [colKey]: curRow[colKey]
+          }
+        ]
+      })
+      curRow.tempLoading[colKey] = false
+      this.$emit('reloadWorkOrderList')
+    },
+    handleImgPriview(src) {
+      this.$emit('imgPriview', src)
+    },
+    handleFormFileChange(info, formObj, itemKey, single, updateCallback) {
+      let fileList = [...info.fileList]
+      if (single) fileList = fileList.slice(-1)
+      fileList = fileList.map(file => {
+        if (file.response) {
+          file.uploadRes = file.response.data.url
+        }
+        return file
+      })
+      formObj[itemKey] = fileList
+      if (updateCallback) updateCallback()
+    },
+    async handlePointTableRowImgSave(curRow, colKey) {
+      const isAllFileDone = curRow.tempRow[colKey].every(file => file.status === 'done')
+      if (!isAllFileDone) return
+      curRow[colKey] = curRow.tempRow[colKey].map(file => file.uploadRes)
+      curRow.tempLoading[colKey] = true
+      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
+        pointList: [
+          {
+            point: curRow.point,
+            [colKey]: curRow[colKey]
+          }
+        ]
+      })
+      curRow.tempLoading[colKey] = false
+      this.$emit('reloadWorkOrderList')
+    },
+    handleOpenEditRemarkModal(row, col) {
+      const editRemarkModalConfig = col.editRemarkModalConfig
+      this.editRemarkModal = {
+        show: true,
+        loading: false,
+        title: editRemarkModalConfig.title,
+        statusLabel: editRemarkModalConfig.statusLabel,
+        statusNameKey: editRemarkModalConfig.statusNameKey,
+        statusKey: editRemarkModalConfig.statusKey,
+        statusOptions: editRemarkModalConfig.statusOptions,
+        remarkKey: editRemarkModalConfig.remarkKey,
+        status: row[editRemarkModalConfig.statusKey],
+        remark: row[editRemarkModalConfig.remarkKey],
+        sourceRow: row
+      }
+    },
+    async handlePointTableRowRemarkModalSave() {
+      this.editRemarkModal.loading = true
+      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
+        pointList: [
+          {
+            point: this.editRemarkModal.sourceRow.point,
+            [this.editRemarkModal.statusKey]: this.editRemarkModal.status,
+            [this.editRemarkModal.remarkKey]: this.editRemarkModal.remark
+          }
+        ]
+      })
+      this.editRemarkModal.loading = false
+      this.editRemarkModal.show = false
+      const curStatusObj = this.editRemarkModal.statusOptions.find(item => item.key === this.editRemarkModal.status)
+      this.editRemarkModal.sourceRow[this.editRemarkModal.statusKey] = this.editRemarkModal.status
+      this.editRemarkModal.sourceRow[this.editRemarkModal.statusNameKey] = curStatusObj ? curStatusObj.value : ''
+      this.editRemarkModal.sourceRow[this.editRemarkModal.remarkKey] = this.editRemarkModal.remark
+      this.$emit('reloadWorkOrderList')
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+</style>

@@ -310,6 +310,7 @@
                 >
                   <a-input-number
                     v-model="scope.row.tempRow[col.key]"
+                    :disabled="col.disabledFun ? col.disabledFun(scope.row) : false"
                     @blur="handlePointModalTableRowInputSave(scope.row, col.key)"
                   />
                 </div>
@@ -531,8 +532,11 @@ export default {
           {
             key: 'point',
             label: '编号',
-            editType: 'text',
-            width: 80
+            editType: 'number',
+            disabledFun: (row) => {
+              return !!row.id
+            },
+            width: 120
           },
           {
             key: 'location',

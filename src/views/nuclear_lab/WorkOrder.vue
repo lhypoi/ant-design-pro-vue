@@ -184,6 +184,7 @@
                       v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] === '4'"
                       class="h-8 rounded-md text-sm"
                       type="primary"
+                      @click="handleOpenWorkOrderDetailModal(scope.row)"
                     >
                       数据修改
                     </a-button>
@@ -327,6 +328,19 @@
         </div>
       </div>
     </a-modal>
+    <el-image
+      v-if="imgPreviewParams.src.length"
+      ref="imgPreview"
+      class="w-0 h-0 overflow-hidden"
+      lazy
+      :src="imgPreviewParams.src[0]"
+      :preview-src-list="imgPreviewParams.src"
+    />
+    <WorkOrderDetail
+      ref="WorkOrderDetail"
+      @reloadWorkOrderList="handleSearch"
+      @imgPriview="handleImgPriview"
+    />
   </div>
 </template>
 
@@ -334,6 +348,7 @@
 import nuclearLabApi from '@/api/nuclearLab'
 import KTable from '@/components/Kira/KTable'
 import WorkOrderCards from '@/components/Kira/WorkOrderCards'
+import WorkOrderDetail from '@/components/Kira/WorkOrderDetail'
 import { mapGetters } from 'vuex'
 import { baseMixin } from '@/store/app-mixin'
 
@@ -342,10 +357,14 @@ export default {
   mixins: [baseMixin],
   components: {
     KTable,
-    WorkOrderCards
+    WorkOrderCards,
+    WorkOrderDetail
   },
   data() {
     return {
+      imgPreviewParams: {
+        src: []
+      },
       formData: null,
       tabLoading: false,
       tabOptions: [],
@@ -716,6 +735,15 @@ export default {
       if (tabKey !== this.curTabKey) {
         this.curTabKey = tabKey
       }
+    },
+    handleOpenWorkOrderDetailModal(row) {
+      this.$refs.WorkOrderDetail.openWorkOrderDetailModal(row)
+    },
+    handleImgPriview(src) {
+      this.imgPreviewParams.src = src
+      this.$nextTick(() => {
+        this.$refs.imgPreview.clickHandler()
+      })
     }
   }
 }
