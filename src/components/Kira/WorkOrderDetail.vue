@@ -15,6 +15,7 @@
             <a-button
               class="h-8 rounded-md text-sm"
               type="primary"
+              @click="() => $emit('clickRoomImg', workOrderDetailModalParams.detailData)"
             >
               三维界面
             </a-button>
@@ -29,12 +30,12 @@
                 <span class="font-bold">工单名：</span>
                 {{ workOrderDetailModalParams.detailData.title }}
               </div>
-              <div class="min-w-[140px] sm:min-w-[320px]">
+              <div v-if="workOrderDetailModalParams.detailData.finishTime" class="min-w-[140px] sm:min-w-[320px]">
                 <span class="font-bold">审批完成时间：</span>
                 {{ workOrderDetailModalParams.detailData.finishTime || '-' }}
               </div>
               <div class="flex flex-rowmin-w-[140px] sm:min-w-[320px]">
-                <div class="font-bold">创建人：</div>
+                <div class="font-bold">管理员：</div>
                 <a-popover v-if="workOrderDetailModalParams.detailData.creatorName" title="手机号码" trigger="click">
                   <template slot="content">
                     <p>{{ workOrderDetailModalParams.detailData.createPhoneNumber }}</p>
@@ -87,11 +88,7 @@
               </div>
               <div class="min-w-[140px] sm:min-w-[320px]">
                 <span class="font-bold">机房点位图：</span>
-                <span class="text-blue-400 cursor-pointer">查看</span>
-              </div>
-              <div class="min-w-[140px] sm:min-w-[320px]">
-                <span class="font-bold">核查视频：</span>
-                <span class="text-blue-400 cursor-pointer">查看</span>
+                <span class="text-blue-400 cursor-pointer" @click="handleImgPriview([workOrderDetailModalParams.detailData.pointImg])">查看</span>
               </div>
               <div class="min-w-[140px] sm:min-w-[320px]">
                 <span class="font-bold">工单状态：</span>
@@ -100,6 +97,47 @@
               <div class="min-w-[140px] sm:min-w-[320px]">
                 <span class="font-bold">核查轮次：</span>
                 {{ workOrderDetailModalParams.detailData.round }}
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">工单创建时间：</span>
+                {{ workOrderDetailModalParams.detailData.createTime }}
+              </div>
+              <div class="min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">数据更新时间：</span>
+                {{ workOrderDetailModalParams.detailData.updateTime }}
+              </div>
+              <div class="flex flex-row min-w-[140px] sm:min-w-[320px]">
+                <span class="font-bold">机房核查视频：</span>
+                <div
+                  class="flex flex-row"
+                  v-loading="workOrderDetailModalParams.detailData.tempLoading['chkVideo']"
+                  element-loading-spinner="el-icon-loading mt-3"
+                  element-loading-background="rgba(0, 0, 0, 0.8)"
+                >
+                  <span
+                    class="text-blue-400 cursor-pointer"
+                    @click="() => $emit('videoPriview', workOrderDetailModalParams.detailData['chkVideo'])"
+                  >播放</span>
+                  <span
+                    v-if="workOrderDetailModalParams.detailData.canCheck === 1"
+                    class="text-blue-400 cursor-pointer ml-2"
+                    @click="() => $refs['form_chkVideo'].click()"
+                  >上传</span>
+                </div>
+                <div class="w-0 h-0 overflow-hidden absolute">
+                  <a-upload-dragger
+                    :multiple="true"
+                    :action="nuclearLabApi.uploadUrl"
+                    :headers="{
+                      'x-token': token
+                    }"
+                    accept="video/*"
+                    :fileList="workOrderDetailModalParams.detailData.tempRow['chkVideo']"
+                    @change="info => handleFormFileChange(info, workOrderDetailModalParams.detailData.tempRow, 'chkVideo', true, () => handlePointTableRowImgSave(workOrderDetailModalParams.detailData, 'chkVideo'), true, workOrderDetailModalParams.detailData)"
+                  >
+                    <div :ref="`form_chkVideo`" ></div>
+                  </a-upload-dragger>
+                </div>
               </div>
             </div>
           </div>
@@ -154,6 +192,7 @@
             <k-table
               :dataRows="workOrderDetailModalParams.pointsTableRows"
               border
+              :span-method="workOrderDetailModalParams.pointsTableSpanMethod"
               :hidePage="true"
             >
               <el-table-column
@@ -236,10 +275,24 @@
                     >
                       <div v-if="!col.editImgHideUpload" class="rounded-md bg-sky-50 flex flex-col items-center pt-2 pb-2">
                         <div>
-                          <span class="text-indigo-500">点击上传</span>
+                          <span class="text-indigo-500">{{ col.imgCtrlText ? col.imgCtrlText(scope.row) : '点击上传' }}</span>
                         </div>
                       </div>
                     </a-upload-dragger>
+                  </div>
+                  <div
+                    v-else-if="col.key === 'chkConfirm'"
+                  >
+                    <div>
+                      <a-button
+                        class="h-8 rounded-md text-sm"
+                        type="primary"
+                        :disabled="!(workOrderDetailModalParams.detailData.canCheck === 1 && scope.row.chkStatus === '0')"
+                        @click="handlePointChkStatusUpdate(scope.row)"
+                      >
+                        确定
+                      </a-button>
+                    </div>
                   </div>
                   <div
                     v-else-if="col.editType === 'remarkModal'"
@@ -248,20 +301,27 @@
                     element-loading-background="rgba(0, 0, 0, 0.8)"
                   >
                     <div class="w-full flex flex-row">
-                      <div class="flex-auto">
-                        {{ scope.row[col.editRemarkModalConfig.statusNameKey] }}
-                        {{ scope.row[col.editRemarkModalConfig.remarkKey] ? '，' + scope.row[col.editRemarkModalConfig.remarkKey] : scope.row[col.editRemarkModalConfig.remarkKey] }}
+                      <div class="flex-auto flex flex-row">
+                        <template v-if="col.editRemarkModalConfig.statusNameKey">{{ scope.row[col.editRemarkModalConfig.statusNameKey] }}</template>
+                        <template v-if="col.editRemarkModalConfig.statusNameKey && scope.row[col.editRemarkModalConfig.statusNameKey] && scope.row[col.editRemarkModalConfig.remarkKey]">，</template>
+                        <template>{{ scope.row[col.editRemarkModalConfig.remarkKey] }}</template>
                       </div>
                       <div class="pl-3">
                         <a-button
                           class="h-8 rounded-md text-sm"
                           type="primary"
+                          :disabled="col.disabledFun ? col.disabledFun(scope.row, col) : false"
                           @click="handleOpenEditRemarkModal(scope.row, col)"
                         >
                           编辑
                         </a-button>
                       </div>
                     </div>
+                  </div>
+                  <div
+                    v-else-if="col.key === 'point' && !scope.row['point']"
+                  >
+                    其他意见
                   </div>
                   <div
                     v-else
@@ -271,6 +331,16 @@
                 </template>
               </el-table-column>
             </k-table>
+          </div>
+          <div v-if="workOrderDetailModalParams.detailData.canCheck === 1" class="pt-3 flex flex-row justify-end">
+            <a-button
+              v-if="workOrderDetailModalParams.detailData.canCheck === 1"
+              class="h-10 rounded-md text-sm"
+              type="primary"
+              @click="handleWorkOrderSubmit"
+            >
+              核查提交
+            </a-button>
           </div>
         </div>
       </div>
@@ -292,6 +362,7 @@
             :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
           >
             <a-form-model-item
+              v-if="editRemarkModal['statusKey']"
               key="status"
               prop="status"
               :label="editRemarkModal.statusLabel"
@@ -307,7 +378,7 @@
               prop="remark"
               label="说明"
             >
-              <a-input
+              <a-textarea
                 v-model="editRemarkModal['remark']"
                 placeholder="请输入"
                 size="large"
@@ -315,7 +386,7 @@
               />
             </a-form-model-item>
             <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
-              <div class="pt-4 flex flex-row gap-20">
+              <div class="pt-2 flex flex-row gap-20">
                 <a-button
                   class="h-11 w-24 rounded-md text-base"
                   type="primary"
@@ -365,7 +436,16 @@ export default {
         modalLoading: false,
         detailData: null,
         pointsTableRows: [],
-        pointsTableCols: []
+        pointsTableCols: [],
+        pointsTableSpanMethod: ({ row, column, columnIndex }) => {
+          if (!row.point) {
+            if (columnIndex === 0) {
+              return [1, 9]
+            } else if (columnIndex < 9) {
+              return [0, 0]
+            }
+          }
+        }
       },
       editRemarkModal: {
         show: false,
@@ -404,8 +484,23 @@ export default {
           workOrderNo: rowData.workOrderNo
         })
         if (res && res.code === 200) {
-          this.workOrderDetailModalParams.detailData = res.data
+          const detailData = res.data
+          detailData.tempRow = {
+            chkVideo: res.data.chkVideo ? [
+              {
+                uid: res.data.chkVideo,
+                name: res.data.chkVideo.split('/').pop().replace(/-.+?\./, '.'),
+                status: 'done',
+                uploadRes: res.data.chkVideo
+              }
+            ] : []
+          }
+          detailData.tempLoading = {
+            chkVideo: false
+          }
+          this.workOrderDetailModalParams.detailData = detailData
           const canEdit = this.workOrderDetailModalParams.detailData.canEdit === 1
+          const canCheck = this.workOrderDetailModalParams.detailData.canCheck === 1
           this.workOrderDetailModalParams.pointsTableCols = [
             {
               key: 'point',
@@ -431,11 +526,24 @@ export default {
               minWidth: 160
             },
             {
-              key: 'chkJudgeId',
+              key: 'referImgList',
+              label: '参考图',
+              editType: 'img',
+              editImgHideUpload: !canEdit,
+              width: 180
+            },
+            {
+              key: 'chkRemark',
+              label: '核查备注',
+              editType: (canEdit || canCheck) ? 'text' : '',
+              minWidth: 160
+            },
+            {
+              key: (canEdit || canCheck) ? 'chkJudgeId' : 'chkJudgeName',
               label: '判别',
-              editType: canEdit ? 'radio' : '',
+              editType: (canEdit || canCheck) ? 'radio' : '',
               editOptionsFun: (row) => {
-                return row.chkJudgeList.map(item => ({
+                return (row.chkJudgeList || []).map(item => ({
                   key: item.id,
                   label: item.name
                 })) || []
@@ -443,16 +551,13 @@ export default {
               width: 100
             },
             {
-              key: 'referImgList',
-              label: '参考图片',
-              editType: 'img',
-              editImgHideUpload: true,
-              width: 180
-            },
-            {
               key: 'chkImgList',
               label: '图片',
               editType: 'img',
+              editImgHideUpload: !(canEdit || canCheck),
+              imgCtrlText: (row) => {
+                return `点击上传（${row.chkImgNum}张）`
+              },
               width: 180
             },
             {
@@ -463,14 +568,30 @@ export default {
             {
               key: 'chkAnswer',
               label: '核查回复',
-              editType: canEdit ? 'text' : '',
+              editType: 'remarkModal',
+              disabledFun: (row, col) => {
+                return !(this.workOrderDetailModalParams.detailData.canEdit === 1 || this.workOrderDetailModalParams.detailData[col.editRemarkModalConfig.disabledPassKey] === 1)
+              },
+              editRemarkModalConfig: {
+                disabledPassKey: 'canCheck',
+                title: '核查回复/备注',
+                statusLabel: '',
+                statusNameKey: '',
+                statusKey: '',
+                statusOptions: [],
+                remarkKey: 'chkAnswer'
+              },
               minWidth: 180
             },
             {
               key: 'auditRemark',
               label: '审核意见',
               editType: 'remarkModal',
+              disabledFun: (row, col) => {
+                return !(this.workOrderDetailModalParams.detailData.canEdit === 1 || this.workOrderDetailModalParams.detailData[col.editRemarkModalConfig.disabledPassKey] === 1)
+              },
               editRemarkModalConfig: {
+                disabledPassKey: 'canAudit',
                 title: '审核意见',
                 statusLabel: '审核',
                 statusNameKey: 'auditStatusName',
@@ -489,7 +610,11 @@ export default {
               key: 'reauditRemark',
               label: '复核意见',
               editType: 'remarkModal',
+              disabledFun: (row, col) => {
+                return !(this.workOrderDetailModalParams.detailData.canEdit === 1 || this.workOrderDetailModalParams.detailData[col.editRemarkModalConfig.disabledPassKey] === 1)
+              },
               editRemarkModalConfig: {
+                disabledPassKey: 'canReaudit',
                 title: '复核意见',
                 statusLabel: '复核',
                 statusNameKey: 'reauditStatusName',
@@ -509,7 +634,15 @@ export default {
             return this.generatePointTableRow({
               ...defaultRowData
             })
-          })
+          }).concat(this.generatePointTableRow({
+            chkAnswer: detailData.chkAnswer,
+            auditStatusName: detailData.auditStatusName,
+            auditStatus: detailData.auditStatus,
+            auditRemark: detailData.auditRemark,
+            reauditStatusName: detailData.reauditStatusName,
+            reauditStatus: detailData.reauditStatus,
+            reauditRemark: detailData.reauditRemark
+          }))
         } else {
           throw new Error(res.message || '加载失败')
         }
@@ -552,38 +685,51 @@ export default {
       })
       return newRow
     },
+    async pointTableRowReqSave(curRow, colKey) {
+      const curRowKeyValue = colKey === 'chkVideo' ? (curRow[colKey][0] || '') : curRow[colKey]
+      if (this.workOrderDetailModalParams.detailData.canEdit === 1) {
+        await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, curRow.point ? {
+          pointList: [
+            {
+              point: curRow.point,
+              [colKey]: curRowKeyValue
+            }
+          ]
+        } : {
+          [colKey]: curRowKeyValue
+        })
+      } else if (this.workOrderDetailModalParams.detailData.canCheck === 1) {
+        curRow.point ? await nuclearLabApi.workOrderCheck({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          point: curRow.point,
+          [colKey]: curRowKeyValue
+        }) : await nuclearLabApi.workOrderBatchCheckPoint({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          [colKey]: curRowKeyValue
+        })
+      }
+    },
     async handlePointTableRowInputSave(curRow, colKey) {
       curRow[colKey] = curRow.tempRow[colKey]
       curRow.tempLoading[colKey] = true
-      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
-        pointList: [
-          {
-            point: curRow.point,
-            [colKey]: curRow[colKey]
-          }
-        ]
-      })
+      await this.pointTableRowReqSave(curRow, colKey)
       curRow.tempLoading[colKey] = false
       this.$emit('reloadWorkOrderList')
     },
     async handlePointTableRowCheckboxSave(curRow, colKey) {
       curRow[colKey] = curRow.tempRow[colKey]
       curRow.tempLoading[colKey] = true
-      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
-        pointList: [
-          {
-            point: curRow.point,
-            [colKey]: curRow[colKey]
-          }
-        ]
-      })
+      await this.pointTableRowReqSave(curRow, colKey)
       curRow.tempLoading[colKey] = false
       this.$emit('reloadWorkOrderList')
     },
     handleImgPriview(src) {
       this.$emit('imgPriview', src)
     },
-    handleFormFileChange(info, formObj, itemKey, single, updateCallback) {
+    handleFormFileChange(info, formObj, itemKey, single, updateCallback, showFullLoading, curRow) {
+      if (showFullLoading) {
+        curRow.tempLoading[itemKey] = true
+      }
       let fileList = [...info.fileList]
       if (single) fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
@@ -600,14 +746,7 @@ export default {
       if (!isAllFileDone) return
       curRow[colKey] = curRow.tempRow[colKey].map(file => file.uploadRes)
       curRow.tempLoading[colKey] = true
-      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
-        pointList: [
-          {
-            point: curRow.point,
-            [colKey]: curRow[colKey]
-          }
-        ]
-      })
+      await this.pointTableRowReqSave(curRow, colKey)
       curRow.tempLoading[colKey] = false
       this.$emit('reloadWorkOrderList')
     },
@@ -629,22 +768,104 @@ export default {
     },
     async handlePointTableRowRemarkModalSave() {
       this.editRemarkModal.loading = true
-      await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
-        pointList: [
-          {
-            point: this.editRemarkModal.sourceRow.point,
-            [this.editRemarkModal.statusKey]: this.editRemarkModal.status,
-            [this.editRemarkModal.remarkKey]: this.editRemarkModal.remark
-          }
-        ]
-      })
+      const curRow = this.editRemarkModal.sourceRow
+      const formChangeParams = {
+        ...(this.editRemarkModal.statusKey ? {
+          [this.editRemarkModal.statusKey]: this.editRemarkModal.status
+        } : {}),
+        [this.editRemarkModal.remarkKey]: this.editRemarkModal.remark
+      }
+      if (this.workOrderDetailModalParams.detailData.canEdit === 1) {
+        await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, curRow.point ? {
+          pointList: [
+            {
+              point: curRow.point,
+              ...formChangeParams
+            }
+          ]
+        } : {
+          ...formChangeParams
+        })
+      } else if (this.workOrderDetailModalParams.detailData.canCheck === 1) {
+        curRow.point ? await nuclearLabApi.workOrderCheck({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          point: curRow.point,
+          ...formChangeParams
+        }) : await nuclearLabApi.workOrderBatchCheckPoint({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          ...formChangeParams
+        })
+      }
       this.editRemarkModal.loading = false
       this.editRemarkModal.show = false
-      const curStatusObj = this.editRemarkModal.statusOptions.find(item => item.key === this.editRemarkModal.status)
-      this.editRemarkModal.sourceRow[this.editRemarkModal.statusKey] = this.editRemarkModal.status
-      this.editRemarkModal.sourceRow[this.editRemarkModal.statusNameKey] = curStatusObj ? curStatusObj.value : ''
+      if (this.editRemarkModal.statusKey) {
+        const curStatusObj = this.editRemarkModal.statusOptions.find(item => item.key === this.editRemarkModal.status)
+        this.editRemarkModal.sourceRow[this.editRemarkModal.statusKey] = this.editRemarkModal.status
+        this.editRemarkModal.sourceRow[this.editRemarkModal.statusNameKey] = curStatusObj ? curStatusObj.value : ''
+      }
       this.editRemarkModal.sourceRow[this.editRemarkModal.remarkKey] = this.editRemarkModal.remark
       this.$emit('reloadWorkOrderList')
+    },
+    handlePointChkStatusUpdate(curRow) {
+      if (curRow['chkJudgeList'].length > 1 && !curRow['chkJudgeId']) {
+        this.$message.info('未核查完')
+        return
+      }
+      if (curRow['chkImgNum'] && curRow['chkImgNum'] !== curRow['chkImgList'].length) {
+        this.$message.info('未核查完')
+        return
+      }
+      this.$confirm({
+        title: '提示',
+        content: `确定核查确认?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await nuclearLabApi.workOrderCheck({
+              workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+              point: curRow.point,
+              chkStatus: '1'
+            })
+            if (res && res.code === 200) {
+              this.$message.success('成功')
+              curRow.chkStatus = '1'
+            } else {
+              throw new Error(res.message || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleWorkOrderSubmit() {
+      this.$confirm({
+        title: '提示',
+        content: `确定核查提交?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await nuclearLabApi.workOrderSubmit({
+              workOrderNo: this.workOrderDetailModalParams.workOrderNo
+            })
+            if (res && res.code === 200) {
+              this.$message.success('提交成功')
+              this.$emit('reloadWorkOrderList')
+              this.workOrderDetailModalParams.show = false
+            } else {
+              throw new Error(res.message || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
     }
   }
 }

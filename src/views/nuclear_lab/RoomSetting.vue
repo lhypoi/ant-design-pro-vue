@@ -419,12 +419,6 @@
         </div>
       </div>
     </a-modal>
-    <!-- <a-modal :visible="true">
-      <video width="640" height="360" controls>
-        <source src="https://bw-nrl.oss-cn-shenzhen.aliyuncs.com/nrl/file/20231010/uc-berkely-phd-math-a86c89a918104ec3.mp4" type="video/mp4">
-        您的浏览器不支持 HTML5 视频播放器，请升级浏览器。
-      </video>
-    </a-modal> -->
   </div>
 </template>
 

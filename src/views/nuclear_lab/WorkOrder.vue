@@ -206,6 +206,7 @@
                     <a-button
                       class="h-8 rounded-md text-sm"
                       type="primary"
+                      @click="handleOpenWorkOrderDetailModal(scope.row)"
                     >
                       表单查看
                     </a-button>
@@ -219,6 +220,8 @@
                 class="flex-auto h-0"
                 :updatingMode="orderCardsUpdatingMode"
                 @clickRoomImg="handleOpenOrderLab"
+                @openOrderDetailForm="handleOpenWorkOrderDetailModal"
+                @reloadWorkOrderList="handleSearch"
               />
             </template>
           </div>
@@ -336,10 +339,29 @@
       :src="imgPreviewParams.src[0]"
       :preview-src-list="imgPreviewParams.src"
     />
+    <a-modal
+      v-if="videoPreviewParams.show"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '800px'"
+      @cancel="videoPreviewParams.show = false"
+    >
+      <div v-if="videoPreviewParams.src" class="pt-5">
+        <video width="100%" height="auto" controls>
+          <source :src="videoPreviewParams.src" type="video/mp4">
+          <source :src="videoPreviewParams.src" type="video/ogg">
+          您的浏览器不支持Video标签。
+        </video>
+      </div>
+      <div v-else>未上传</div>
+    </a-modal>
     <WorkOrderDetail
       ref="WorkOrderDetail"
       @reloadWorkOrderList="handleSearch"
       @imgPriview="handleImgPriview"
+      @videoPriview="handleVideoPriview"
+      @clickRoomImg="handleOpenOrderLab"
     />
   </div>
 </template>
@@ -364,6 +386,10 @@ export default {
     return {
       imgPreviewParams: {
         src: []
+      },
+      videoPreviewParams: {
+        show: false,
+        src: ''
       },
       formData: null,
       tabLoading: false,
@@ -750,6 +776,12 @@ export default {
       this.$nextTick(() => {
         this.$refs.imgPreview.clickHandler()
       })
+    },
+    handleVideoPriview(src) {
+      this.videoPreviewParams = {
+        show: true,
+        src: src
+      }
     }
   }
 }

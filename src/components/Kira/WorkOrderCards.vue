@@ -147,6 +147,7 @@
             class="h-9 w-24 rounded-md text-base"
             type="primary"
             size="large"
+            @click="handleOpenFullDetailModal('3d')"
           >
             三维核查
           </a-button>
@@ -155,6 +156,7 @@
             class="h-9 w-24 rounded-md text-base"
             type="primary"
             size="large"
+            @click="handleOpenFullDetailModal('3d')"
           >
             三维查看
           </a-button>
@@ -163,6 +165,7 @@
             class="h-9 w-24 rounded-md text-base"
             type="primary"
             size="large"
+            @click="handleOpenFullDetailModal('form')"
           >
             表单核查
           </a-button>
@@ -171,6 +174,7 @@
             class="h-9 w-24 rounded-md text-base"
             type="primary"
             size="large"
+            @click="handleOpenFullDetailModal('form')"
           >
             表单审批
           </a-button>
@@ -179,6 +183,7 @@
             class="h-9 w-24 rounded-md text-base"
             type="primary"
             size="large"
+            @click="handleOpenFullDetailModal('form')"
           >
             表单查看
           </a-button>
@@ -190,6 +195,7 @@
 
 <script>
 import { baseMixin } from '@/store/app-mixin'
+import nuclearLabApi from '@/api/nuclearLab'
 
 export default {
   name: 'WorkOrderCards',
@@ -263,6 +269,24 @@ export default {
         title: '选择方式',
         sourceCard: sourceCard
       }
+    },
+    async handleOpenFullDetailModal(showType) {
+      this.workOrderDetailModalParams.loading = true
+      if (this.workOrderDetailModalParams.sourceCard.canCheck === 1) {
+        await nuclearLabApi.workOrderUpdateStartCheckById(this.workOrderDetailModalParams.sourceCard.workOrderNo)
+      } else if (this.workOrderDetailModalParams.sourceCard.canAudit === 1) {
+        await nuclearLabApi.workOrderUpdateStartAuditById(this.workOrderDetailModalParams.sourceCard.workOrderNo)
+      } else if (this.workOrderDetailModalParams.sourceCard.canReaudit === 1) {
+        await nuclearLabApi.workOrderUpdateStartReAuditById(this.workOrderDetailModalParams.sourceCard.workOrderNo)
+      }
+      this.workOrderDetailModalParams.loading = false
+      if (showType === '3d') {
+        this.$emit('clickRoomImg', this.workOrderDetailModalParams.sourceCard)
+      } else if (showType === 'form') {
+        this.$emit('openOrderDetailForm', this.workOrderDetailModalParams.sourceCard)
+      }
+      this.workOrderDetailModalParams.show = false
+      this.$emit('reloadWorkOrderList')
     }
   }
 }
