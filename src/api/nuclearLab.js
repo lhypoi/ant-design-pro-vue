@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
-// const url = 'https://api.ukshuxi.com/nrl/api/v1'
-const url = '/nrl/api/v1'
+const url = 'https://api.ukshuxi.com/nrl/api/v1'
+// const url = '/nrl/api/v1'
 export const uploadUrl = url + '/file/upload'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'
@@ -341,6 +341,54 @@ export function workOrderSubmit (parameter) {
   })
 }
 
+export function workOrderUpdateAudit (parameter) {
+  return request({
+    url: url + '/workOrder/updateAudit',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderUpdateAuditPoint (parameter) {
+  return request({
+    url: url + '/workOrder/updateAuditPoint',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderUpdateReAudit (parameter) {
+  return request({
+    url: url + '/workOrder/updateReAudit',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderUpdateReAuditPoint (parameter) {
+  return request({
+    url: url + '/workOrder/updateReAuditPoint',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderUpdateAuditSubmitById (id, parameter) {
+  return request({
+    url: url + '/workOrder/updateAuditSubmit/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function workOrderUpdateReAuditSubmitById (id, parameter) {
+  return request({
+    url: url + '/workOrder/updateReAuditSubmit/' + id,
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -386,5 +434,11 @@ export default {
   workOrderUpdateStartReAuditById,
   workOrderBatchCheckPoint,
   workOrderCheck,
-  workOrderSubmit
+  workOrderSubmit,
+  workOrderUpdateAudit,
+  workOrderUpdateAuditPoint,
+  workOrderUpdateReAudit,
+  workOrderUpdateReAuditPoint,
+  workOrderUpdateAuditSubmitById,
+  workOrderUpdateReAuditSubmitById
 }

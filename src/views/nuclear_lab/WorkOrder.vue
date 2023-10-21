@@ -477,25 +477,39 @@ export default {
       }, {})
     },
     topDescBoxMode() {
-      return this.routePermissions.adminOrderHandle || this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
+      return this.routePermissions.adminOrderHandle ||
+        this.routePermissions.checkOrderHandle ||
+        this.routePermissions.auditOrderHandle ||
+        this.routePermissions.reAuditOrderHandle
     },
     showPubTaskBtn() {
       return this.routePermissions.adminOrderHandle
     },
     shortFormMode() {
-      return this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
+      return this.routePermissions.checkOrderHandle ||
+        this.routePermissions.auditOrderHandle ||
+        this.routePermissions.reAuditOrderHandle
     },
     tabMode() {
-      return this.routePermissions.adminOrderHandle || this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
+      return this.routePermissions.adminOrderHandle ||
+        this.routePermissions.checkOrderHandle ||
+        this.routePermissions.auditOrderHandle ||
+        this.routePermissions.reAuditOrderHandle
     },
     listShowMode() {
-      if (this.routePermissions.roomCheckShow || this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle) {
+      if (this.routePermissions.roomCheckShow ||
+        this.routePermissions.checkOrderHandle ||
+        this.routePermissions.auditOrderHandle ||
+        this.routePermissions.reAuditOrderHandle
+      ) {
         return 'card'
       }
       return 'table'
     },
     orderCardsUpdatingMode() {
-      return this.routePermissions.auditOrderHandle || this.routePermissions.checkOrderHandle
+      return this.routePermissions.checkOrderHandle ||
+        this.routePermissions.auditOrderHandle ||
+        this.routePermissions.reAuditOrderHandle
     }
   },
   async mounted() {

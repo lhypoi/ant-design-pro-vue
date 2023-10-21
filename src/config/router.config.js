@@ -228,6 +228,13 @@ const asyncRouterMapAll = {
           component: () => import('@/views/nuclear_lab/WorkOrder'),
           meta: { title: '审核员任务管理', icon: 'table', permission: ['auditOrderHandle'] }
         },
+        // ReAuditOrderHandle
+        {
+          path: '/re-audit-order-handle',
+          name: 'ReAuditOrderHandle',
+          component: () => import('@/views/nuclear_lab/WorkOrder'),
+          meta: { title: '复核员任务管理', icon: 'table', permission: ['reAuditOrderHandle'] }
+        },
         // Permission
         {
           path: '/permission',

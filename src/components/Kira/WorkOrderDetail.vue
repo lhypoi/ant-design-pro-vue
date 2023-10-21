@@ -332,14 +332,32 @@
               </el-table-column>
             </k-table>
           </div>
-          <div v-if="workOrderDetailModalParams.detailData.canCheck === 1" class="pt-3 flex flex-row justify-end">
+          <div
+            class="flex flex-row justify-end"
+          >
             <a-button
               v-if="workOrderDetailModalParams.detailData.canCheck === 1"
-              class="h-10 rounded-md text-sm"
+              class="h-10 rounded-md text-sm mt-3"
               type="primary"
               @click="handleWorkOrderSubmit"
             >
               核查提交
+            </a-button>
+            <a-button
+              v-if="workOrderDetailModalParams.detailData.canAudit === 1"
+              class="h-10 rounded-md text-sm mt-3"
+              type="primary"
+              @click="handleWorkOrderAuditSubmit"
+            >
+              审核提交
+            </a-button>
+            <a-button
+              v-if="workOrderDetailModalParams.detailData.canReaudit === 1"
+              class="h-10 rounded-md text-sm mt-3"
+              type="primary"
+              @click="handleWorkOrderReAuditSubmit"
+            >
+              复核提交
             </a-button>
           </div>
         </div>
@@ -795,6 +813,24 @@ export default {
           workOrderNo: this.workOrderDetailModalParams.workOrderNo,
           ...formChangeParams
         })
+      } else if (this.workOrderDetailModalParams.detailData.canAudit === 1) {
+        curRow.point ? await nuclearLabApi.workOrderUpdateAuditPoint({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          point: curRow.point,
+          ...formChangeParams
+        }) : await nuclearLabApi.workOrderUpdateAudit({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          ...formChangeParams
+        })
+      } else if (this.workOrderDetailModalParams.detailData.canReaudit === 1) {
+        curRow.point ? await nuclearLabApi.workOrderUpdateReAuditPoint({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          point: curRow.point,
+          ...formChangeParams
+        }) : await nuclearLabApi.workOrderUpdateReAudit({
+          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+          ...formChangeParams
+        })
       }
       this.editRemarkModal.loading = false
       this.editRemarkModal.show = false
@@ -853,6 +889,54 @@ export default {
             const res = await nuclearLabApi.workOrderSubmit({
               workOrderNo: this.workOrderDetailModalParams.workOrderNo
             })
+            if (res && res.code === 200) {
+              this.$message.success('提交成功')
+              this.$emit('reloadWorkOrderList')
+              this.workOrderDetailModalParams.show = false
+            } else {
+              throw new Error(res.message || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleWorkOrderAuditSubmit() {
+      this.$confirm({
+        title: '提示',
+        content: `确定审核提交?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await nuclearLabApi.workOrderUpdateAuditSubmitById(this.workOrderDetailModalParams.workOrderNo)
+            if (res && res.code === 200) {
+              this.$message.success('提交成功')
+              this.$emit('reloadWorkOrderList')
+              this.workOrderDetailModalParams.show = false
+            } else {
+              throw new Error(res.message || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleWorkOrderReAuditSubmit() {
+      this.$confirm({
+        title: '提示',
+        content: `确定复核提交?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await nuclearLabApi.workOrderUpdateReAuditSubmitById(this.workOrderDetailModalParams.workOrderNo)
             if (res && res.code === 200) {
               this.$message.success('提交成功')
               this.$emit('reloadWorkOrderList')
