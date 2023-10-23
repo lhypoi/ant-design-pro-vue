@@ -159,8 +159,13 @@ export default {
       this.loading = false
     },
     handleOpenLab(labData) {
+      nuclearLabApi.accessLogCreate({
+        action: `访问${labData.name}`,
+        detail: '',
+        page: this.$route.meta.title,
+        remark: ''
+      })
       this.labModalParams.labData = labData
-      // url参数：token，workNumber，roomId
       const url = new URL('http://159.75.246.27:66/')
       url.searchParams.append('token', this.token)
       url.searchParams.append('roomId', labData.id)

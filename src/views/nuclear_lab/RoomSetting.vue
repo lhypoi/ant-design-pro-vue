@@ -551,8 +551,14 @@ export default {
             minWidth: 160
           },
           {
+            key: 'referImgList',
+            label: '参考图',
+            editType: 'img',
+            width: 180
+          },
+          {
             key: 'judgeIdList',
-            label: '判别选项',
+            label: '判别',
             editType: 'radio',
             editOptions: [
               {
@@ -573,12 +579,6 @@ export default {
           {
             key: 'imgList',
             label: '图片',
-            editType: 'img',
-            width: 180
-          },
-          {
-            key: 'referImgList',
-            label: '参考图片',
             editType: 'img',
             width: 180
           },
@@ -621,19 +621,19 @@ export default {
           tableData.rows = res.data.list.map(row => ({
             ...row,
             tempRow: {
-              img: [row.img].map(name => ({
+              img: row.img ? [row.img].map(name => ({
                 uid: name,
                 name: name,
                 status: 'done',
                 uploadRes: name
-              })),
+              })) : [],
               imgUploading: false,
-              pointImg: [row.pointImg].map(name => ({
+              pointImg: row.pointImg ? [row.pointImg].map(name => ({
                 uid: name,
                 name: name,
                 status: 'done',
                 uploadRes: name
-              })),
+              })) : [],
               pointImgUploading: false,
               remark: row.remark || '',
               remarkLoading: false
@@ -665,6 +665,8 @@ export default {
       fileList = fileList.map(file => {
         if (file.response) {
           file.uploadRes = file.response.data.url
+          // 当前表格只有单文件列，直接走回调
+          row[colKey] = file.uploadRes
           this.handleTableTempRowFileSave(row, colKey, loadingKey)
         }
         return file
@@ -672,20 +674,23 @@ export default {
       row.tempRow[colKey] = fileList
     },
     async handleTableTempRowFileSave(row, colKey, loadingKey) {
-      await new Promise(resolve => {
-        setTimeout(() => {
-          resolve()
-        }, 500)
+      await nuclearLabApi.roomUpdateById(row.id, {
+        [colKey]: row[colKey]
+      })
+      nuclearLabApi.accessLogCreate({
+        action: `${row.name}-上传`,
+        detail: '',
+        page: this.$route.meta.title,
+        remark: ''
       })
       row.tempRow[loadingKey] = false
     },
     async handleTableTempRowInputSave(row, colKey, loadingKey) {
+      if (row.tempRow[colKey] === row[colKey]) return
       row.tempRow[loadingKey] = true
-      await new Promise(resolve => {
-        setTimeout(() => {
-          resolve()
-        }, 500)
-        console.log(row)
+      row[colKey] = row.tempRow[colKey]
+      await nuclearLabApi.roomUpdateById(row.id, {
+        [colKey]: row[colKey]
       })
       row.tempRow[loadingKey] = false
     },
@@ -734,6 +739,12 @@ export default {
           remark: this.roomModalParams.formData.remark
         }
         const res = await nuclearLabApi.roomCreate(params)
+        nuclearLabApi.accessLogCreate({
+          action: `创建机房`,
+          detail: this.roomModalParams.formData.name,
+          page: this.$route.meta.title,
+          remark: ''
+        })
         if (res && res.code === 200) {
           this.$message.success('保存成功')
           this.roomModalParams.show = false
@@ -767,7 +778,14 @@ export default {
           roomId: this.pointModalParams.roomId,
           ...this.pointModalParams.cols.reduce((pointObj, col) => Object.assign(pointObj, { [col.key]: newRow[col.key] }), {})
         })
+        nuclearLabApi.accessLogCreate({
+          action: `${this.pointModalParams.sourceRoomRow.name}-机房点位修改`,
+          detail: '',
+          page: this.$route.meta.title,
+          remark: ''
+        })
         this.handleOpenPointModal({
+          ...this.pointModalParams.sourceRoomRow,
           id: this.pointModalParams.roomId,
           pointList: this.pointModalParams.rows
         })
@@ -822,6 +840,12 @@ export default {
             } else {
               this.pointModalParams.loading = true
               await nuclearLabApi.pointDeleteById(curRow.id)
+              nuclearLabApi.accessLogCreate({
+                action: `${this.pointModalParams.sourceRoomRow.name}-机房点位修改`,
+                detail: '',
+                page: this.$route.meta.title,
+                remark: ''
+              })
               this.pointModalParams.loading = false
             }
             this.$message.success('删除成功')
@@ -843,6 +867,12 @@ export default {
           try {
             this.$refs.table.localLoading = true
             await nuclearLabApi.roomDeleteById(curRow.id)
+            nuclearLabApi.accessLogCreate({
+              action: `${curRow.name}-数据删除`,
+              detail: '',
+              page: this.$route.meta.title,
+              remark: ''
+            })
             this.$refs.table.localLoading = false
             this.$message.success('删除成功')
             this.handleSearch()
@@ -860,7 +890,8 @@ export default {
         show: true,
         loading: !!roomForm.id,
         roomId: roomForm.id || '',
-        rows: defaultRowDatas.map((defaultRowData) => this.generatePointModalTableRow(defaultRowData))
+        rows: defaultRowDatas.map((defaultRowData) => this.generatePointModalTableRow(defaultRowData)),
+        sourceRoomRow: roomForm.id ? roomForm : null
       }
       if (roomForm.id) {
         try {
@@ -885,6 +916,7 @@ export default {
       }
     },
     async handlePointModalTableRowInputSave(curRow, colKey) {
+      if (curRow[colKey] === curRow.tempRow[colKey]) return
       curRow[colKey] = curRow.tempRow[colKey]
       if (!this.pointModalParams.roomId) {
         const roomModalFormPonitsRow = this.roomModalParams.formData.pointList.find(row => row.localId === curRow.localId)
@@ -893,6 +925,12 @@ export default {
         curRow.tempLoading[colKey] = true
         await nuclearLabApi.pointUpdateById(curRow.id, {
           [colKey]: curRow[colKey]
+        })
+        nuclearLabApi.accessLogCreate({
+          action: `${this.pointModalParams.sourceRoomRow.name}-机房点位修改`,
+          detail: '',
+          page: this.$route.meta.title,
+          remark: ''
         })
         curRow.tempLoading[colKey] = false
       }
@@ -906,6 +944,12 @@ export default {
         curRow.tempLoading[colKey] = true
         await nuclearLabApi.pointUpdateById(curRow.id, {
           [colKey]: curRow[colKey]
+        })
+        nuclearLabApi.accessLogCreate({
+          action: `${this.pointModalParams.sourceRoomRow.name}-机房点位修改`,
+          detail: '',
+          page: this.$route.meta.title,
+          remark: ''
         })
         curRow.tempLoading[colKey] = false
       }
@@ -921,6 +965,12 @@ export default {
         curRow.tempLoading[colKey] = true
         await nuclearLabApi.pointUpdateById(curRow.id, {
           [colKey]: curRow[colKey]
+        })
+        nuclearLabApi.accessLogCreate({
+          action: `${this.pointModalParams.sourceRoomRow.name}-机房点位修改`,
+          detail: '',
+          page: this.$route.meta.title,
+          remark: ''
         })
         curRow.tempLoading[colKey] = false
       }

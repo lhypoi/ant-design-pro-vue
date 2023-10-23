@@ -389,6 +389,22 @@ export function workOrderUpdateReAuditSubmitById (id, parameter) {
   })
 }
 
+export function accessLogList (parameter) {
+  return request({
+    url: url + '/accessLog/list',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function accessLogCreate (parameter) {
+  return request({
+    url: url + '/accessLog/create',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -440,5 +456,7 @@ export default {
   workOrderUpdateReAudit,
   workOrderUpdateReAuditPoint,
   workOrderUpdateAuditSubmitById,
-  workOrderUpdateReAuditSubmitById
+  workOrderUpdateReAuditSubmitById,
+  accessLogList,
+  accessLogCreate
 }

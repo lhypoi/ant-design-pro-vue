@@ -3,6 +3,7 @@
     <span class="ant-pro-account-avatar">
       <a-avatar size="small" :src="avatarImg" class="antd-pro-global-header-index-avatar" />
       <span>{{ userInfo.username }}</span>
+      <span class="pl-1">{{ userInfo.phoneNumber }}</span>
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">

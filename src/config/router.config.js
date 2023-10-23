@@ -200,6 +200,13 @@ const asyncRouterMapAll = {
           component: () => import('@/views/nuclear_lab/WorkOrder'),
           meta: { title: '机房核查展示', icon: 'table', permission: ['roomCheckShow'] }
         },
+        // RoomSetting
+        {
+          path: '/room-setting',
+          name: 'RoomSetting',
+          component: () => import('@/views/nuclear_lab/RoomSetting'),
+          meta: { title: '机房设置', icon: 'solution', permission: ['roomSetting'] }
+        },
         // OrderSearch
         {
           path: '/order-search',
@@ -249,12 +256,12 @@ const asyncRouterMapAll = {
           component: () => import('@/views/nuclear_lab/LoginLog'),
           meta: { title: '登录日志', icon: 'solution', permission: ['loginLog'] }
         },
-        // RoomSetting
+        // AccessLog
         {
-          path: '/room-setting',
-          name: 'RoomSetting',
-          component: () => import('@/views/nuclear_lab/RoomSetting'),
-          meta: { title: '机房设置', icon: 'solution', permission: ['roomSetting'] }
+          path: '/access-log',
+          name: 'AccessLog',
+          component: () => import('@/views/nuclear_lab/AccessLog'),
+          meta: { title: '访问日志', icon: 'solution' }
         }
       ]
     },
