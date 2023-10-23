@@ -184,7 +184,7 @@
                       v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] === '4'"
                       class="h-8 rounded-md text-sm"
                       type="primary"
-                      @click="handleOpenWorkOrderDetailModal(scope.row)"
+                      @click="handleOpenWorkOrderDetailModal(scope.row, '数据修改')"
                     >
                       数据修改
                     </a-button>
@@ -206,7 +206,7 @@
                     <a-button
                       class="h-8 rounded-md text-sm"
                       type="primary"
-                      @click="handleOpenWorkOrderDetailModal(scope.row)"
+                      @click="handleOpenWorkOrderDetailModal(scope.row, '表单查看')"
                     >
                       表单查看
                     </a-button>
@@ -574,7 +574,10 @@ export default {
         console.log(error)
         this.$message.error(error.message)
       }
-      this.tabLoading = false
+      // 延缓一个周期显示，确保老组件被销毁
+      this.$nextTick(() => {
+        this.tabLoading = false
+      })
     },
     async getWorkOrderList(tabKey, params) {
       const tableData = {
@@ -592,7 +595,7 @@ export default {
           beginTime: this.formData.timeRange[0] ? this.formData.timeRange[0].startOf('day').valueOf() : undefined,
           endTime: this.formData.timeRange[1] ? this.formData.timeRange[1].endOf('day').valueOf() : undefined,
           userName: this.formData.userName || undefined,
-          orderStatus: tabKey || undefined
+          orderStatus: this.formData.orderStatus || tabKey || undefined
         }
         if (this.routePermissions['roomCheckShow']) {
           res = await nuclearLabApi.workOrderListDone(reqParams)
@@ -600,8 +603,13 @@ export default {
           res = await nuclearLabApi.workOrderList(reqParams)
         }
         if (res && res.code === 200) {
-          tableData.rows = res.data.list
-          tableData.total = res.data.total
+          if (this.tabMode && this.tabOptions.find(tab => tab.key === tabKey).num === 0) {
+            tableData.rows = []
+            tableData.total = 0
+          } else {
+            tableData.rows = res.data.list
+            tableData.total = res.data.total
+          }
         } else {
           throw new Error(res.message || '加载失败')
         }
@@ -682,6 +690,21 @@ export default {
       this.taskModalParams.optionsLoading = false
     },
     handleOpenOrderLab(workOrder) {
+      if (this.routePermissions.roomCheckShow) {
+        nuclearLabApi.accessLogCreate({
+          action: `访问${workOrder.roomName}`,
+          detail: '',
+          page: this.$route.meta.title,
+          remark: ''
+        })
+      } else {
+        nuclearLabApi.accessLogCreate({
+          action: workOrder.workOrderNo,
+          detail: '三维查看',
+          page: this.$route.meta.title,
+          remark: ''
+        })
+      }
       this.labModalParams.labData = {
         name: workOrder.roomName
       }
@@ -738,6 +761,21 @@ export default {
         }
         const res = this.taskModalParams.taskId ? await nuclearLabApi.workOrderUpdateInfoById(this.taskModalParams.taskId, params) : await nuclearLabApi.workOrderCreate(params)
         if (res && res.code === 200) {
+          if (this.taskModalParams.taskId) {
+            nuclearLabApi.accessLogCreate({
+              action: this.taskModalParams.taskId,
+              detail: '修改任务',
+              page: this.$route.meta.title,
+              remark: ''
+            })
+          } else {
+            nuclearLabApi.accessLogCreate({
+              action: '发起任务',
+              detail: res.data,
+              page: this.$route.meta.title,
+              remark: ''
+            })
+          }
           this.$message.success('保存成功')
           this.taskModalParams.show = false
           this.handleSearch()
@@ -761,6 +799,12 @@ export default {
           try {
             const res = await nuclearLabApi.workOrderDeleteById(row.workOrderNo)
             if (res && res.code === 200) {
+              nuclearLabApi.accessLogCreate({
+                action: row.workOrderNo,
+                detail: '取消工单',
+                page: this.$route.meta.title,
+                remark: ''
+              })
               this.$message.success('删除成功')
               this.taskModalParams.show = false
               this.handleSearch()
@@ -782,7 +826,15 @@ export default {
         this.curTabKey = tabKey
       }
     },
-    handleOpenWorkOrderDetailModal(row) {
+    handleOpenWorkOrderDetailModal(row, accessLogDetail) {
+      if (accessLogDetail) {
+        nuclearLabApi.accessLogCreate({
+          action: row.workOrderNo,
+          detail: accessLogDetail,
+          page: this.$route.meta.title,
+          remark: ''
+        })
+      }
       this.$refs.WorkOrderDetail.openWorkOrderDetailModal(row)
     },
     handleImgPriview(src) {
