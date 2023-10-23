@@ -890,6 +890,12 @@ export default {
               workOrderNo: this.workOrderDetailModalParams.workOrderNo
             })
             if (res && res.code === 200) {
+              await nuclearLabApi.accessLogCreate({
+                action: this.workOrderDetailModalParams.workOrderNo,
+                detail: '核查完成',
+                page: '表单核查审批界面',
+                remark: ''
+              })
               this.$message.success('提交成功')
               this.$emit('reloadWorkOrderList')
               this.workOrderDetailModalParams.show = false
@@ -914,6 +920,12 @@ export default {
           try {
             const res = await nuclearLabApi.workOrderUpdateAuditSubmitById(this.workOrderDetailModalParams.workOrderNo)
             if (res && res.code === 200) {
+              await nuclearLabApi.accessLogCreate({
+                action: this.workOrderDetailModalParams.workOrderNo,
+                detail: '审核完成',
+                page: '表单核查审批界面',
+                remark: ''
+              })
               this.$message.success('提交成功')
               this.$emit('reloadWorkOrderList')
               this.workOrderDetailModalParams.show = false
@@ -938,6 +950,12 @@ export default {
           try {
             const res = await nuclearLabApi.workOrderUpdateReAuditSubmitById(this.workOrderDetailModalParams.workOrderNo)
             if (res && res.code === 200) {
+              await nuclearLabApi.accessLogCreate({
+                action: this.workOrderDetailModalParams.workOrderNo,
+                detail: '复核完成',
+                page: '表单核查审批界面',
+                remark: ''
+              })
               this.$message.success('提交成功')
               this.$emit('reloadWorkOrderList')
               this.workOrderDetailModalParams.show = false
