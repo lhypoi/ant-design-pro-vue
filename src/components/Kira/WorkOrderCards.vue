@@ -279,6 +279,26 @@ export default {
       } else if (this.workOrderDetailModalParams.sourceCard.canReaudit === 1) {
         await nuclearLabApi.workOrderUpdateStartReAuditById(this.workOrderDetailModalParams.sourceCard.workOrderNo)
       }
+      let accessLogDetail = ''
+      if (showType === 'form') {
+        if (this.workOrderDetailModalParams.sourceCard.canCheck === 1) {
+          accessLogDetail = `去核查-${ '表单核查' }`
+        } else if (this.workOrderDetailModalParams.sourceCard.canAudit === 1) {
+          accessLogDetail = `去审核-${ '表单审批' }`
+        } else if (this.workOrderDetailModalParams.sourceCard.canReaudit === 1) {
+          accessLogDetail = `去复核-${ '表单审批' }`
+        } else {
+          accessLogDetail = `查看-${ '表单审批' }`
+        }
+      }
+      if (accessLogDetail) {
+        await nuclearLabApi.accessLogCreate({
+          action: this.workOrderDetailModalParams.sourceCard.workOrderNo,
+          detail: accessLogDetail,
+          page: this.$route.meta.title,
+          remark: ''
+        })
+      }
       this.workOrderDetailModalParams.loading = false
       if (showType === '3d') {
         this.$emit('clickRoomImg', this.workOrderDetailModalParams.sourceCard)

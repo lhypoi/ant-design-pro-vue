@@ -14,19 +14,19 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item key="phoneNumber" prop="phoneNumber" class="flex-auto min-w-[170px]">
+            <a-form-model-item key="action" prop="action" class="flex-auto min-w-[170px]">
               <a-input
-                v-model="formData.phoneNumber"
-                placeholder="请输入手机号码"
+                v-model="formData.action"
+                placeholder="请输入操作"
                 size="large"
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item key="timeRange" prop="timeRange" class="min-w-[240px]">
+            <!-- <a-form-model-item key="timeRange" prop="timeRange" class="min-w-[240px]">
               <a-range-picker v-model="formData.timeRange" size="large" allowClear>
                 <a-icon slot="suffixIcon" type="calendar" />
               </a-range-picker>
-            </a-form-model-item>
+            </a-form-model-item> -->
             <a-button
               class="h-11 rounded-md text-base"
               type="primary"
@@ -99,7 +99,7 @@ export default {
       try {
         const res = await nuclearLabApi.accessLogList({
           userName: this.formData.userName || undefined,
-          phoneNumber: this.formData.phoneNumber || undefined,
+          action: this.formData.action || undefined,
           beginTime: this.formData.timeRange[0] ? this.formData.timeRange[0].startOf('day').valueOf() : undefined,
           endTime: this.formData.timeRange[1] ? this.formData.timeRange[1].endOf('day').valueOf() : undefined,
           pageNum: params.pageNum,

@@ -700,7 +700,10 @@ export default {
       } else {
         nuclearLabApi.accessLogCreate({
           action: workOrder.workOrderNo,
-          detail: '三维查看',
+          detail: workOrder.canCheck === 1 ? '去核查-三维界面'
+            : workOrder.canAudit === 1 ? '去审核-三维查看'
+            : workOrder.canReaudit === 1 ? '去复核-三维查看'
+            : '查看-三维界面',
           page: this.$route.meta.title,
           remark: ''
         })
