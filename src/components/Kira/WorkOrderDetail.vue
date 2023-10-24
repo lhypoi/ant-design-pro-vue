@@ -287,7 +287,10 @@
                       <a-button
                         class="h-8 rounded-md text-sm"
                         type="primary"
-                        :disabled="!(workOrderDetailModalParams.detailData.canCheck === 1 && scope.row.chkStatus === '0')"
+                        :disabled="!(workOrderDetailModalParams.detailData.canCheck === 1 && scope.row.chkStatus === '0') ||
+                          (scope.row['chkImgList'] || []).length === 0 ||
+                          ((scope.row['chkJudgeList'] || []).length > 1 && (!scope.row['chkJudgeId'] || scope.row['chkJudgeId'] === 1))
+                        "
                         @click="handlePointChkStatusUpdate(scope.row)"
                       >
                         确定
