@@ -426,7 +426,14 @@
               prop="status"
               :label="editRemarkModal.statusLabel"
             >
-              <a-select v-model="editRemarkModal['status']" size="large" placeholder="请选择" allowClear :getPopupContainer="() => $refs.editRemarkModalForm">
+              <a-select
+                v-model="editRemarkModal['status']"
+                size="large"
+                placeholder="请选择"
+                allowClear
+                :getPopupContainer="() => $refs.editRemarkModalForm"
+                :disabled="!editRemarkModal.sourceRow.point && workOrderDetailModalParams.pointsTableRows.filter(row => !!row.point).some(row => row[editRemarkModal.statusKey] === '2')"
+              >
                 <a-select-option v-for="item in editRemarkModal.statusOptions" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-select-option>
@@ -878,6 +885,12 @@ export default {
           workOrderNo: this.workOrderDetailModalParams.workOrderNo,
           ...formChangeParams
         })
+        if (curRow.point && this.editRemarkModal.status === '2') {
+          await nuclearLabApi.workOrderUpdateAudit({
+            workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+            [this.editRemarkModal.statusKey]: '2'
+          })
+        }
       } else if (this.workOrderDetailModalParams.detailData.canReaudit === 1) {
         curRow.point ? await nuclearLabApi.workOrderUpdateReAuditPoint({
           workOrderNo: this.workOrderDetailModalParams.workOrderNo,
@@ -887,6 +900,12 @@ export default {
           workOrderNo: this.workOrderDetailModalParams.workOrderNo,
           ...formChangeParams
         })
+        if (curRow.point && this.editRemarkModal.status === '2') {
+          await nuclearLabApi.workOrderUpdateReAudit({
+            workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+            [this.editRemarkModal.statusKey]: '2'
+          })
+        }
       }
       this.editRemarkModal.loading = false
       this.editRemarkModal.show = false
@@ -894,6 +913,10 @@ export default {
         const curStatusObj = this.editRemarkModal.statusOptions.find(item => item.key === this.editRemarkModal.status)
         this.editRemarkModal.sourceRow[this.editRemarkModal.statusKey] = this.editRemarkModal.status
         this.editRemarkModal.sourceRow[this.editRemarkModal.statusNameKey] = curStatusObj ? curStatusObj.value : ''
+        if (curRow.point && this.editRemarkModal.status === '2') {
+          this.workOrderDetailModalParams.pointsTableRows.find(row => !row.point)[this.editRemarkModal.statusKey] = '2'
+          this.workOrderDetailModalParams.pointsTableRows.find(row => !row.point)[this.editRemarkModal.statusNameKey] = curStatusObj ? curStatusObj.value : ''
+        }
       }
       this.editRemarkModal.sourceRow[this.editRemarkModal.remarkKey] = this.editRemarkModal.remark
       this.$emit('reloadWorkOrderList')
@@ -934,6 +957,11 @@ export default {
       })
     },
     handleWorkOrderSubmit() {
+      const allChkStatusOk = this.workOrderDetailModalParams.pointsTableRows.filter(row => !!row.point).every(row => row.chkStatus === '1')
+      if (!allChkStatusOk) {
+        this.$message.info('点位未核查完成')
+        return
+      }
       this.$confirm({
         title: '提示',
         content: `确定核查提交?`,
@@ -966,6 +994,11 @@ export default {
       })
     },
     handleWorkOrderAuditSubmit() {
+      const allAuditStatusSelected = this.workOrderDetailModalParams.pointsTableRows.every(row => row.auditStatus === '1' || row.auditStatus === '2')
+      if (!allAuditStatusSelected) {
+        this.$message.info('点位未审核完成')
+        return
+      }
       this.$confirm({
         title: '提示',
         content: `确定审核提交?`,
@@ -996,6 +1029,11 @@ export default {
       })
     },
     handleWorkOrderReAuditSubmit() {
+      const allReAuditStatusSelected = this.workOrderDetailModalParams.pointsTableRows.every(row => row.reauditStatus === '1' || row.reauditStatus === '2')
+      if (!allReAuditStatusSelected) {
+        this.$message.info('点位未复核完成')
+        return
+      }
       this.$confirm({
         title: '提示',
         content: `确定复核提交?`,
