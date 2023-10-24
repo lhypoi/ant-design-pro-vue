@@ -487,7 +487,7 @@ export default {
     ...mapGetters(['token'])
   },
   methods: {
-    async openWorkOrderDetailModal(rowData) {
+    async openWorkOrderDetailModal(rowData, globalDisabledMode) {
       this.workOrderDetailModalParams = {
         ...this.workOrderDetailModalParams,
         show: true,
@@ -499,10 +499,12 @@ export default {
       }
       try {
         const res = await nuclearLabApi.workOrderDetail({
-          workOrderNo: rowData.workOrderNo
+          workOrderNo: rowData.workOrderNo,
+          disable: globalDisabledMode ? 1 : undefined
         })
         if (res && res.code === 200) {
           const detailData = res.data
+          // 构造工单对象级别的可编辑上下文 S
           detailData.tempRow = {
             chkVideo: res.data.chkVideo ? [
               {
@@ -517,6 +519,7 @@ export default {
             chkVideo: false
           }
           this.workOrderDetailModalParams.detailData = detailData
+          // 构造工单对象级别的可编辑上下文 E
           const canEdit = this.workOrderDetailModalParams.detailData.canEdit === 1
           const canCheck = this.workOrderDetailModalParams.detailData.canCheck === 1
           this.workOrderDetailModalParams.pointsTableCols = [

@@ -510,6 +510,9 @@ export default {
       return this.routePermissions.checkOrderHandle ||
         this.routePermissions.auditOrderHandle ||
         this.routePermissions.reAuditOrderHandle
+    },
+    globalDisabledMode() {
+      return this.routePermissions.orderSearch
     }
   },
   async mounted() {
@@ -595,7 +598,8 @@ export default {
           beginTime: this.formData.timeRange[0] ? this.formData.timeRange[0].startOf('day').valueOf() : undefined,
           endTime: this.formData.timeRange[1] ? this.formData.timeRange[1].endOf('day').valueOf() : undefined,
           userName: this.formData.userName || undefined,
-          orderStatus: this.formData.orderStatus || tabKey || undefined
+          orderStatus: this.formData.orderStatus || tabKey || undefined,
+          disable: this.globalDisabledMode ? 1 : undefined
         }
         if (this.routePermissions['roomCheckShow']) {
           res = await nuclearLabApi.workOrderListDone(reqParams)
@@ -838,7 +842,7 @@ export default {
           remark: ''
         })
       }
-      this.$refs.WorkOrderDetail.openWorkOrderDetailModal(row)
+      this.$refs.WorkOrderDetail.openWorkOrderDetailModal(row, this.globalDisabledMode)
     },
     handleImgPriview(src) {
       this.imgPreviewParams.src = src
