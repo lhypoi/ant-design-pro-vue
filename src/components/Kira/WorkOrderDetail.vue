@@ -360,6 +360,15 @@
               复核提交
             </a-button>
           </div>
+          <!-- <div class="pt-6">
+            <k-table
+              :dataRows="workOrderDetailModalParams.detailData.logList"
+              border
+              :hidePage="true"
+            >
+
+            </k-table>
+          </div> -->
         </div>
       </div>
     </a-modal>
@@ -531,26 +540,27 @@ export default {
             {
               key: 'location',
               label: '位置',
-              editType: canEdit ? 'text' : '',
+              // editType: canEdit ? 'text' : '',
               width: 100
             },
             {
               key: 'name',
               label: '名称',
-              editType: canEdit ? 'text' : '',
+              // editType: canEdit ? 'text' : '',
               width: 100
             },
             {
               key: 'prompt',
               label: '文字说明',
-              editType: canEdit ? 'text' : '',
+              // editType: canEdit ? 'text' : '',
               minWidth: 160
             },
             {
               key: 'referImgList',
               label: '参考图',
               editType: 'img',
-              editImgHideUpload: !canEdit,
+              // editImgHideUpload: !canEdit,
+              editImgHideUpload: true,
               width: 180
             },
             {
