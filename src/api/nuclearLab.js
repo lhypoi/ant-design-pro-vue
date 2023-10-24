@@ -405,6 +405,23 @@ export function accessLogCreate (parameter) {
   })
 }
 
+export function workOrderLogExport (parameter) {
+  return request({
+    url: url + '/workOrderLog/export',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  })
+}
+
+export function workOrderLogDetail (parameter) {
+  return request({
+    url: url + '/workOrderLog/detail',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -458,5 +475,7 @@ export default {
   workOrderUpdateAuditSubmitById,
   workOrderUpdateReAuditSubmitById,
   accessLogList,
-  accessLogCreate
+  accessLogCreate,
+  workOrderLogExport,
+  workOrderLogDetail
 }

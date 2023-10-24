@@ -11,7 +11,7 @@
     >
       <div v-loading="workOrderDetailModalParams.modalLoading">
         <div v-if="workOrderDetailModalParams.detailData">
-          <div class="flex flex-row justify-end -mb-4 sm:-mb-8">
+          <div v-if="!logMode" class="flex flex-row justify-end -mb-4 sm:-mb-8">
             <a-button
               class="h-8 rounded-md text-sm"
               type="primary"
@@ -200,7 +200,7 @@
                 :key="col.key"
                 :prop="col.key"
                 :label="col.label"
-                :align="'center'"
+                :align="col.align || 'center'"
                 :width="col.width"
                 :min-width="col.minWidth"
               >
@@ -360,15 +360,44 @@
               复核提交
             </a-button>
           </div>
-          <!-- <div class="pt-6">
+          <div v-if="!logMode" class="pt-6">
+            <div class="text-sm pb-2">核查审批意见记录</div>
             <k-table
               :dataRows="workOrderDetailModalParams.detailData.logList"
               border
               :hidePage="true"
+              v-loading="workOrderDetailModalParams.WorkOrderLogExportLoading"
             >
-
+              <el-table-column prop="round" label="轮次" :align="'center'" :min-width="200">
+                <div slot-scope="scope">
+                  <div>{{ `第${ scope.row['round'] }次核查审批意见记录` }}</div>
+                </div>
+              </el-table-column>
+              <el-table-column prop="updateTime" label="更新时间" :align="'center'" :min-width="180" />
+              <el-table-column
+                label="操作"
+                :align="'center'"
+                :width="250"
+              >
+                <div slot-scope="scope" class="flex flex-row flex-wrap gap-3 justify-center">
+                  <a-button
+                    class="h-8 rounded-md text-sm"
+                    type="primary"
+                    @click="handleWorkOrderLogExport(scope.row)"
+                  >
+                    输出PDF
+                  </a-button>
+                  <a-button
+                    class="h-8 rounded-md text-sm"
+                    type="primary"
+                    @click="handleOpenWorkOrderLogDetail(scope.row)"
+                  >
+                    表单查看
+                  </a-button>
+                </div>
+              </el-table-column>
             </k-table>
-          </div> -->
+          </div>
         </div>
       </div>
     </a-modal>
@@ -444,6 +473,7 @@ import { baseMixin } from '@/store/app-mixin'
 import nuclearLabApi from '@/api/nuclearLab'
 import KTable from '@/components/Kira/KTable'
 import { mapGetters } from 'vuex'
+import { downloadByStream } from '@/utils//util.js'
 
 export default {
   name: 'WorkOrderDetail',
@@ -452,6 +482,10 @@ export default {
     KTable
   },
   props: {
+    logMode: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {
@@ -472,7 +506,8 @@ export default {
               return [0, 0]
             }
           }
-        }
+        },
+        WorkOrderLogExportLoading: false
       },
       editRemarkModal: {
         show: false,
@@ -504,10 +539,15 @@ export default {
         title: rowData.title,
         modalLoading: true,
         detailData: null,
-        pointsTableRows: []
+        pointsTableRows: [],
+        WorkOrderLogExportLoading: false
       }
       try {
-        const res = await nuclearLabApi.workOrderDetail({
+        const res = this.logMode ? await nuclearLabApi.workOrderLogDetail({
+          workOrderNo: rowData.workOrderNo,
+          round: rowData.round,
+          disable: globalDisabledMode ? 1 : undefined
+        }) : await nuclearLabApi.workOrderDetail({
           workOrderNo: rowData.workOrderNo,
           disable: globalDisabledMode ? 1 : undefined
         })
@@ -661,7 +701,7 @@ export default {
               width: 180
             }
           ]
-          this.workOrderDetailModalParams.pointsTableRows = res.data.pointList.map((defaultRowData) => {
+          this.workOrderDetailModalParams.pointsTableRows = (res.data.pointList || []).map((defaultRowData) => {
             return this.generatePointTableRow({
               ...defaultRowData
             })
@@ -981,6 +1021,18 @@ export default {
           }
         }
       })
+    },
+    async handleWorkOrderLogExport(row) {
+      this.workOrderDetailModalParams.WorkOrderLogExportLoading = true
+      const res = await nuclearLabApi.workOrderLogExport({
+        workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+        round: row.round
+      })
+      downloadByStream(res, `${this.workOrderDetailModalParams.workOrderNo}_第${ row['round'] }次核查审批意见记录.pdf`)
+      this.workOrderDetailModalParams.WorkOrderLogExportLoading = false
+    },
+    async handleOpenWorkOrderLogDetail(row) {
+      this.$emit('openWorkOrderLogDetail', row)
     }
   }
 }

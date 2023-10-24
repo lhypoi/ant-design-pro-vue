@@ -362,6 +362,15 @@
       @imgPriview="handleImgPriview"
       @videoPriview="handleVideoPriview"
       @clickRoomImg="handleOpenOrderLab"
+      @openWorkOrderLogDetail="handleOpenWorkOrderLogDetail"
+    />
+    <WorkOrderDetail
+      ref="WorkOrderLogDetail"
+      :logMode="true"
+      @reloadWorkOrderList="handleSearch"
+      @imgPriview="handleImgPriview"
+      @videoPriview="handleVideoPriview"
+      @clickRoomImg="handleOpenOrderLab"
     />
   </div>
 </template>
@@ -843,6 +852,9 @@ export default {
         })
       }
       this.$refs.WorkOrderDetail.openWorkOrderDetailModal(row, this.globalDisabledMode)
+    },
+    handleOpenWorkOrderLogDetail(row) {
+      this.$refs.WorkOrderLogDetail.openWorkOrderDetailModal(row, this.globalDisabledMode)
     },
     handleImgPriview(src) {
       this.imgPreviewParams.src = src
