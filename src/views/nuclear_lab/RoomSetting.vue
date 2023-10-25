@@ -56,6 +56,19 @@
         <el-table-column prop="name" label="机房名" :align="'center'" min-width="160" />
         <el-table-column prop="userName" label="创建人" :align="'center'" min-width="100" />
         <el-table-column prop="createTime" label="创建时间" :align="'center'" min-width="160" />
+        <el-table-column label="模型url" :align="'center'" width="200">
+          <div
+            slot-scope="scope"
+            v-loading="scope.row.tempRow['urlLoading']"
+            element-loading-spinner="el-icon-loading mt-3"
+            element-loading-background="rgba(0, 0, 0, 0.8)"
+          >
+            <a-input
+              v-model="scope.row.tempRow['url']"
+              @blur="handleTableTempRowInputSave(scope.row, 'url', 'urlLoading')"
+            />
+          </div>
+        </el-table-column>
         <el-table-column label="机房图" :align="'center'" min-width="160">
           <div
             slot-scope="scope"
@@ -635,6 +648,8 @@ export default {
                 uploadRes: name
               })) : [],
               pointImgUploading: false,
+              url: row.url || '',
+              urlLoading: false,
               remark: row.remark || '',
               remarkLoading: false
             }
