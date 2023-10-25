@@ -86,9 +86,35 @@
                 <span class="font-bold">机房名：</span>
                 {{ workOrderDetailModalParams.detailData.roomName }}
               </div>
-              <div class="min-w-[140px] sm:min-w-[320px]">
+              <div class="flex flex-row min-w-[140px] sm:min-w-[320px]">
                 <span class="font-bold">机房点位图：</span>
-                <span class="text-blue-400 cursor-pointer" @click="handleImgPriview([workOrderDetailModalParams.detailData.pointImg])">查看</span>
+                <div
+                  class="flex flex-row"
+                  v-loading="workOrderDetailModalParams.detailData.tempLoading['roomPointImg']"
+                  element-loading-spinner="el-icon-loading mt-3"
+                  element-loading-background="rgba(0, 0, 0, 0.8)"
+                >
+                  <span class="text-blue-400 cursor-pointer" @click="handleImgPriview([workOrderDetailModalParams.detailData.roomPointImg])">查看</span>
+                  <span
+                    v-if="workOrderDetailModalParams.detailData.canEdit === 1"
+                    class="text-blue-400 cursor-pointer ml-2"
+                    @click="() => $refs['form_roomPointImg'].click()"
+                  >上传</span>
+                </div>
+                <div class="w-0 h-0 overflow-hidden absolute">
+                  <a-upload-dragger
+                    :multiple="true"
+                    :action="nuclearLabApi.uploadUrl"
+                    :headers="{
+                      'x-token': token
+                    }"
+                    accept="image/*"
+                    :fileList="workOrderDetailModalParams.detailData.tempRow['roomPointImg']"
+                    @change="info => handleFormFileChange(info, workOrderDetailModalParams.detailData.tempRow, 'roomPointImg', true, () => handlePointTableRowImgSave(workOrderDetailModalParams.detailData, 'roomPointImg'), true, workOrderDetailModalParams.detailData)"
+                  >
+                    <div :ref="`form_roomPointImg`" ></div>
+                  </a-upload-dragger>
+                </div>
               </div>
               <div class="min-w-[140px] sm:min-w-[320px]">
                 <span class="font-bold">工单状态：</span>
@@ -270,12 +296,22 @@
                       }"
                       accept="image/*"
                       :fileList="scope.row.tempRow[col.key]"
-                      @change="info => handleFormFileChange(info, scope.row.tempRow, col.key, false, () => handlePointTableRowImgSave(scope.row, col.key))"
+                      :disabled="col.disabledFun ? col.disabledFun(scope.row, col) : false"
+                      @change="info => handleFormFileChange(
+                        info,
+                        scope.row.tempRow,
+                        col.key,
+                        false,
+                        () => handlePointTableRowImgSave(scope.row, col.key),
+                        undefined,
+                        undefined,
+                        scope.row['chkImgNum'])
+                      "
                       @preview="file => handleImgPriview([file.uploadRes])"
                     >
                       <div v-if="!col.editImgHideUpload" class="rounded-md bg-sky-50 flex flex-col items-center pt-2 pb-2">
                         <div>
-                          <span class="text-indigo-500">{{ col.imgCtrlText ? col.imgCtrlText(scope.row) : '点击上传' }}</span>
+                          <span :class="(col.disabledFun && col.disabledFun(scope.row, col)) ? 'text-gray-400' : 'text-indigo-500'">{{ col.imgCtrlText ? col.imgCtrlText(scope.row) : '点击上传' }}</span>
                         </div>
                       </div>
                     </a-upload-dragger>
@@ -287,10 +323,7 @@
                       <a-button
                         class="h-8 rounded-md text-sm"
                         type="primary"
-                        :disabled="!(workOrderDetailModalParams.detailData.canCheck === 1 && scope.row.chkStatus === '0') ||
-                          (scope.row['chkImgList'] || []).length === 0 ||
-                          ((scope.row['chkJudgeList'] || []).length > 1 && (!scope.row['chkJudgeId'] || scope.row['chkJudgeId'] === 1))
-                        "
+                        :disabled="!((workOrderDetailModalParams.detailData.canCheck === 1 || workOrderDetailModalParams.detailData.canEdit === 1) && scope.row.chkStatus === '0')"
                         @click="handlePointChkStatusUpdate(scope.row)"
                       >
                         确定
@@ -320,6 +353,20 @@
                         </a-button>
                       </div>
                     </div>
+                  </div>
+                  <div
+                    v-else-if="col.key === 'name'"
+                    :class="scope.row['chkJudgeId'] === 4 ||
+                      scope.row['chkJudgeId'] === 6 ||
+                      scope.row['chkStatus'] === '0' ||
+                      scope.row['auditStatus'] === '2' ||
+                      scope.row['reauditStatus'] === '2' ||
+                      (workOrderDetailModalParams.detailData.canAudit === 1 && scope.row['auditStatus'] === '0') ||
+                      (workOrderDetailModalParams.detailData.canReaudit === 1 && scope.row['reauditStatus'] === '0')
+                      ? 'text-red-400' : ''
+                    "
+                  >
+                    {{ scope.row[col.key] }}
                   </div>
                   <div
                     v-else-if="col.key === 'point' && !scope.row['point']"
@@ -572,10 +619,19 @@ export default {
                 status: 'done',
                 uploadRes: res.data.chkVideo
               }
+            ] : [],
+            roomPointImg: res.data.roomPointImg ? [
+              {
+                uid: res.data.roomPointImg,
+                name: res.data.roomPointImg.split('/').pop().replace(/-.+?\./, '.'),
+                status: 'done',
+                uploadRes: res.data.roomPointImg
+              }
             ] : []
           }
           detailData.tempLoading = {
-            chkVideo: false
+            chkVideo: false,
+            roomPointImg: false
           }
           this.workOrderDetailModalParams.detailData = detailData
           // 构造工单对象级别的可编辑上下文 E
@@ -611,6 +667,9 @@ export default {
               editType: 'img',
               // editImgHideUpload: !canEdit,
               editImgHideUpload: true,
+              disabledFun: (row, col) => {
+                return true
+              },
               width: 180
             },
             {
@@ -636,6 +695,9 @@ export default {
               label: '图片',
               editType: 'img',
               editImgHideUpload: !(canEdit || canCheck),
+              disabledFun: (row, col) => {
+                return !(canEdit || canCheck)
+              },
               imgCtrlText: (row) => {
                 return `点击上传（${row.chkImgNum}张）`
               },
@@ -767,30 +829,41 @@ export default {
       return newRow
     },
     async pointTableRowReqSave(curRow, colKey) {
-      const curRowKeyValue = colKey === 'chkVideo' ? (curRow[colKey][0] || '') : curRow[colKey]
+      const curRowKeyValue = curRow[colKey]
       if (this.workOrderDetailModalParams.detailData.canEdit === 1) {
         await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, curRow.point ? {
           pointList: [
             {
               point: curRow.point,
-              [colKey]: curRowKeyValue
+              [colKey]: curRowKeyValue,
+              chkStatus: this.workOrderDetailModalParams.detailData.orderStatus === '1' ? '0' : curRow.chkStatus
             }
           ]
         } : {
           [colKey]: curRowKeyValue
         })
+        if (curRow.point && this.workOrderDetailModalParams.detailData.orderStatus === '1') {
+          curRow.chkStatus = '0'
+        }
       } else if (this.workOrderDetailModalParams.detailData.canCheck === 1) {
-        curRow.point ? await nuclearLabApi.workOrderCheck({
-          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
-          point: curRow.point,
-          [colKey]: curRowKeyValue
-        }) : await nuclearLabApi.workOrderBatchCheckPoint({
-          workOrderNo: this.workOrderDetailModalParams.workOrderNo,
-          [colKey]: curRowKeyValue
-        })
+        if (curRow.point) {
+          await nuclearLabApi.workOrderCheck({
+            workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+            point: curRow.point,
+            [colKey]: curRowKeyValue,
+            chkStatus: '0'
+          })
+          curRow.chkStatus = '1'
+        } else {
+          await nuclearLabApi.workOrderBatchCheckPoint({
+            workOrderNo: this.workOrderDetailModalParams.workOrderNo,
+            [colKey]: curRowKeyValue
+          })
+        }
       }
     },
     async handlePointTableRowInputSave(curRow, colKey) {
+      if (curRow.tempRow[colKey] === curRow[colKey]) return
       curRow[colKey] = curRow.tempRow[colKey]
       curRow.tempLoading[colKey] = true
       await this.pointTableRowReqSave(curRow, colKey)
@@ -807,12 +880,13 @@ export default {
     handleImgPriview(src) {
       this.$emit('imgPriview', src)
     },
-    handleFormFileChange(info, formObj, itemKey, single, updateCallback, showFullLoading, curRow) {
+    handleFormFileChange(info, formObj, itemKey, single, updateCallback, showFullLoading, curRow, maxFileLen) {
       if (showFullLoading) {
         curRow.tempLoading[itemKey] = true
       }
       let fileList = [...info.fileList]
       if (single) fileList = fileList.slice(-1)
+      if (maxFileLen) fileList = fileList.slice(-maxFileLen)
       fileList = fileList.map(file => {
         if (file.response) {
           file.uploadRes = file.response.data.url
@@ -825,7 +899,8 @@ export default {
     async handlePointTableRowImgSave(curRow, colKey) {
       const isAllFileDone = curRow.tempRow[colKey].every(file => file.status === 'done')
       if (!isAllFileDone) return
-      curRow[colKey] = curRow.tempRow[colKey].map(file => file.uploadRes)
+      const fileResList = curRow.tempRow[colKey].map(file => file.uploadRes)
+      curRow[colKey] = (colKey === 'chkVideo' || colKey === 'roomPointImg') ? (fileResList[0] || '') : fileResList
       curRow.tempLoading[colKey] = true
       await this.pointTableRowReqSave(curRow, colKey)
       curRow.tempLoading[colKey] = false
@@ -922,11 +997,11 @@ export default {
       this.$emit('reloadWorkOrderList')
     },
     handlePointChkStatusUpdate(curRow) {
-      if (curRow['chkJudgeList'].length > 1 && !curRow['chkJudgeId']) {
+      if ((curRow['chkJudgeList'] || []).length > 1 && (!curRow['chkJudgeId'] || curRow['chkJudgeId'] === 1)) {
         this.$message.info('未核查完')
         return
       }
-      if (curRow['chkImgNum'] && curRow['chkImgNum'] !== curRow['chkImgList'].length) {
+      if (!curRow['chkImgList'].length && !curRow['chkRemark']) {
         this.$message.info('未核查完')
         return
       }
@@ -938,7 +1013,14 @@ export default {
         cancelText: '取消',
         onOk: async () => {
           try {
-            const res = await nuclearLabApi.workOrderCheck({
+            const res = this.workOrderDetailModalParams.detailData.canEdit === 1 ? await nuclearLabApi.workOrderUpdateInfoById(this.workOrderDetailModalParams.workOrderNo, {
+              pointList: [
+                {
+                  point: curRow.point,
+                  chkStatus: '1'
+                }
+              ]
+            }) : await nuclearLabApi.workOrderCheck({
               workOrderNo: this.workOrderDetailModalParams.workOrderNo,
               point: curRow.point,
               chkStatus: '1'
