@@ -703,6 +703,21 @@ export default {
       this.taskModalParams.optionsLoading = false
     },
     handleOpenOrderLab(workOrder) {
+      try {
+        const url = new URL(workOrder.roomUrl)
+        url.searchParams.append('token', this.token)
+        url.searchParams.append('roomId', workOrder.roomId)
+        url.searchParams.append('workNumber', workOrder.workOrderNo)
+        this.labModalParams.url = url.toString()
+        this.labModalParams.labData = {
+          name: workOrder.roomName
+        }
+        this.labModalParams.show = true
+      } catch (error) {
+        this.$message.error(`机房地址【${workOrder.roomUrl}】格式不正确，请配置为形如 http://www.example.com`)
+        console.log(error)
+        return
+      }
       if (this.routePermissions.roomCheckShow) {
         nuclearLabApi.accessLogCreate({
           action: `访问${workOrder.roomName}`,
@@ -721,16 +736,6 @@ export default {
           remark: ''
         })
       }
-      this.labModalParams.labData = {
-        name: workOrder.roomName
-      }
-      // url参数：token，workNumber，roomId
-      const url = new URL('http://159.75.246.27:66/')
-      url.searchParams.append('token', this.token)
-      url.searchParams.append('roomId', workOrder.roomId)
-      url.searchParams.append('workNumber', workOrder.workOrderNo)
-      this.labModalParams.url = url.toString()
-      this.labModalParams.show = true
     },
     handleOpenTaskModal(task) {
       this.taskModalParams = {

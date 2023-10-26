@@ -159,18 +159,24 @@ export default {
       this.loading = false
     },
     handleOpenLab(labData) {
+      try {
+        const url = new URL(labData.url)
+        url.searchParams.append('token', this.token)
+        url.searchParams.append('roomId', labData.id)
+        this.labModalParams.url = url.toString()
+        this.labModalParams.labData = labData
+        this.labModalParams.show = true
+      } catch (error) {
+        this.$message.error(`机房地址【${labData.url}】格式不正确，请配置为形如 http://www.example.com`)
+        console.log(error)
+        return
+      }
       nuclearLabApi.accessLogCreate({
         action: `访问${labData.name}`,
         detail: '',
         page: this.$route.meta.title,
         remark: ''
       })
-      this.labModalParams.labData = labData
-      const url = new URL('http://159.75.246.27:66/')
-      url.searchParams.append('token', this.token)
-      url.searchParams.append('roomId', labData.id)
-      this.labModalParams.url = url.toString()
-      this.labModalParams.show = true
     }
   }
 }
