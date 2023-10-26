@@ -82,13 +82,19 @@
       :centered="!labModalParams.fullscreen"
       :width="labModalParams.fullscreen ? '100vw' : '90vw'"
       :dialogStyle="labModalParams.fullscreen ? { top: '0', padding: '0', margin: '0', maxWidth: '100%' } : {}"
-      @cancel="labModalParams.show = false"
+      :bodyStyle="labModalParams.fullscreen ? { padding: '0' } : {}"
+      :closable="false"
     >
-      <div :class="labModalParams.fullscreen ? 'h-[calc(100vh-55px-48px)]' : 'h-[75vh] sm:h-[80vh]'">
+      <div :class="labModalParams.fullscreen ? 'h-[calc(100vh-55px)]' : 'h-[75vh] sm:h-[80vh]'">
         <button class="ant-modal-close right-14" @click="labModalParams.fullscreen = !labModalParams.fullscreen">
           <span class="ant-modal-close-x w-4">
             <a-icon v-if="labModalParams.fullscreen" type="fullscreen-exit" />
             <a-icon v-else type="fullscreen" />
+          </span>
+        </button>
+        <button class="ant-modal-close right-6" @click="labModalParams.show = false">
+          <span class="ant-modal-close-x w-4">
+            <a-icon type="close" />
           </span>
         </button>
         <iframe
