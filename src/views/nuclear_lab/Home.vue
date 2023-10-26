@@ -79,11 +79,18 @@
       :visible="true"
       :footer="null"
       :maskClosable="false"
-      centered
-      width="90vw"
+      :centered="!labModalParams.fullscreen"
+      :width="labModalParams.fullscreen ? '100vw' : '90vw'"
+      :dialogStyle="labModalParams.fullscreen ? { top: '0', padding: '0', margin: '0', maxWidth: '100%' } : {}"
       @cancel="labModalParams.show = false"
     >
-      <div class="h-[75vh] sm:h-[80vh]">
+      <div :class="labModalParams.fullscreen ? 'h-[calc(100vh-55px-48px)]' : 'h-[75vh] sm:h-[80vh]'">
+        <button class="ant-modal-close right-14" @click="labModalParams.fullscreen = !labModalParams.fullscreen">
+          <span class="ant-modal-close-x w-4">
+            <a-icon v-if="labModalParams.fullscreen" type="fullscreen-exit" />
+            <a-icon v-else type="fullscreen" />
+          </span>
+        </button>
         <iframe
           :src="labModalParams.url"
           class="w-full h-full"
@@ -114,6 +121,7 @@ export default {
       total: 0,
       labModalParams: {
         show: false,
+        fullscreen: false,
         labData: null,
         url: ''
       }
@@ -165,6 +173,7 @@ export default {
         url.searchParams.append('roomId', labData.id)
         this.labModalParams.url = url.toString()
         this.labModalParams.labData = labData
+        this.labModalParams.fullscreen = false
         this.labModalParams.show = true
       } catch (error) {
         this.$message.error(`机房地址【${labData.url}】格式不正确，请配置为形如 http://www.example.com`)
