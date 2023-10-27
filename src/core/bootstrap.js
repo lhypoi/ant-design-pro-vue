@@ -2,7 +2,7 @@ import store from '@/store'
 import storage from 'store'
 import {
   ACCESS_TOKEN,
-  APP_LANGUAGE,
+  // APP_LANGUAGE,
   TOGGLE_CONTENT_WIDTH,
   TOGGLE_FIXED_HEADER,
   TOGGLE_FIXED_SIDEBAR, TOGGLE_HIDE_HEADER,
@@ -28,6 +28,7 @@ export default function Initializer () {
   store.commit('SET_TOKEN', storage.get(ACCESS_TOKEN))
   store.commit('SET_ROUTERS', asyncRouterMap)
 
-  store.dispatch('setLang', storage.get(APP_LANGUAGE, 'en-US'))
+  // store.dispatch('setLang', storage.get(APP_LANGUAGE, 'zh-CN'))
+  store.dispatch('setLang', 'zh-CN')
   // last step
 }

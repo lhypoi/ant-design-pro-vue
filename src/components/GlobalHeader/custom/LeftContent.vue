@@ -1,10 +1,20 @@
 <template>
   <div class="h-full flex flex-row items-center flex-auto pr-4">
+    <div class="text-white flex flex-row items-center gap-2">
+      <a-icon
+        type="home"
+        theme="filled"
+        class="searchIcon"
+      />
+      <div v-if="!collapsed" class="whitespace-nowrap">
+        {{ defaultSettings.title }}
+      </div>
+    </div>
     <div>
       <!-- 强制覆盖，因为 antd pro 在此处的样式规则是直接指到 img 标签 -->
-      <img :src="logoImg" alt="logo" style="display: block; height: 24px; width: auto;">
+      <!-- <img :src="logoImg" alt="logo" style="display: block; height: 24px; width: auto;"> -->
     </div>
-    <div
+    <!-- <div
       class="group flex-auto max-w-[400px] ml-8 flex items-center h-9 rounded-full border border-solid border-zinc-200 bg-neutral-50 hover:ring-1 hover:ring-indigo-500 px-6"
     >
       <div class="flex cursor-pointer">
@@ -37,20 +47,30 @@
           {{ d.text }}
         </a-select-option>
       </a-select>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash-es'
 import { CUR_APP } from '@/store/mutation-types'
+import defaultSettings from '@/config/defaultSettings'
 
 export default {
   name: 'LeftContent',
+  props: {
+    collapsed: {
+      type: Boolean
+    },
+    isMobile: {
+      type: Boolean
+    }
+  },
   data() {
     this.lastFetchId = 0
     this.fetchUser = debounce(this.fetchUser, 800)
     return {
+      defaultSettings,
       data: [],
       value: [],
       fetching: false

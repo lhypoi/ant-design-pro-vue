@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import { constantRouterMap, asyncRouterMap } from '@/config/router.config'
+import { APP_ROUTE_BASE_NAME, CUR_APP } from '@/store/mutation-types'
 
 // hack router push callback
 const originalPush = Router.prototype.push
@@ -13,11 +14,16 @@ Vue.use(Router)
 
 const createRouter = () =>
   new Router({
+    base: APP_ROUTE_BASE_NAME[CUR_APP] || '',
     mode: 'history',
-    routes: [...constantRouterMap, ...asyncRouterMap]
+    routes: [...constantRouterMap]
   })
 
 const router = createRouter()
+
+asyncRouterMap.forEach(r => {
+  router.addRoute(r)
+})
 
 // 定义一个resetRouter 方法，在退出登录后或token过期后 需要重新登录时，调用即可
 export function resetRouter () {

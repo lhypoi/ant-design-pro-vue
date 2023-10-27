@@ -138,7 +138,7 @@ ol {
       display: flex;
 
       .ant-pro-global-header-trigger {
-        margin-left: -24px;
+        // margin-left: -24px;
       }
 
       .ant-pro-global-header-content {
@@ -150,6 +150,7 @@ ol {
   .ant-layout-content {
     display: flex;
     flex-direction: column;
+    @apply m-3 sm:m-8;
 
     .ant-pro-basicLayout-children-content-wrap {
       flex: auto;
@@ -304,6 +305,12 @@ input:-webkit-autofill:active {
   .reset-btn {
     @apply h-12 rounded-md text-base;
   }
+
+  &.link-style-form-sm {
+    .ant-form-item {
+      @apply h-9;
+    }
+  }
 }
 
 // vue-pdf-embed 样式
@@ -338,4 +345,20 @@ input:-webkit-autofill:active {
 /* 滚动条滑块悬停样式 */
 ::-webkit-scrollbar-thumb:hover {
   background: #ccc;
+}
+
+.ant-drawer,
+.ant-modal-mask,
+.ant-modal-wrap,
+.ant-select-dropdown {
+  z-index: 10000;
+}
+
+.ant-message,
+.ant-popover {
+  z-index: 10010;
+}
+
+.el-loading-spinner .circular {
+  display: inline;
 }

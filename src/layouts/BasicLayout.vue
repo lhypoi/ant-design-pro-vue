@@ -24,7 +24,10 @@
         <img src="@/assets/logo.svg" />
         <h1>{{ title }}</h1>
       </div> -->
-      <LeftContent />
+      <LeftContent
+        :collapsed="collapsed"
+        :isMobile="isMobile"
+      />
     </template>
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
           增加 Header 左侧内容区自定义
@@ -35,7 +38,7 @@
           <a-icon type="reload" style="font-size: 18px;cursor: pointer;" @click="() => { $message.info('只是一个DEMO') }" />
         </a-tooltip>
       </div> -->
-      <LeftContent />
+      <!-- <LeftContent v-if="isMobile" /> -->
     </template>
 
     <setting-drawer v-if="isDev" :settings="settings" @change="handleSettingChange">
@@ -50,12 +53,13 @@
     <template v-slot:footerRender>
       <global-footer />
     </template>
-    <router-view />
+    <router-view :key="$route.path" />
   </pro-layout>
 </template>
 
 <script>
-import { SettingDrawer, updateTheme } from '@ant-design-vue/pro-layout'
+import { SettingDrawer } from '@ant-design-vue/pro-layout'
+import { updateTheme } from '@/components/SettingDrawer/settingConfig'
 import { i18nRender } from '@/locales'
 import { mapState } from 'vuex'
 import { CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'

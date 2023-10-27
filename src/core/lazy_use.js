@@ -47,7 +47,8 @@ import {
   message,
   notification,
   Empty,
-  FormModel
+  FormModel,
+  Pagination
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -60,7 +61,11 @@ import PermissionHelper from '@/core/permission/permission'
 import './directives/action'
 
 import {
-  Image
+  Image,
+  Loading,
+  Table as ETable,
+  TableColumn as ETableColumn,
+  Pagination as EPagination
 } from 'element-ui'
 
 Vue.use(ConfigProvider)
@@ -107,6 +112,7 @@ Vue.use(Descriptions)
 Vue.use(Space)
 Vue.use(Empty)
 Vue.use(FormModel)
+Vue.use(Pagination)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message
@@ -123,6 +129,12 @@ Vue.use(PageLoading)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
 
+// element ui
+Vue.prototype.$ELEMENT = { zIndex: 10000 }
 Vue.use(Image)
+Vue.use(Loading.directive)
+Vue.use(ETable)
+Vue.use(ETableColumn)
+Vue.use(EPagination)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')

@@ -40,6 +40,8 @@ const assetsCDN = {
 
 // vue.config.js
 const vueConfig = {
+  publicPath: process.env.VUE_APP_PUBLICPATH,
+  outputDir: process.env.VUE_APP_OUTPUTDIR,
   configureWebpack: {
     // webpack plugins
     plugins: [
@@ -159,6 +161,11 @@ const vueConfig = {
     proxy: {
       '/services': {
         target: 'http://120.25.231.168:18080',
+        ws: false,
+        changeOrigin: true
+      },
+      '/nrl/api': {
+        target: 'https://api.ukshuxi.com',
         ws: false,
         changeOrigin: true
       }
