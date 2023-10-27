@@ -2,8 +2,7 @@
   <a-dropdown v-if="hasLogin" placement="bottomRight">
     <span class="ant-pro-account-avatar">
       <a-avatar size="small" :src="avatarImg" class="antd-pro-global-header-index-avatar" />
-      <span>{{ userInfo.username }}</span>
-      <span class="pl-1">{{ userInfo.phoneNumber }}</span>
+      <span>{{ userInfo.name }}</span>
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
@@ -15,11 +14,11 @@
           <a-icon type="setting" />
           {{ $t('menu.account.settings') }}
         </a-menu-item> -->
-        <!-- <a-menu-item v-if="menu" key="profile" @click="handleToProfile">
+        <a-menu-item v-if="menu" key="profile" @click="handleToProfile">
           <a-icon type="file-sync" />
           {{ 'Profile' }}
-        </a-menu-item> -->
-        <!-- <a-menu-divider v-if="menu" /> -->
+        </a-menu-item>
+        <a-menu-divider v-if="menu" />
         <a-menu-item key="logout" @click="handleLogout">
           <a-icon type="logout" />
           {{ $t('menu.account.logout') }}
@@ -49,7 +48,7 @@ export default {
   },
   data() {
     return {
-      avatarImg: require('@/assets/missing-face.png')
+      avatarImg: require('@/assets/link/avatar.png')
     }
   },
   computed: {
