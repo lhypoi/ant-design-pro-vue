@@ -315,6 +315,7 @@
                         </div>
                       </div>
                     </a-upload-dragger>
+                    <div v-if="col.imgCtrlTipText && col.imgCtrlTipText(scope.row)" class="text-red-400">{{ col.imgCtrlTipText(scope.row) }}</div>
                   </div>
                   <div
                     v-else-if="col.key === 'chkConfirm'"
@@ -701,6 +702,9 @@ export default {
               imgCtrlText: (row) => {
                 return `点击上传（${row.chkImgNum}张）`
               },
+              imgCtrlTipText: (row) => {
+                return (row.chkImgList || []).length ? '' : '未上传'
+              },
               width: 180
             },
             {
@@ -853,7 +857,7 @@ export default {
             [colKey]: curRowKeyValue,
             chkStatus: '0'
           })
-          curRow.chkStatus = '1'
+          curRow.chkStatus = '0'
         } else {
           await nuclearLabApi.workOrderBatchCheckPoint({
             workOrderNo: this.workOrderDetailModalParams.workOrderNo,
