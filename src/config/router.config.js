@@ -261,7 +261,7 @@ const asyncRouterMapAll = {
           path: '/access-log',
           name: 'AccessLog',
           component: () => import('@/views/nuclear_lab/AccessLog'),
-          meta: { title: '访问日志', icon: 'solution' }
+          meta: { title: '访问日志', icon: 'solution', permission: ['accessLog'] }
         }
       ]
     },
