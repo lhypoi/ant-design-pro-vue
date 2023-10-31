@@ -220,6 +220,7 @@
               border
               :span-method="workOrderDetailModalParams.pointsTableSpanMethod"
               :hidePage="true"
+              :cell-class-name="pointsTableRowsCellClass"
             >
               <el-table-column
                 v-for="col in workOrderDetailModalParams.pointsTableCols"
@@ -315,7 +316,7 @@
                         </div>
                       </div>
                     </a-upload-dragger>
-                    <div v-if="col.imgCtrlTipText && col.imgCtrlTipText(scope.row)" class="text-red-400">{{ col.imgCtrlTipText(scope.row) }}</div>
+                    <div v-if="col.imgCtrlTipText && col.imgCtrlTipText(scope.row)">{{ col.imgCtrlTipText(scope.row) }}</div>
                   </div>
                   <div
                     v-else-if="col.key === 'chkConfirm'"
@@ -357,15 +358,6 @@
                   </div>
                   <div
                     v-else-if="col.key === 'name'"
-                    :class="scope.row['chkJudgeId'] === 4 ||
-                      scope.row['chkJudgeId'] === 6 ||
-                      scope.row['chkStatus'] === '0' ||
-                      scope.row['auditStatus'] === '2' ||
-                      scope.row['reauditStatus'] === '2' ||
-                      (workOrderDetailModalParams.detailData.canAudit === 1 && scope.row['auditStatus'] === '0') ||
-                      (workOrderDetailModalParams.detailData.canReaudit === 1 && scope.row['reauditStatus'] === '0')
-                      ? 'text-red-400' : ''
-                    "
                   >
                     {{ scope.row[col.key] }}
                   </div>
@@ -647,29 +639,28 @@ export default {
             {
               key: 'location',
               label: '位置',
-              // editType: canEdit ? 'text' : '',
+              editType: canEdit ? 'text' : '',
               width: 100
             },
             {
               key: 'name',
               label: '名称',
-              // editType: canEdit ? 'text' : '',
+              editType: canEdit ? 'text' : '',
               width: 100
             },
             {
               key: 'prompt',
               label: '文字说明',
-              // editType: canEdit ? 'text' : '',
+              editType: canEdit ? 'text' : '',
               minWidth: 160
             },
             {
               key: 'referImgList',
               label: '参考图',
               editType: 'img',
-              // editImgHideUpload: !canEdit,
-              editImgHideUpload: true,
+              editImgHideUpload: !canEdit,
               disabledFun: (row, col) => {
-                return true
+                return !canEdit
               },
               width: 180
             },
@@ -992,9 +983,20 @@ export default {
         const curStatusObj = this.editRemarkModal.statusOptions.find(item => item.key === this.editRemarkModal.status)
         this.editRemarkModal.sourceRow[this.editRemarkModal.statusKey] = this.editRemarkModal.status
         this.editRemarkModal.sourceRow[this.editRemarkModal.statusNameKey] = curStatusObj ? curStatusObj.value : ''
+        // 如果是点位上下文，且选择了不通过，则找到对应的其他意见上下文，将其自动修改为不通过
         if (curRow.point && this.editRemarkModal.status === '2') {
           this.workOrderDetailModalParams.pointsTableRows.find(row => !row.point)[this.editRemarkModal.statusKey] = '2'
           this.workOrderDetailModalParams.pointsTableRows.find(row => !row.point)[this.editRemarkModal.statusNameKey] = curStatusObj ? curStatusObj.value : ''
+        }
+        // 如果是审核中，且为点位上下文，且审核意见选择了通过，则将复核意见设置为 未复核
+        if (this.workOrderDetailModalParams.detailData.orderStatus === '2' && curRow.point && this.editRemarkModal.statusKey === 'auditStatus' && this.editRemarkModal.status === '1') {
+          this.editRemarkModal.sourceRow['reauditStatus'] = '0'
+          this.editRemarkModal.sourceRow['reauditStatusName'] = this.codeDict.work_order_point.reauditStatus['0']
+        }
+        // 如果是复核中，且为点位上下文，且复核意见选择了不通过，则将审核意见设置为 未审核
+        if (this.workOrderDetailModalParams.detailData.orderStatus === '3' && curRow.point && this.editRemarkModal.statusKey === 'reauditStatus' && this.editRemarkModal.status === '2') {
+          this.editRemarkModal.sourceRow['auditStatus'] = '0'
+          this.editRemarkModal.sourceRow['auditStatusName'] = this.codeDict.work_order_point.auditStatus['0']
         }
       }
       this.editRemarkModal.sourceRow[this.editRemarkModal.remarkKey] = this.editRemarkModal.remark
@@ -1002,16 +1004,16 @@ export default {
     },
     handlePointChkStatusUpdate(curRow) {
       if ((curRow['chkJudgeList'] || []).length > 1 && (!curRow['chkJudgeId'] || curRow['chkJudgeId'] === 1)) {
-        this.$message.info('未核查完')
+        this.$message.info('未核查完，请判别、上传图片或填写备注')
         return
       }
       if (!curRow['chkImgList'].length && !curRow['chkRemark']) {
-        this.$message.info('未核查完')
+        this.$message.info('未核查完，请判别、上传图片或填写备注')
         return
       }
       this.$confirm({
         title: '提示',
-        content: `确定核查确认?`,
+        content: `点位核查确认？`,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
@@ -1032,6 +1034,8 @@ export default {
             if (res && res.code === 200) {
               this.$message.success('成功')
               curRow.chkStatus = '1'
+              curRow.auditStatus = '0'
+              curRow.auditStatusName = this.codeDict.work_order_point.auditStatus['0']
             } else {
               throw new Error(res.message || '失败')
             }
@@ -1160,10 +1164,31 @@ export default {
     },
     async handleOpenWorkOrderLogDetail(row) {
       this.$emit('openWorkOrderLogDetail', row)
+    },
+    pointsTableRowsCellClass({ row }) {
+      return (this.workOrderDetailModalParams.detailData.orderStatus === '1' && row['chkStatus'] === '0') ||
+        (this.workOrderDetailModalParams.detailData.orderStatus === '2' && row['auditStatus'] === '0') ||
+        (this.workOrderDetailModalParams.detailData.orderStatus === '3' && row['reauditStatus'] === '0')
+        ? 'tableRedTip' : ''
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+:deep(.tableRedTip) {
+  color: red;
+
+  .ant-upload-list,
+  .ant-input,
+  .ant-radio-wrapper {
+    color: red;
+  }
+
+  .ant-upload-drag-container {
+    .text-indigo-500 {
+      color: red;
+    }
+  }
+}
 </style>
