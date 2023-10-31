@@ -112,6 +112,52 @@
                 <el-table-column prop="title" label="工单名" :align="'center'" :width="200" />
                 <el-table-column prop="roomName" label="机房名" :align="'center'" :min-width="150" />
                 <el-table-column prop="createTime" label="工单创建时间" :align="'center'" :width="200" />
+                <el-table-column
+                  label="操作"
+                  :align="'center'"
+                  :width="250"
+                >
+                  <div slot-scope="scope" class="flex flex-row flex-wrap gap-3 justify-center">
+                    <a-button
+                      v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] !== '4'"
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                      @click="handleOpenTaskModal(scope.row)"
+                    >
+                      修改任务
+                    </a-button>
+                    <a-button
+                      v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] === '4'"
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                      @click="handleOpenWorkOrderDetailModal(scope.row, '数据修改')"
+                    >
+                      数据修改
+                    </a-button>
+                    <a-button
+                      v-if="scope.row['canEdit'] === 1"
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                      @click="handleTaskDelete(scope.row)"
+                    >
+                      取消工单
+                    </a-button>
+                    <a-button
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                      @click="handleOpenOrderLab(scope.row)"
+                    >
+                      三维查看
+                    </a-button>
+                    <a-button
+                      class="h-8 rounded-md text-sm"
+                      type="primary"
+                      @click="handleOpenWorkOrderDetailModal(scope.row, '表单查看')"
+                    >
+                      表单查看
+                    </a-button>
+                  </div>
+                </el-table-column>
                 <el-table-column prop="orderStatusName" label="工单状态" :align="'center'" :min-width="150" />
                 <el-table-column prop="round" label="核查次数" :align="'center'" :width="100" />
                 <el-table-column prop="creatorName" label="创建人" :align="'center'" :width="150">
@@ -166,52 +212,6 @@
                   </div>
                 </el-table-column>
                 <el-table-column prop="remark" label="备注" :align="'center'" :width="200" />
-                <el-table-column
-                  label="操作"
-                  :align="'center'"
-                  :width="250"
-                >
-                  <div slot-scope="scope" class="flex flex-row flex-wrap gap-3 justify-center">
-                    <a-button
-                      v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] !== '4'"
-                      class="h-8 rounded-md text-sm"
-                      type="primary"
-                      @click="handleOpenTaskModal(scope.row)"
-                    >
-                      修改任务
-                    </a-button>
-                    <a-button
-                      v-if="scope.row['canEdit'] === 1 && scope.row['orderStatus'] === '4'"
-                      class="h-8 rounded-md text-sm"
-                      type="primary"
-                      @click="handleOpenWorkOrderDetailModal(scope.row, '数据修改')"
-                    >
-                      数据修改
-                    </a-button>
-                    <a-button
-                      v-if="scope.row['canEdit'] === 1"
-                      class="h-8 rounded-md text-sm"
-                      type="primary"
-                      @click="handleTaskDelete(scope.row)"
-                    >
-                      取消工单
-                    </a-button>
-                    <a-button
-                      class="h-8 rounded-md text-sm"
-                      type="primary"
-                      @click="handleOpenOrderLab(scope.row)"
-                    >
-                      三维查看
-                    </a-button>
-                    <a-button
-                      class="h-8 rounded-md text-sm"
-                      type="primary"
-                      @click="handleOpenWorkOrderDetailModal(scope.row, '表单查看')"
-                    >
-                      表单查看
-                    </a-button>
-                  </div>
-                </el-table-column>
               </k-table>
             </template>
             <template v-if="listShowMode === 'card'">
