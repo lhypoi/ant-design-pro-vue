@@ -1007,7 +1007,11 @@ export default {
         this.$message.info('未核查完，请判别、上传图片或填写备注')
         return
       }
-      if (!curRow['chkImgList'].length && !curRow['chkRemark']) {
+      if (curRow['chkImgNum'] !== 0 && !curRow['chkImgList'].length && !curRow['chkRemark']) {
+        this.$message.info('未核查完，请判别、上传图片或填写备注')
+        return
+      }
+      if ((curRow['auditStatus'] === '2' || curRow['reauditStatus'] === '2') && !curRow['chkAnswer']) {
         this.$message.info('未核查完，请判别、上传图片或填写备注')
         return
       }
