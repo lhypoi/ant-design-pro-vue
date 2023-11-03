@@ -2,6 +2,7 @@
   <div class="KTable flex flex-col">
     <el-table
       v-bind="$attrs"
+      v-on="$listeners"
       v-loading="localLoading"
       :data="dataRows || rows"
     >
