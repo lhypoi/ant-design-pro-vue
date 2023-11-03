@@ -55,7 +55,10 @@
                 </a-form-model-item>
                 <a-form-model-item>
                   <div class="pt-8 -mb-4 flex flex-row justify-between text-base">
-                    <div class="cursor-pointer text-blue-400 hover:text-blue-600 hover:underline hover:underline-offset-4">注册账号</div>
+                    <div
+                      class="cursor-pointer text-blue-400 hover:text-blue-600 hover:underline hover:underline-offset-4"
+                      @click="handleToRegister"
+                    >注册账号</div>
                     <div class="cursor-pointer text-blue-400 hover:text-blue-600 hover:underline hover:underline-offset-4">修改密码</div>
                   </div>
                 </a-form-model-item>
@@ -261,6 +264,11 @@ export default {
           }
           this.submitting = false
         }
+      })
+    },
+    handleToRegister() {
+      this.$router.push({
+        name: 'tRegister'
       })
     }
   }

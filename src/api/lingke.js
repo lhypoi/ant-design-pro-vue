@@ -75,6 +75,14 @@ export function teacherUpdate (parameter) {
   })
 }
 
+export function orderUpdate (parameter) {
+  return request({
+    url: url + '/order/update',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -87,5 +95,6 @@ export default {
   orderGetList,
   teacherGetOne,
   orderGetOne,
-  teacherUpdate
+  teacherUpdate,
+  orderUpdate
 }
