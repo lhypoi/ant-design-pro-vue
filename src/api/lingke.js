@@ -83,6 +83,22 @@ export function orderUpdate (parameter) {
   })
 }
 
+export function teacherGetAccount (parameter) {
+  return request({
+    url: url + '/teacher/getAccount',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderTotal (parameter) {
+  return request({
+    url: url + '/order/total',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -96,5 +112,7 @@ export default {
   teacherGetOne,
   orderGetOne,
   teacherUpdate,
-  orderUpdate
+  orderUpdate,
+  teacherGetAccount,
+  orderTotal
 }

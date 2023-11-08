@@ -153,6 +153,13 @@ const asyncRouterMapAll = {
           name: 'PersonalCenter',
           component: () => import('@/views/link/PersonalCenter'),
           meta: { title: '个人中心', icon: 'user' }
+        },
+        // My Orders
+        {
+          path: '/my-orders',
+          name: 'MyOrders',
+          component: () => import('@/views/link/MyOrders'),
+          meta: { title: '我的订单', icon: 'database' }
         }
       ]
     },
