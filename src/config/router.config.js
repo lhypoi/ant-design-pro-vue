@@ -191,36 +191,8 @@ const asyncRouterMapAll = {
       path: '/',
       name: 'index',
       component: BasicLayout,
-      redirect: '/home',
+      // redirect: '/home',
       children: [
-        // Home
-        {
-          path: '/home',
-          name: 'Home',
-          component: () => import('@/views/nuclear_lab/Home'),
-          meta: { title: '模型展示', icon: 'appstore', permission: ['modelShow'] }
-        },
-        // RoomCheckShow
-        {
-          path: '/room-checkShow',
-          name: 'RoomCheckShow',
-          component: () => import('@/views/nuclear_lab/WorkOrder'),
-          meta: { title: '机房核查展示', icon: 'table', permission: ['roomCheckShow'] }
-        },
-        // RoomSetting
-        {
-          path: '/room-setting',
-          name: 'RoomSetting',
-          component: () => import('@/views/nuclear_lab/RoomSetting'),
-          meta: { title: '机房设置', icon: 'solution', permission: ['roomSetting'] }
-        },
-        // OrderSearch
-        {
-          path: '/order-search',
-          name: 'OrderSearch',
-          component: () => import('@/views/nuclear_lab/WorkOrder'),
-          meta: { title: '工单查询', icon: 'table', permission: ['orderSearch'] }
-        },
         // AdminOrderHandle
         {
           path: '/admin-order-handle',
@@ -248,6 +220,34 @@ const asyncRouterMapAll = {
           name: 'ReAuditOrderHandle',
           component: () => import('@/views/nuclear_lab/WorkOrder'),
           meta: { title: '复核员任务管理', icon: 'table', permission: ['reAuditOrderHandle'] }
+        },
+        // Home
+        {
+          path: '/home',
+          name: 'Home',
+          component: () => import('@/views/nuclear_lab/Home'),
+          meta: { title: '模型展示', icon: 'appstore', permission: ['modelShow'] }
+        },
+        // RoomCheckShow
+        {
+          path: '/room-checkShow',
+          name: 'RoomCheckShow',
+          component: () => import('@/views/nuclear_lab/WorkOrder'),
+          meta: { title: '机房核查展示', icon: 'table', permission: ['roomCheckShow'] }
+        },
+        // RoomSetting
+        {
+          path: '/room-setting',
+          name: 'RoomSetting',
+          component: () => import('@/views/nuclear_lab/RoomSetting'),
+          meta: { title: '机房设置', icon: 'solution', permission: ['roomSetting'] }
+        },
+        // OrderSearch
+        {
+          path: '/order-search',
+          name: 'OrderSearch',
+          component: () => import('@/views/nuclear_lab/WorkOrder'),
+          meta: { title: '工单查询', icon: 'table', permission: ['orderSearch'] }
         },
         // Permission
         {

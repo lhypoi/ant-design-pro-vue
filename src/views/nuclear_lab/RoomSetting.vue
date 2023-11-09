@@ -421,7 +421,7 @@
             </el-table-column>
           </k-table>
         </div>
-        <div class="pt-3 flex flex-row justify-end">
+        <div class="pt-3 flex flex-row justify-end gap-2">
           <a-button
             class="h-8 rounded-md text-sm"
             type="primary"
@@ -429,6 +429,145 @@
           >
             新增点位
           </a-button>
+          <a-button
+            class="h-8 rounded-md text-sm"
+            type="primary"
+            @click="openPointImportModal"
+          >
+            导入点位
+          </a-button>
+        </div>
+      </div>
+    </a-modal>
+    <a-modal
+      v-if="pointImportModalParams.show"
+      :title="'导入点位'"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '1200px'"
+      @cancel="pointImportModalParams.show = false"
+    >
+      <div v-loading="pointImportModalParams.loading">
+        <div>
+          <a-form-model
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+          >
+            <a-form-model-item label="来源机房">
+              <a-select
+                v-model="pointImportModalParams.selectedRoomId"
+                placeholder="请选择"
+                allowClear
+                @change="handlePointImportModalRoomIdChange"
+              >
+                <a-select-option
+                  v-for="item in pointImportModalParams.roomList"
+                  :key="item.key"
+                  :value="item.key"
+                >
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item label="点位">
+              <div class="h-[60vh] sm:h-[600px] leading-none">
+                <k-table
+                  :dataRows="pointImportModalParams.pointTableRows"
+                  border
+                  height="100%"
+                  class="h-full"
+                  :hidePage="true"
+                  highlight-selection-row
+                  @selection-change="handlePointImportModalSelectedPointTableRowsChange"
+                >
+                  <el-table-column
+                    v-for="col in pointImportModalParams.pointTableCols"
+                    :key="col.key"
+                    :prop="col.key"
+                    :label="col.label"
+                    :align="'center'"
+                    :width="col.width"
+                    :min-width="col.minWidth"
+                  >
+                    <template
+                      slot-scope="scope"
+                    >
+                      <div
+                        v-if="col.editType === 'radio'"
+                      >
+                        <a-radio-group
+                          v-model="scope.row.tempRow[col.key]"
+                          disabled
+                        >
+                          <a-row>
+                            <a-col
+                              v-for="item in col.editOptions"
+                              :key="item.label"
+                              :span="24"
+                              class="text-left"
+                            >
+                              <a-radio :value="item.key">
+                                {{ item.label }}
+                              </a-radio>
+                            </a-col>
+                          </a-row>
+                        </a-radio-group>
+                      </div>
+                      <div
+                        v-if="col.editType === 'img'"
+                        class="link-style-form"
+                      >
+                        <a-upload-dragger
+                          class="dragUploader"
+                          style="margin-bottom: 0;"
+                          :multiple="true"
+                          :action="nuclearLabApi.uploadUrl"
+                          :headers="{
+                            'x-token': token
+                          }"
+                          accept="image/*"
+                          disabled
+                          :fileList="scope.row.tempRow[col.key]"
+                          @preview="file => handleImgPriview([file.uploadRes])"
+                        >
+                        </a-upload-dragger>
+                      </div>
+                      <div v-if="!col.editType">
+                        {{ scope.row[col.key] }}
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    :align="'center'"
+                    type="selection"
+                    width="60"
+                    fixed="right"
+                  >
+                  </el-table-column>
+                </k-table>
+              </div>
+            </a-form-model-item>
+            <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 2, span: 22 }" class="mb-0">
+              <div class="pt-1 flex flex-row justify-end gap-8">
+                <a-button
+                  class="h-11 w-24 rounded-md text-base"
+                  size="large"
+                  @click="pointImportModalParams.show = false"
+                >
+                  取消
+                </a-button>
+                <a-button
+                  class="h-11 w-24 rounded-md text-base"
+                  type="primary"
+                  size="large"
+                  @click="handlePointImportModalSubmit"
+                >
+                  确定
+                </a-button>
+              </div>
+            </a-form-model-item>
+          </a-form-model>
         </div>
       </div>
     </a-modal>
@@ -603,6 +742,73 @@ export default {
           }
         ],
         rows: []
+      },
+      pointImportModalParams: {
+        show: false,
+        loading: false,
+        roomList: [],
+        selectedRoomId: null,
+        pointTableCols: [
+          {
+            key: 'point',
+            label: '编号',
+            width: 60
+          },
+          {
+            key: 'location',
+            label: '位置',
+            width: 100
+          },
+          {
+            key: 'name',
+            label: '名称',
+            width: 100
+          },
+          {
+            key: 'prompt',
+            label: '文字说明',
+            minWidth: 160
+          },
+          {
+            key: 'referImgList',
+            label: '参考图',
+            editType: 'img',
+            width: 180
+          },
+          {
+            key: 'judgeIdList',
+            label: '判别',
+            editType: 'radio',
+            editOptions: [
+              {
+                key: [2],
+                label: '无'
+              },
+              {
+                key: [1, 3, 4],
+                label: '未判别 正常 异常'
+              },
+              {
+                key: [1, 5, 6],
+                label: '未判别 符合 不符合'
+              }
+            ],
+            width: 180
+          },
+          {
+            key: 'imgList',
+            label: '图片',
+            editType: 'img',
+            width: 180
+          },
+          {
+            key: 'chkImgNum',
+            label: '核查图片数量',
+            width: 120
+          }
+        ],
+        pointTableRows: [],
+        selectedPointTableRows: []
       }
     }
   },
@@ -988,6 +1194,124 @@ export default {
           remark: ''
         })
         curRow.tempLoading[colKey] = false
+      }
+    },
+    async openPointImportModal() {
+      this.pointImportModalParams = {
+        ...this.pointImportModalParams,
+        show: true,
+        loading: true,
+        roomList: [],
+        selectedRoomId: undefined,
+        pointTableRows: [],
+        selectedPointTableRows: []
+      }
+      try {
+        const res = await nuclearLabApi.roomAll()
+        if (res && res.code === 200) {
+          this.pointImportModalParams.roomList = res.data.map(item => {
+            return {
+              key: item.id,
+              value: item.name
+            }
+          })
+        } else {
+          throw new Error(res.message || '加载机房列表失败')
+        }
+      } catch (error) {
+        console.log(error)
+      }
+      this.pointImportModalParams.loading = false
+    },
+    async handlePointImportModalRoomIdChange() {
+      this.pointImportModalParams.loading = true
+      let pointTableRows = []
+      try {
+        const selectedRoomId = this.pointImportModalParams.selectedRoomId
+        if (selectedRoomId) {
+          const res = await nuclearLabApi.roomInfo({
+            roomId: selectedRoomId
+          })
+          if (res && res.code === 200) {
+            pointTableRows = res.data.points.map((defaultRowData) => {
+              const judgeIdListTxt = defaultRowData.judgeList ? JSON.stringify(defaultRowData.judgeList.map(item => item.id)) : null
+              const judgeIdListOption = this.pointImportModalParams.pointTableCols.find(col => col.key === 'judgeIdList').editOptions.find(option => JSON.stringify(option.key) === judgeIdListTxt)
+              return this.generatePointModalTableRow({
+                ...defaultRowData,
+                judgeIdList: judgeIdListOption ? judgeIdListOption.key : undefined
+              })
+            })
+          } else {
+            throw new Error(res.message || '加载点位列表失败')
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+      this.pointImportModalParams = {
+        ...this.pointImportModalParams,
+        loading: false,
+        pointTableRows,
+        selectedPointTableRows: []
+      }
+    },
+    handlePointImportModalSelectedPointTableRowsChange(selectedPointTableRows) {
+      this.pointImportModalParams.selectedPointTableRows = selectedPointTableRows
+    },
+    async handlePointImportModalSubmit() {
+      const existRows = this.pointModalParams.rows
+      let curLastRowPoint = existRows.length ? existRows[existRows.length - 1].point : 0
+      const selectedRows = this.pointImportModalParams.selectedPointTableRows
+      const newPointModalRows = selectedRows.map((row) => {
+        curLastRowPoint = Number(curLastRowPoint) + 1
+        const newRow = JSON.parse(JSON.stringify(row))
+        newRow['point'] = curLastRowPoint
+        newRow.tempRow['point'] = curLastRowPoint
+        return Object.assign(newRow, {
+          id: undefined,
+          localId: Math.random(),
+          roomId: undefined
+        })
+      })
+      this.pointModalParams.rows = [
+        ...this.pointModalParams.rows,
+        ...newPointModalRows
+      ]
+      this.pointImportModalParams.show = false
+      if (!this.pointModalParams.roomId) {
+        this.roomModalParams.formData.pointList = [
+          ...this.roomModalParams.formData.pointList,
+          ...newPointModalRows.map(row => {
+            return {
+              localId: row.localId,
+              ...this.pointModalParams.cols.reduce((pointObj, col) => Object.assign(pointObj, { [col.key]: row[col.key] }), {})
+            }
+          })
+        ]
+      } else {
+        try {
+          this.pointModalParams.loading = true
+          await Promise.all(newPointModalRows.map(async row => {
+            await nuclearLabApi.pointCreate({
+              roomId: this.pointModalParams.roomId,
+              ...this.pointModalParams.cols.reduce((pointObj, col) => Object.assign(pointObj, { [col.key]: row[col.key] }), {})
+            })
+          }))
+          nuclearLabApi.accessLogCreate({
+            action: `${this.pointModalParams.sourceRoomRow.name}-机房点位修改`,
+            detail: '',
+            page: this.$route.meta.title,
+            remark: ''
+          })
+          this.handleOpenPointModal({
+            ...this.pointModalParams.sourceRoomRow,
+            id: this.pointModalParams.roomId,
+            pointList: this.pointModalParams.rows
+          })
+          this.pointModalParams.loading = false
+        } catch (error) {
+          console.log(error)
+        }
       }
     }
   }
