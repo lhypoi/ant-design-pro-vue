@@ -96,12 +96,20 @@
               class="text-yellow-500 text-base"
             >{{ item.statusName }}</div>
           </div>
-          <div class="flex justify-between items-center sm:flex-col sm:gap-y-3 sm:justify-center sm:items-start sm:w-28">
+          <div class="flex justify-between items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28">
             <div
               v-if="item.status === '1'"
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
               @click.stop="handleAcceptTask(item)"
             >接受委托</div>
+            <div
+              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
+              @click.stop="handleRefuseTask(item)"
+            >拒绝委托</div>
+            <div
+              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
+              @click.stop="handleFinishTask(item)"
+            >交付确认</div>
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
               @click.stop="() => {}"
@@ -182,12 +190,20 @@
               >
               </a-upload-dragger>
             </div>
-            <div class="flex gap-6 pt-8">
+            <div class="flex gap-x-6 gap-y-3 pt-8 flex-wrap whitespace-nowrap">
               <div
                 v-if="detailData.status === '1'"
                 class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
                 @click.stop="handleAcceptTask(detailData)"
               >接受委托</div>
+              <div
+                class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
+                @click.stop="handleRefuseTask(item)"
+              >拒绝委托</div>
+              <div
+                class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
+                @click.stop="handleFinishTask(item)"
+              >交付确认</div>
               <div
                 class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
                 @click.stop="() => {}"
@@ -360,6 +376,63 @@ export default {
             })
             if (res && res.code === 1000 && res.data === 1) {
               this.$message.success('提交成功')
+              this.reloadAllData()
+            } else {
+              throw new Error(res.msg || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleRefuseTask(item) {
+      this.$confirm({
+        title: '提示',
+        content: `确认拒绝委托?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            // TODO: 此处要考虑怎么传达 当前这人拒绝 这个逻辑概念，目前暂用重置状态为 未处理 代替
+            // 拒绝，如果是用 status 6 表示，其他人呢？当前人拒绝过则无法接 而其他未拒绝的人可以接，在字段层面如何表达
+            // 公开未指定接收人的呢？-》 转化为 限制人列表 的字段逻辑？
+            const res = await lingkeApi.orderUpdate({
+              teacherId: this.teacherInfo.userId,
+              id: item.id,
+              status: '1'
+            })
+            if (res && res.code === 1000 && res.data === 1) {
+              this.$message.success('提交成功')
+              this.reloadAllData()
+            } else {
+              throw new Error(res.msg || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleFinishTask(item) {
+      this.$confirm({
+        title: '提示',
+        content: `若已完成订单交付，点击确认，可以提交到委托方进行订单完成确认`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await lingkeApi.orderUpdate({
+              teacherId: this.teacherInfo.userId,
+              id: item.id,
+              status: '4'
+            })
+            if (res && res.code === 1000 && res.data === 1) {
+              this.$message.success('已提交委托方进行确认')
               this.reloadAllData()
             } else {
               throw new Error(res.msg || '失败')
