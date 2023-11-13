@@ -14,7 +14,7 @@
         <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">可提现金额：{{ teacherAccountParams.accountInfo.balance || 0 }}</div>
         <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">已提现金额：{{ teacherAccountParams.accountInfo.withdrawalAmount || 0 }}</div>
       </div>
-      <div class="sm:pl-8 sm:pt-3">
+      <div class="w-full sm:w-auto sm:pl-8 sm:pt-3">
         <a-popover title="说明" trigger="click">
           <template slot="content">
             <p>累计金额：历史所有累计已经完成订单的金额总和，订单需要是已完成的才会纳入统计。</p>
@@ -28,6 +28,7 @@
           type="primary"
           class="rounded-md"
           size="large"
+          @click="handleOpenCanWithdrawModal"
         >
           提现
         </a-button>
@@ -215,6 +216,64 @@
         </div>
       </div>
     </a-drawer>
+    <!-- canWithdrawModal -->
+    <a-modal
+      v-if="canWithdrawModalParams.show"
+      title="提现"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '1200px'"
+      @cancel="canWithdrawModalParams.show = false"
+    >
+      <div v-loading="canWithdrawModalParams.loading">
+        <div class="pb-4">请选择要提现的订单：</div>
+        <div class="h-[60vh] sm:h-[600px]">
+          <k-table
+            :dataRows="canWithdrawModalParams.rows"
+            :border="true"
+            height="100%"
+            class="h-full"
+            :hidePage="true"
+            highlight-selection-row
+            @selection-change="handleCanWithdrawModalSelectionChange"
+          >
+            <el-table-column
+              v-for="col in canWithdrawModalParams.cols"
+              :key="col.key"
+              :prop="col.key"
+              :type="col.type"
+              :label="col.label"
+              :align="col.align || 'center'"
+              :fixed="col.fixed"
+              :width="col.width"
+              :min-width="col.minWidth"
+            >
+              <template v-if="!col.type" v-slot="scope">
+                <div>{{ scope.row[col.key] }}</div>
+              </template>
+            </el-table-column>
+          </k-table>
+        </div>
+        <div class="pt-3 flex flex-row justify-end gap-8">
+          <a-button
+            class="h-11 w-24 rounded-md text-base"
+            size="large"
+            @click="canWithdrawModalParams.show = false"
+          >
+            取消
+          </a-button>
+          <a-button
+            class="h-11 w-24 rounded-md text-base"
+            type="primary"
+            size="large"
+            @click="handleCanWithdrawModalSubmit"
+          >
+            确定
+          </a-button>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -223,10 +282,14 @@ import { mapState, mapGetters } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
+import KTable from '@/components/Kira/KTable'
+import { baseMixin } from '@/store/app-mixin'
 
 export default {
   name: 'MyOrders',
+  mixins: [baseMixin],
   components: {
+    KTable
   },
   data() {
     return {
@@ -247,6 +310,59 @@ export default {
       tabParams: {
         loading: false,
         tabList: []
+      },
+      canWithdrawModalParams: {
+        show: false,
+        loading: false,
+        cols: [
+          {
+            key: 'tempColLocal1',
+            label: '下单人（缺失key）',
+            width: 160
+          },
+          {
+            key: 'task',
+            label: '委托任务',
+            width: 120
+          },
+          {
+            key: 'typeName',
+            label: '任务类型',
+            width: 120
+          },
+          {
+            key: 'detail',
+            label: '任务详细说明',
+            minWidth: 200
+          },
+          {
+            key: 'createTime',
+            label: '创建时间',
+            width: 160
+          },
+          {
+            key: 'updateTime',
+            label: '更新时间',
+            width: 160
+          },
+          {
+            key: 'unitPrice',
+            label: '一小时单价',
+            width: 120
+          },
+          {
+            key: 'duration',
+            label: '课程时间(小时)',
+            width: 120
+          },
+          {
+            type: 'selection',
+            width: 60,
+            fixed: 'right'
+          }
+        ],
+        rows: [],
+        selectedRows: []
       }
     }
   },
@@ -487,6 +603,74 @@ export default {
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)
+    },
+    async handleOpenCanWithdrawModal() {
+      this.canWithdrawModalParams = {
+        ...this.canWithdrawModalParams,
+        show: true,
+        loading: true,
+        rows: [],
+        selectedRows: []
+      }
+      try {
+        const res = await lingkeApi.orderGetList({
+          currentTeacherId: this.teacherInfo.userId,
+          teacher_id: this.teacherInfo.userId,
+          status: ''
+        })
+        if (res && res.code === 1000) {
+          this.canWithdrawModalParams.rows = res.data.list
+        } else {
+          throw new Error(res.msg || '加载失败')
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
+      }
+      this.canWithdrawModalParams.loading = false
+    },
+    handleCanWithdrawModalSelectionChange(rows) {
+      this.canWithdrawModalParams.selectedRows = rows
+    },
+    async handleCanWithdrawModalSubmit() {
+      this.canWithdrawModalParams.loading = true
+      const resTipList = await Promise.all(this.canWithdrawModalParams.selectedRows.map(async row => {
+        const amount = row.unitPrice * row.duration
+        let resText = ''
+        try {
+          const res = await lingkeApi.withdrawalCreate({
+            userId: this.teacherInfo.userId,
+            orderId: row.id,
+            amount: amount,
+            fee: 0
+          })
+          if (res && res.data && res.data.code === 1000) {
+            resText = `订单【${ row.task }】提现成功`
+          } else {
+            throw new Error(res?.msg || '系统繁忙')
+          }
+        } catch (error) {
+          resText = `订单【${ row.task }】提现失败，${ error.message }`
+          console.log(error)
+        }
+        return resText
+      }))
+      this.canWithdrawModalParams.loading = false
+      this.canWithdrawModalParams.show = false
+      this.reloadAllData()
+      this.$info({
+        title: '提现结果：',
+        icon: () => null,
+        content: (
+          <div class="flex flex-col gap-y-3 pt-2">
+            {
+              resTipList.map((rowText, index) => (
+                <div class="pb-1 border-b border-solid border-gray-300">{ (index + 1) + '. ' + rowText }</div>
+              ))
+            }
+          </div>
+        )
+      })
     }
   }
 }
