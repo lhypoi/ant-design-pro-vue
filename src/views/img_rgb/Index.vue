@@ -40,26 +40,26 @@
         <div class="text-base border-t border-solid border-gray-300 pt-4 pb-2">处理结果：</div>
         <div class="flex flex-col gap-y-2 text-base pb-2" >
           <el-card :body-style="{ padding: '0px' }">
-            <div class="flex flex-row text-blue-400 pl-2 py-2">
-              <div class="w-36 text-right pr-2">像素点总个数：</div>
+            <div class="flex flex-row text-blue-400 pl-3 py-2">
+              <div class="w-36 text-right pr-0">像素点总个数：</div>
               <div class="">{{ rgbRes.total || '-' }}</div>
             </div>
           </el-card>
           <el-card :body-style="{ padding: '0px' }">
-            <div class="flex flex-row text-blue-400 pl-2 py-2">
-              <div class="w-36 text-right pr-2">像素点处理个数：</div>
+            <div class="flex flex-row text-blue-400 pl-3 py-2">
+              <div class="w-36 text-right pr-0">处理后像素点个数：</div>
               <div class="">{{ rgbRes.rest || '-' }}</div>
             </div>
           </el-card>
           <el-card :body-style="{ padding: '0px' }">
-            <div class="flex flex-row text-blue-400 pl-2 py-2">
-              <div class="w-36 text-right pr-2">x 值：</div>
+            <div class="flex flex-row text-blue-400 pl-3 py-2">
+              <div class="w-36 text-right pr-0">x 值：</div>
               <div class="">{{ rgbRes.x || '-' }}</div>
             </div>
           </el-card>
           <el-card :body-style="{ padding: '0px' }">
-            <div class="flex flex-row text-blue-400 pl-2 py-2">
-              <div class="w-36 text-right pr-2">y 值：</div>
+            <div class="flex flex-row text-blue-400 pl-3 py-2">
+              <div class="w-36 text-right pr-0">y 值：</div>
               <div class="">{{ rgbRes.y || '-' }}</div>
             </div>
           </el-card>
@@ -143,6 +143,7 @@ export default {
             this.rgbRes = rgbRes
             this.curImgSrc = reader.result
             this.loading = false
+            this.$message.success('导入成功')
           } catch (error) {
             console.log(error)
           }
