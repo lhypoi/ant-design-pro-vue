@@ -24,19 +24,11 @@ export const NAV_THEME = {
 }
 
 export const APP_NAME = {
-  ZND: 'znd',
-  LINK_DEV: 'link_dev',
-  NUCLEAR_LAB: 'nuclear_lab',
-  REPAYMENT_PLAN: 'repayment_plan',
   IMG_RGB: 'img_rgb'
 }
 
 export const APP_ROUTE_BASE_NAME = {
-  [APP_NAME.ZND]: '',
-  [APP_NAME.LINK_DEV]: 'link-dev',
-  [APP_NAME.IMG_RGB]: 'img-rgb',
-  [APP_NAME.NUCLEAR_LAB]: 'nuclear-lab',
-  [APP_NAME.REPAYMENT_PLAN]: '/repayment_plan/'
+  [APP_NAME.IMG_RGB]: 'img-rgb'
 }
 
 export const CUR_APP = APP_NAME.IMG_RGB

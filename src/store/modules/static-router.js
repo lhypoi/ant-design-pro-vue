@@ -1,6 +1,6 @@
 import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
 import cloneDeep from 'lodash.clonedeep'
-import { APP_NAME, CUR_APP } from '@/store/mutation-types'
+import { CUR_APP } from '@/store/mutation-types'
 
 /**
  * 过滤账户是否拥有某一个权限，并将菜单从加载列表移除
@@ -75,9 +75,6 @@ const permission = {
         const accessedRouters = filterAsyncRouter(routerMap, role)
         // 根据用户信息，修改路由数据
         switch (CUR_APP) {
-          case APP_NAME.NUCLEAR_LAB:
-            accessedRouters[0].redirect = accessedRouters[0].children[0].path
-            break
           default:
             break
         }

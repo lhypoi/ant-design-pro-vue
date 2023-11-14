@@ -54,9 +54,9 @@ import Viser from 'viser-vue'
 
 // ext library
 import VueCropper from 'vue-cropper'
-import Dialog from '@/components/Dialog'
-import MultiTab from '@/components/MultiTab'
-import PageLoading from '@/components/PageLoading'
+// import Dialog from '@/components/Dialog'
+// import MultiTab from '@/components/MultiTab'
+// import PageLoading from '@/components/PageLoading'
 import PermissionHelper from '@/core/permission/permission'
 import './directives/action'
 
@@ -124,9 +124,9 @@ Vue.prototype.$error = Modal.error
 Vue.prototype.$warning = Modal.warning
 
 Vue.use(Viser)
-Vue.use(Dialog) // this.$dialog func
-Vue.use(MultiTab)
-Vue.use(PageLoading)
+// Vue.use(Dialog) // this.$dialog func
+// Vue.use(MultiTab)
+// Vue.use(PageLoading)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
 
