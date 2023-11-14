@@ -65,7 +65,8 @@ import {
   Loading,
   Table as ETable,
   TableColumn as ETableColumn,
-  Pagination as EPagination
+  Pagination as EPagination,
+  Card as ECard
 } from 'element-ui'
 
 Vue.use(ConfigProvider)
@@ -136,5 +137,6 @@ Vue.use(Loading.directive)
 Vue.use(ETable)
 Vue.use(ETableColumn)
 Vue.use(EPagination)
+Vue.use(ECard)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')

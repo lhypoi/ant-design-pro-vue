@@ -290,6 +290,17 @@ const asyncRouterMapAll = {
       component: () => import('@/views/repayment_plan/List'),
       hidden: true
     }
+  ],
+  [APP_NAME.IMG_RGB]: [
+    {
+      path: '/',
+      name: 'Index',
+      publiclyAccessible: true,
+      defaultLoginRoute: true,
+      component: () => import('@/views/img_rgb/Index'),
+      meta: { title: '首页' },
+      hidden: true
+    }
   ]
 }
 
