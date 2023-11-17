@@ -168,6 +168,7 @@ const asyncRouterMapAll = {
       name: 'registerPre',
       publiclyAccessible: true,
       component: () => import('@/views/link/RegisterPre'),
+      meta: { title: '介绍' },
       hidden: true
     },
     {
@@ -175,6 +176,15 @@ const asyncRouterMapAll = {
       name: 'tRegister',
       publiclyAccessible: true,
       component: () => import('@/views/link/TRegister'),
+      meta: { title: '教师注册' },
+      hidden: true
+    },
+    {
+      path: '/o-register',
+      name: 'oRegister',
+      publiclyAccessible: true,
+      component: () => import('@/views/link/ORegister'),
+      meta: { title: '机构注册' },
       hidden: true
     },
     {

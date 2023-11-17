@@ -79,108 +79,67 @@
                       </a-form-model-item>
                     </template>
                     <template v-if="item.key === 2">
-                      <a-form-model-item prop="cv">
-                        <a-upload-dragger
-                          class="dragUploader"
-                          :multiple="true"
-                          name="fileList"
-                          :action="uploadUrl"
-                          :fileList="formData[item.key].cv"
-                          @change="info => handleFileChange(info, item.key, 'cv', true)"
-                        >
-                          <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
-                            <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
-                            <div class="pt-4 text-slate-950 text-lg font-bold">
-                              将简历拖到此处，或<span class="text-indigo-500">点击上传</span>
-                            </div>
-                            <div class="pt-2 text-sm text-gray-400">
-                              可导入pdf / docx / doc 格式简历，最大10MB
-                            </div>
-                          </div>
-                        </a-upload-dragger>
-                      </a-form-model-item>
-                    </template>
-                    <template v-if="item.key === 3">
-                      <div class="text-sm font-bold text-black pb-3">基本信息：</div>
-                      <a-form-model-item prop="name">
-                        <a-input
-                          v-model="formData[item.key].name"
-                          placeholder="请输入姓名"
-                        />
-                      </a-form-model-item>
+                      <div class="text-sm font-bold text-black pb-3">机构类型：</div>
                       <a-form-model-item prop="highEduLevel">
                         <a-select
                           show-search
                           allowClear
                           showArrow
                           size="large"
-                          placeholder="请选择学历"
-                          v-model="formData[item.key].highEduLevel"
+                          placeholder="请选择机构类型"
+                          v-model="formData[item.key].type"
                         >
-                          <a-select-option v-for="(label, key) in highEduLevelDict" :key="key" :value="key" class="pl-5">
+                          <a-select-option v-for="(label, key) in organizationTypeDict" :key="key" :value="key" class="pl-5">
                             {{ label }}
                           </a-select-option>
                         </a-select>
                       </a-form-model-item>
-                      <a-form-model-item prop="major">
+                      <div class="text-sm font-bold text-black pb-3">机构名称：</div>
+                      <a-form-model-item prop="name">
                         <a-input
-                          v-model="formData[item.key].major"
-                          placeholder="请输入专业"
+                          v-model="formData[item.key].name"
+                          placeholder="请输入机构名称"
                         />
                       </a-form-model-item>
-                      <a-form-model-item prop="college">
+                      <div class="text-sm font-bold text-black pb-3">法人：</div>
+                      <a-form-model-item prop="legalPerson">
                         <a-input
-                          v-model="formData[item.key].college"
-                          placeholder="请输入毕业大学"
+                          v-model="formData[item.key].legalPerson"
+                          placeholder="请输入法人"
                         />
                       </a-form-model-item>
-                      <div class="text-sm font-bold text-black pb-3">擅长做什么：</div>
-                      <a-form-model-item prop="advantage">
-                        <a-textarea
-                          v-model="formData[item.key].advantage"
-                          :rows="5"
-                          placeholder="请输入擅长领域：例如：擅长数据分析、数据挖掘、数据建模，精通SPSS、Python、R等分析工具，熟练掌握tableau、power等可视化工具。"
-                        />
-                      </a-form-model-item>
-                      <div class="text-sm font-bold text-black pb-3">会使用哪些工具：</div>
-                      <a-form-model-item prop="tools">
-                        <a-select
-                          allowClear
-                          showArrow
-                          mode="tags"
-                          size="large"
-                          placeholder="请选择或直接输入"
-                          v-model="formData[item.key].tools"
-                        >
-                          <a-select-option v-for="tool in localDict.toolsList" :key="tool" :value="tool" class="pl-5">
-                            {{ tool }}
-                          </a-select-option>
-                        </a-select>
-                      </a-form-model-item>
-                      <div class="text-sm font-bold text-black pb-3">我想做什么：</div>
-                      <a-form-model-item prop="want">
-                        <a-checkbox-group
-                          v-model="formData[item.key].want"
-                          :options="Object.keys(orderTypeDict).map(key => ({ value: key, label: orderTypeDict[key] }))"
-                          class="flex justify-between"
-                        />
-                      </a-form-model-item>
-                      <a-form-model-item prop="sample">
+                      <div class="text-sm font-bold text-black pb-3">法人身份证：</div>
+                      <a-form-model-item prop="idCard">
                         <a-upload-dragger
                           class="dragUploader"
                           :multiple="true"
                           name="fileList"
                           :action="uploadUrl"
-                          :fileList="formData[item.key].sample"
-                          @change="info => handleFileChange(info, item.key, 'sample', true)"
+                          :fileList="formData[item.key].idCard"
+                          @change="info => handleFileChange(info, item.key, 'idCard', true)"
                         >
                           <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
                             <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
                             <div class="pt-4 text-slate-950 text-lg font-bold">
-                              将文书拖到此处，或<span class="text-indigo-500">点击上传</span>
+                              将文件拖到此处，或<span class="text-indigo-500">点击上传</span>
                             </div>
-                            <div class="pt-2 text-sm text-gray-400">
-                              可导入pdf / docx / doc 格式简历，最大10MB
+                          </div>
+                        </a-upload-dragger>
+                      </a-form-model-item>
+                      <div class="text-sm font-bold text-black pb-3">营业执照：</div>
+                      <a-form-model-item prop="businessLicense">
+                        <a-upload-dragger
+                          class="dragUploader"
+                          :multiple="true"
+                          name="fileList"
+                          :action="uploadUrl"
+                          :fileList="formData[item.key].businessLicense"
+                          @change="info => handleFileChange(info, item.key, 'businessLicense', true)"
+                        >
+                          <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
+                            <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
+                            <div class="pt-4 text-slate-950 text-lg font-bold">
+                              将文件拖到此处，或<span class="text-indigo-500">点击上传</span>
                             </div>
                           </div>
                         </a-upload-dragger>
@@ -209,7 +168,7 @@
                 :loading="submitting"
                 @click="handleStepNext"
               >
-                {{ curStep === 3 ? '提交' : '下一步' }}
+                {{ curStep === 2 ? '提交' : '下一步' }}
               </a-button>
             </div>
           </div>
@@ -221,7 +180,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import { uploadUrl, sendSmsCode, teacherSignup } from '@/api/lingke'
+import { uploadUrl, sendSmsCode, organizationSignup } from '@/api/lingke'
 import { CUR_APP } from '@/store/mutation-types'
 
 const regexConfig = {
@@ -229,7 +188,7 @@ const regexConfig = {
 }
 
 export default {
-  name: 'TRegister',
+  name: 'ORegister',
   components: {
   },
   data() {
@@ -243,10 +202,6 @@ export default {
         {
           key: 2,
           label: '第二步'
-        },
-        {
-          key: 3,
-          label: '第三步'
         }
       ],
       curStep: 1,
@@ -257,17 +212,11 @@ export default {
           smsCode: ''
         },
         2: {
-          cv: []
-        },
-        3: {
+          type: undefined,
           name: '',
-          highEduLevel: undefined,
-          major: '',
-          college: '',
-          advantage: '',
-          tools: [],
-          want: [],
-          sample: []
+          legalPerson: '',
+          idCard: [],
+          businessLicense: []
         }
       },
       formRules: {
@@ -321,12 +270,12 @@ export default {
           ]
         },
         2: {
-          cv: [
+          type: [
             {
               validator: (rule, value, callback) => {
                 try {
-                  if (!value.length) {
-                    callback(new Error('请上传简历'))
+                  if (!value) {
+                    callback(new Error('请选择机构类型'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -335,15 +284,13 @@ export default {
                 callback()
               }
             }
-          ]
-        },
-        3: {
+          ],
           name: [
             {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.trim()) {
-                    callback(new Error('请输入姓名'))
+                    callback(new Error('请输入机构名称'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -353,27 +300,12 @@ export default {
               }
             }
           ],
-          highEduLevel: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value) {
-                    callback(new Error('请选择学历'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
-          major: [
+          legalPerson: [
             {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.trim()) {
-                    callback(new Error('请输入专业'))
+                    callback(new Error('请输入法人'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -383,42 +315,12 @@ export default {
               }
             }
           ],
-          college: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value.trim()) {
-                    callback(new Error('请输入毕业大学'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
-          advantage: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value.trim()) {
-                    callback(new Error('请输入擅长领域'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
-          tools: [
+          idCard: [
             {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.length) {
-                    callback(new Error('请选择或输入使用工具'))
+                    callback(new Error('请上传法人身份证'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -428,27 +330,12 @@ export default {
               }
             }
           ],
-          want: [
+          businessLicense: [
             {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.length) {
-                    callback(new Error('请选择想做什么'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
-          sample: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value.length) {
-                    callback(new Error('请上传文书'))
+                    callback(new Error('请上传营业执照'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -478,11 +365,8 @@ export default {
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
     }),
-    highEduLevelDict() {
-      return this.codeDict.teacher && this.codeDict.teacher.highEduLevel || {}
-    },
-    orderTypeDict() {
-      return this.codeDict.order && this.codeDict.order.type || {}
+    organizationTypeDict() {
+      return this.codeDict.organization && this.codeDict.organization.type || {}
     }
   },
   async mounted() {
@@ -538,9 +422,6 @@ export default {
           this.handleToStep2()
           break
         case 2:
-          this.handleToStep3()
-          break
-        case 3:
           this.handleSubmit()
           break
         default:
@@ -548,15 +429,6 @@ export default {
       }
     },
     async handleToStep2() {
-      try {
-        await this.$refs['form_' + this.curStep][0].validate()
-      } catch {
-        this.$message.error('填写信息不符合要求，请检查')
-        return
-      }
-      this.curStep++
-    },
-    async handleToStep3() {
       try {
         await this.$refs['form_' + this.curStep][0].validate()
       } catch {
@@ -574,19 +446,15 @@ export default {
       }
       this.submitting = true
       try {
-        const res = await teacherSignup({
+        const res = await organizationSignup({
           phoneNumber: this.formData[1].phoneNumber,
           passWord: this.formData[1].passWord,
           smsCode: this.formData[1].smsCode,
-          cv: this.formData[2].cv[0].url,
-          name: this.formData[3].name,
-          highEduLevel: this.formData[3].highEduLevel,
-          major: this.formData[3].major,
-          college: this.formData[3].college,
-          advantage: this.formData[3].advantage,
-          tools: this.formData[3].tools.join(','),
-          want: this.formData[3].want.join(','),
-          sample: this.formData[3].sample[0].url
+          type: this.formData[2].type,
+          name: this.formData[2].name,
+          legalPerson: this.formData[2].legalPerson,
+          idCard: this.formData[2].idCard[0].url,
+          businessLicense: this.formData[2].businessLicense[0].url
         })
         if (res && res.data === 1) {
           this.showResultPanel = true
