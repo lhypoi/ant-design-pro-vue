@@ -36,6 +36,7 @@
           type="primary"
           class="rounded-md"
           size="large"
+          @click="handleOpenWithdrawalRecordModal"
         >
           提现记录
         </a-button>
@@ -274,6 +275,73 @@
         </div>
       </div>
     </a-modal>
+    <a-modal
+      v-if="withdrawalRecordModalParams.show"
+      title="提现记录"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '1200px'"
+      @cancel="withdrawalRecordModalParams.show = false"
+    >
+      <div>
+        <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
+          <a-form-model
+            :model="withdrawalRecordModalParams.formData"
+          >
+            <div class="flex flex-row items-start gap-4 overflow-x-auto">
+              <a-form-model-item key="orderId" prop="orderId" class="flex-auto min-w-[170px]">
+                <a-input
+                  v-model="withdrawalRecordModalParams.formData.orderId"
+                  placeholder="请输入订单号"
+                  size="large"
+                  allowClear
+                />
+              </a-form-model-item>
+              <a-form-model-item key="timeRange" prop="timeRange" class="min-w-[240px]">
+                <a-range-picker v-model="withdrawalRecordModalParams.formData.timeRange" size="large" allowClear>
+                  <a-icon slot="suffixIcon" type="calendar" />
+                </a-range-picker>
+              </a-form-model-item>
+              <a-button
+                class="h-11 rounded-md text-base"
+                type="primary"
+                icon="search"
+                size="large"
+                @click="handleWithdrawalRecordModalSearch"
+              >
+                查询
+              </a-button>
+            </div>
+          </a-form-model>
+        </div>
+        <div class="h-[60vh] sm:h-[600px]">
+          <k-table
+            ref="withdrawalRecordModalTable"
+            :data="(params) => getwithdrawalRecordModalRows(params)"
+            :border="true"
+            height="100%"
+            class="h-full"
+          >
+            <el-table-column
+              v-for="col in withdrawalRecordModalParams.cols"
+              :key="col.key"
+              :prop="col.key"
+              :type="col.type"
+              :label="col.label"
+              :align="col.align || 'center'"
+              :fixed="col.fixed"
+              :width="col.width"
+              :min-width="col.minWidth"
+            >
+              <template v-if="!col.type" v-slot="scope">
+                <div>{{ scope.row[col.key] }}</div>
+              </template>
+            </el-table-column>
+          </k-table>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -363,6 +431,25 @@ export default {
         ],
         rows: [],
         selectedRows: []
+      },
+      withdrawalRecordModalParams: {
+        show: false,
+        formData: {
+          orderId: '',
+          timeRange: []
+        },
+        cols: [
+          {
+            key: 'tempColLocal1',
+            label: '订单号',
+            width: 160
+          },
+          {
+            key: 'tempColLocal2',
+            label: '下单人',
+            minWidth: 160
+          }
+        ]
       }
     }
   },
@@ -671,6 +758,48 @@ export default {
           </div>
         )
       })
+    },
+    handleOpenWithdrawalRecordModal() {
+      this.withdrawalRecordModalParams = {
+        ...this.withdrawalRecordModalParams,
+        show: true,
+        formData: {
+          orderId: '',
+          timeRange: []
+        }
+      }
+    },
+    async getwithdrawalRecordModalRows(params) {
+      const tableData = {
+        rows: [],
+        total: 0
+      }
+      try {
+        const formData = this.withdrawalRecordModalParams.formData
+        const res = await lingkeApi.withdrawalGetList({
+          userId: this.teacherInfo.userId,
+          pageIndex: params.pageNum,
+          pageSize: params.pageSize,
+          orderId: formData.orderId || undefined,
+          beginTime: formData.timeRange[0] ? formData.timeRange[0].startOf('day').valueOf() : undefined,
+          endTime: formData.timeRange[1] ? formData.timeRange[1].endOf('day').valueOf() : undefined
+        })
+        if (res && res.code === 1000) {
+          tableData.rows = res.data.list.map(row => ({
+            ...row
+          }))
+          tableData.total = res.data.total
+        } else {
+          throw new Error(res.message || '加载失败')
+        }
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      }
+      return tableData
+    },
+    handleWithdrawalRecordModalSearch() {
+      this.$refs.withdrawalRecordModalTable.refresh()
     }
   }
 }

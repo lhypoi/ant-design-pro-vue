@@ -107,6 +107,14 @@ export function withdrawalCreate (parameter) {
   })
 }
 
+export function withdrawalGetList (parameter) {
+  return request({
+    url: url + '/withdrawal/getList',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -123,5 +131,6 @@ export default {
   orderUpdate,
   teacherGetAccount,
   orderTotal,
-  withdrawalCreate
+  withdrawalCreate,
+  withdrawalGetList
 }
