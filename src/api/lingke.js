@@ -123,6 +123,30 @@ export function organizationSignup (parameter) {
   })
 }
 
+export function teacherGetList (parameter) {
+  return request({
+    url: url + '/teacher/getList',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function teacherGetOptions (parameter) {
+  return request({
+    url: url + '/teacher/getOptions',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderCreate (parameter) {
+  return request({
+    url: url + '/order/create',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -141,5 +165,8 @@ export default {
   orderTotal,
   withdrawalCreate,
   withdrawalGetList,
-  organizationSignup
+  organizationSignup,
+  teacherGetList,
+  teacherGetOptions,
+  orderCreate
 }

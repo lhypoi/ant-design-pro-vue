@@ -140,26 +140,29 @@ const asyncRouterMapAll = {
       meta: { title: 'menu.home' },
       redirect: '/task-square',
       children: [
-        // task-square
         {
           path: '/task-square',
           name: 'TaskSquare',
           component: () => import('@/views/link/TaskSquare'),
           meta: { title: '任务广场', icon: 'appstore' }
         },
-        // personal-center
         {
           path: '/personal-center',
           name: 'PersonalCenter',
           component: () => import('@/views/link/PersonalCenter'),
           meta: { title: '个人中心', icon: 'user' }
         },
-        // My Orders
         {
           path: '/my-orders',
           name: 'MyOrders',
           component: () => import('@/views/link/MyOrders'),
           meta: { title: '我的订单', icon: 'database' }
+        },
+        {
+          path: '/o-home',
+          name: 'OHome',
+          component: () => import('@/views/link/OHome'),
+          meta: { title: '首页', icon: 'database' }
         }
       ]
     },
