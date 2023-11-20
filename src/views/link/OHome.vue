@@ -61,15 +61,15 @@
                 </div>
               </div>
               <div class="flex-auto pl-4 flex flex-col gap-y-1 text-base">
-                <div class="flex gap-x-3 justify-between">
+                <div class="flex gap-x-4 justify-between">
                   <div class="font-bold">{{ teacher.name }}</div>
                   <div class="font-bold">{{ `ID: ${ teacher.userId }` }}</div>
                 </div>
-                <div class="flex gap-x-3">
+                <div class="flex gap-x-4">
                   <div>{{ teacher.college }}</div>
                   <div>{{ `${ teacher.highEduLevelName }` }}</div>
                 </div>
-                <div class="flex gap-x-3">
+                <div class="flex gap-x-4">
                   <div>{{ `专业: ${ teacher.major }` }}</div>
                 </div>
               </div>
@@ -96,6 +96,7 @@
               <a-button
                 class="h-7 rounded-md"
                 type="primary"
+                @click="$refs.LinkTeacherModal.handleOpenLinkTeacherModal(teacher.userId)"
               >
                 查看简历
               </a-button>
@@ -337,6 +338,10 @@
       </div>
     </a-modal>
     <LinkOrderModal ref="LinkOrderModal" />
+    <LinkTeacherModal
+      ref="LinkTeacherModal"
+      @handleOpenLinkOrderModal="userId => $refs.LinkOrderModal.handleOpenLinkOrderModal(undefined, userId)"
+    />
   </div>
 </template>
 
@@ -347,6 +352,7 @@ import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
 import KTable from '@/components/Kira/KTable'
 import LinkOrderModal from '@/components/Kira/LinkOrderModal'
+import LinkTeacherModal from '@/components/Kira/LinkTeacherModal'
 import { baseMixin } from '@/store/app-mixin'
 
 export default {
@@ -354,7 +360,8 @@ export default {
   mixins: [baseMixin],
   components: {
     KTable,
-    LinkOrderModal
+    LinkOrderModal,
+    LinkTeacherModal
   },
   data() {
     return {
