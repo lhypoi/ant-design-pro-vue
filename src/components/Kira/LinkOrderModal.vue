@@ -325,7 +325,7 @@ export default {
           detail: this.linkOrderModalParams.formData.detail,
           unitPrice: this.linkOrderModalParams.formData.unitPrice,
           duration: this.linkOrderModalParams.formData.duration,
-          files: this.linkOrderModalParams.formData.files.map(file => file.uploadResName).join(','),
+          files: this.linkOrderModalParams.formData.files.map(file => file.uploadResName).join(',') || undefined,
           teacherId: this.linkOrderModalParams.formData.teacherId || undefined
         }
         const res = this.linkOrderModalParams.orderId ? await lingkeApi.orderUpdate({

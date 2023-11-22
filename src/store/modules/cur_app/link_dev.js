@@ -29,11 +29,11 @@ const module = {
         'VUE'
       ]
     },
-    teacherInfo: {}
+    userInfo: {}
   },
   mutations: {
-    SET_TEACHER_INFO: (state, teacherInfo) => {
-      state.teacherInfo = teacherInfo
+    SET_USER_INFO: (state, userInfo) => {
+      state.userInfo = userInfo
     }
   },
   actions: {

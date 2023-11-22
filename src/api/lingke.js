@@ -147,6 +147,62 @@ export function orderCreate (parameter) {
   })
 }
 
+export function orderOrganizationOrderList (parameter) {
+  return request({
+    url: url + '/order/organization/orderList',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderTeacherOrderTotal (parameter) {
+  return request({
+    url: url + '/order/teacher/orderTotal',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderTeacherOrderList (parameter) {
+  return request({
+    url: url + '/order/teacher/orderList',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderOrganizationOrderTotal (parameter) {
+  return request({
+    url: url + '/order/organization/orderTotal',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function organizationGetOne (parameter) {
+  return request({
+    url: url + '/organization/getOne',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function organizationUpdate (parameter) {
+  return request({
+    url: url + '/organization/update',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function organizationChangePasswd (parameter) {
+  return request({
+    url: url + '/organization/changePasswd',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -168,5 +224,12 @@ export default {
   organizationSignup,
   teacherGetList,
   teacherGetOptions,
-  orderCreate
+  orderCreate,
+  orderOrganizationOrderList,
+  orderTeacherOrderTotal,
+  orderTeacherOrderList,
+  orderOrganizationOrderTotal,
+  organizationGetOne,
+  organizationUpdate,
+  organizationChangePasswd
 }

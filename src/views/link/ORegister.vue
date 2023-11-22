@@ -80,9 +80,8 @@
                     </template>
                     <template v-if="item.key === 2">
                       <div class="text-sm font-bold text-black pb-3">机构类型：</div>
-                      <a-form-model-item prop="highEduLevel">
+                      <a-form-model-item prop="type">
                         <a-select
-                          show-search
                           allowClear
                           showArrow
                           size="large"

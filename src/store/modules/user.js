@@ -129,19 +129,10 @@ const user = {
                 result.role = role
                 commit('SET_ROLES', role)
                 commit('SET_INFO', userInfoRes.data)
+                commit(CUR_APP + '/SET_USER_INFO', userInfoRes.data)
               } else {
                 throw new Error(userInfoRes.msg || '获取用户信息失败')
               }
-
-              const teacherRes = await lingkeApi.teacherGetOne({
-                userId: userInfoRes.data.userId
-              })
-              if (teacherRes && teacherRes.code === 1000) {
-                commit(CUR_APP + '/SET_TEACHER_INFO', teacherRes.data)
-              } else {
-                throw new Error(teacherRes.msg || '获取教师信息失败')
-              }
-
               resolve(result)
             } catch (error) {
               reject(error)

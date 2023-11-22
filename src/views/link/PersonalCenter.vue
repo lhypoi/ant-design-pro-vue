@@ -603,7 +603,7 @@ export default {
   },
   computed: {
     ...mapState(CUR_APP, [
-      'teacherInfo',
+      'userInfo',
       'localDict'
     ]),
     ...mapGetters('asyncConfig', {
@@ -626,7 +626,7 @@ export default {
       }
       let resPrecent = 0
       Object.keys(percentMap).forEach(key => {
-        if (this.teacherInfo[key + 'Status'] === '2') {
+        if (this.userInfo[key + 'Status'] === '2') {
           resPrecent = resPrecent + percentMap[key]
         }
       })
@@ -640,7 +640,7 @@ export default {
   },
   methods: {
     initFormData() {
-      const teacherInfo = this.teacherInfo
+      const teacherInfo = this.userInfo
       const formData = {
         '1': {
           name: teacherInfo.name,
@@ -684,7 +684,7 @@ export default {
         onOk: async () => {
           try {
             const params = {
-              userId: this.teacherInfo.userId
+              userId: this.userInfo.userId
             }
             switch (this.curTabKey) {
               case '1':
@@ -776,7 +776,7 @@ export default {
       if (isFileEmpty) {
         return null
       }
-      const formKeyStatus = this.teacherInfo[formKey + 'Status'] || '1'
+      const formKeyStatus = this.userInfo[formKey + 'Status'] || '1'
       const text = this.codeDict.teacher[formKey + 'Status'][formKeyStatus]
       const colorMap = {
         1: '#2db7f5',

@@ -194,7 +194,7 @@ export default {
   },
   computed: {
     ...mapState(CUR_APP, [
-      'teacherInfo'
+      'userInfo'
     ]),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
@@ -314,7 +314,7 @@ export default {
         onOk: async () => {
           try {
             const res = await lingkeApi.orderUpdate({
-              teacherId: this.teacherInfo.userId,
+              teacherId: this.userInfo.userId,
               id: item.id,
               status: '2'
             })

@@ -163,6 +163,18 @@ const asyncRouterMapAll = {
           name: 'OHome',
           component: () => import('@/views/link/OHome'),
           meta: { title: '首页', icon: 'database' }
+        },
+        {
+          path: '/o-orders',
+          name: 'OOrders',
+          component: () => import('@/views/link/OOrders'),
+          meta: { title: '我的委托', icon: 'database' }
+        },
+        {
+          path: '/o-personal-center',
+          name: 'OPersonalCenter',
+          component: () => import('@/views/link/OPersonalCenter'),
+          meta: { title: '个人中心', icon: 'user' }
         }
       ]
     },

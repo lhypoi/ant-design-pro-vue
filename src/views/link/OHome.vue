@@ -464,7 +464,7 @@ export default {
   },
   computed: {
     ...mapState(CUR_APP, [
-      'teacherInfo'
+      'userInfo'
     ]),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
@@ -526,7 +526,7 @@ export default {
       this.teacherAccountParams.loading = true
       try {
         const res = await lingkeApi.teacherGetAccount({
-          userId: this.teacherInfo.userId
+          userId: this.userInfo.userId
         })
         if (res && res.code === 1000) {
           this.teacherAccountParams.accountInfo = res.data
@@ -544,7 +544,7 @@ export default {
       let tabList = []
       try {
         const res = await lingkeApi.orderTotal({
-          currentTeacherId: this.teacherInfo.userId
+          currentTeacherId: this.userInfo.userId
         })
         if (res && res.code === 1000) {
           tabList = [
@@ -574,7 +574,7 @@ export default {
     async infiniteHandler($state) {
       try {
         const res = await lingkeApi.orderGetList({
-          currentTeacherId: this.teacherInfo.userId,
+          currentTeacherId: this.userInfo.userId,
           pageIndex: this.searchParams.pageIndex,
           pageSize: this.searchParams.pageSize,
           status: this.searchParams.status
@@ -618,7 +618,7 @@ export default {
         onOk: async () => {
           try {
             const res = await lingkeApi.orderUpdate({
-              teacherId: this.teacherInfo.userId,
+              teacherId: this.userInfo.userId,
               id: item.id,
               status: '2'
             })
@@ -648,7 +648,7 @@ export default {
             // 拒绝，如果是用 status 6 表示，其他人呢？当前人拒绝过则无法接 而其他未拒绝的人可以接，在字段层面如何表达
             // 公开未指定接收人的呢？-》 转化为 限制人列表 的字段逻辑？
             const res = await lingkeApi.orderUpdate({
-              teacherId: this.teacherInfo.userId,
+              teacherId: this.userInfo.userId,
               id: item.id,
               status: '1'
             })
@@ -675,7 +675,7 @@ export default {
         onOk: async () => {
           try {
             const res = await lingkeApi.orderUpdate({
-              teacherId: this.teacherInfo.userId,
+              teacherId: this.userInfo.userId,
               id: item.id,
               status: '4'
             })
@@ -746,8 +746,8 @@ export default {
       }
       try {
         const res = await lingkeApi.orderGetList({
-          currentTeacherId: this.teacherInfo.userId,
-          teacher_id: this.teacherInfo.userId,
+          currentTeacherId: this.userInfo.userId,
+          teacher_id: this.userInfo.userId,
           status: ''
         })
         if (res && res.code === 1000) {
@@ -771,7 +771,7 @@ export default {
         let resText = ''
         try {
           const res = await lingkeApi.withdrawalCreate({
-            userId: this.teacherInfo.userId,
+            userId: this.userInfo.userId,
             orderId: row.id,
             amount: amount,
             fee: 0
@@ -822,7 +822,7 @@ export default {
       try {
         const formData = this.withdrawalRecordModalParams.formData
         const res = await lingkeApi.withdrawalGetList({
-          userId: this.teacherInfo.userId,
+          userId: this.userInfo.userId,
           pageIndex: params.pageNum,
           pageSize: params.pageSize,
           orderId: formData.orderId || undefined,

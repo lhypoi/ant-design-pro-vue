@@ -1,48 +1,50 @@
 <template>
   <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
-    <div class="flex flex-row flex-wrap gap-y-4" v-loading="teacherAccountParams.loading">
-      <div>
-        <div class="w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-full">
-          <el-image
-            class="w-full h-full"
-            :src="require('@/assets/link/avatar.png')"
-          />
+    <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
+      <a-form-model
+        :model="formData"
+      >
+        <div class="flex flex-row items-start gap-4 overflow-x-auto">
+          <a-form-model-item key="id" prop="id" class="flex-auto min-w-[170px]">
+            <a-input
+              v-model="formData.id"
+              placeholder="请输入订单号"
+              size="large"
+              allowClear
+            />
+          </a-form-model-item>
+          <a-form-model-item key="timeRange" prop="timeRange" class="min-w-[240px]">
+            <a-range-picker v-model="formData.timeRange" size="large" allowClear>
+              <a-icon slot="suffixIcon" type="calendar" />
+            </a-range-picker>
+          </a-form-model-item>
+          <a-form-model-item key="type" prop="type" class="min-w-[240px]">
+            <a-select v-model="formData.type" size="large" placeholder="请选择订单类型" allowClear>
+              <a-select-option v-for="item in options['type']" :key="item.key" :value="item.key">
+                {{ item.value }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+          <a-form-model-item key="teacher" prop="teacher" class="flex-auto min-w-[170px]">
+            <a-input
+              v-model="formData.teacher"
+              placeholder="请输入接单人名称/ID"
+              size="large"
+              allowClear
+            />
+          </a-form-model-item>
+          <a-button
+            class="h-11 rounded-md text-base"
+            type="primary"
+            icon="search"
+            size="large"
+          >
+            查询
+          </a-button>
         </div>
-      </div>
-      <div class="pl-5 pt-1 flex flex-col gap-y-3">
-        <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">累计订单金额：{{ teacherAccountParams.accountInfo.totalAmount || 0 }}</div>
-        <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">可提现金额：{{ teacherAccountParams.accountInfo.balance || 0 }}</div>
-        <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">已提现金额：{{ teacherAccountParams.accountInfo.withdrawalAmount || 0 }}</div>
-      </div>
-      <div class="w-full sm:w-auto sm:pl-8 sm:pt-3">
-        <a-popover title="说明" trigger="click">
-          <template slot="content">
-            <p>累计金额：历史所有累计已经完成订单的金额总和，订单需要是已完成的才会纳入统计。</p>
-            <p>可提现金额：累计金额 - 已提现金额</p>
-          </template>
-          <div class="text-blue-400 underline underline-offset-4 cursor-pointer">接单规则及提现说明</div>
-        </a-popover>
-      </div>
-      <div class="flex-auto flex flex-row sm:justify-end gap-4 sm:pt-1">
-        <a-button
-          type="primary"
-          class="rounded-md"
-          size="large"
-          @click="handleOpenCanWithdrawModal"
-        >
-          提现
-        </a-button>
-        <a-button
-          type="primary"
-          class="rounded-md"
-          size="large"
-          @click="handleOpenWithdrawalRecordModal"
-        >
-          提现记录
-        </a-button>
-      </div>
+      </a-form-model>
     </div>
-    <div class="flex flex-wrap items-end gap-3 min-h-[72px] mt-6 pt-5 pb-4 border-t border-solid border-gray-300" v-loading="tabParams.loading">
+    <div class="flex flex-wrap items-end gap-3 min-h-[56px] pt-2 pb-3" v-loading="tabParams.loading">
       <div
         v-for="tab in tabParams.tabList"
         :key="tab.key"
@@ -56,75 +58,31 @@
     </div>
     <div
       class="flex-auto flex flex-col"
-      :class="detailId ? 'h-0' : 'h-[60vh]'"
+      :class="detailId ? 'h-0' : 'h-[60vh] sm:h-[600px]'"
     >
-      <div
-        class="flex flex-col overflow-y-auto px-2 -mx-2 space-y-3"
-        :class="dataList.length ? 'py-1' : 'py-24'"
+      <k-table
+        ref="withdrawalRecordModalTable"
+        :data="(params) => handleGetOrderOrganizationOrderList(params)"
+        :border="true"
+        height="100%"
+        class="h-full"
       >
-        <div
-          v-for="item in dataList"
-          :key="item.id"
-          class="flex flex-col gap-3 sm:flex-row bg-slate-50 rounded-lg p-3 drop-shadow-md cursor-pointer hover:ring-2"
-          @click="handleToDetail(item)"
+        <el-table-column
+          v-for="col in withdrawalRecordModalParams.cols"
+          :key="col.key"
+          :prop="col.key"
+          :type="col.type"
+          :label="col.label"
+          :align="col.align || 'center'"
+          :fixed="col.fixed"
+          :width="col.width"
+          :min-width="col.minWidth"
         >
-          <div class="flex items-center justify-center sm:items-start">
-            <div class="w-full sm:w-24 h-24 rounded-lg overflow-hidden bg-blue-50">
-              <el-image
-                class="w-full h-full"
-                :src="require('@/assets/link/task-type-1.png')"
-              />
-            </div>
-          </div>
-          <div class="flex flex-col sm:flex-auto">
-            <div class="text-lg text-slate-900 font-bold">{{ item.task }}</div>
-            <div class="flex flex-wrap">
-              <div
-                class="text-sm text-blue-600 pr-2"
-              >#{{ item.typeName }}</div>
-              <div class="text-sm text-slate-400 sm:pl-2">{{ item.updateTime }}</div>
-            </div>
-            <div class="text-sm text-slate-800 line-clamp-2 pt-1">
-              {{ item.detail }}
-            </div>
-          </div>
-          <div class="flex flex-row justify-start items-center sm:justify-center sm:w-48">
-            <div
-              class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
-            >价格：￥{{ `${ item.unitPrice }/h x ${ item.duration }h` }}</div>
-          </div>
-          <div class="flex flex-row justify-start items-center sm:justify-center sm:w-44">
-            <div
-              class="text-yellow-500 text-base"
-            >{{ item.statusName }}</div>
-          </div>
-          <div class="flex justify-between items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28">
-            <div
-              v-if="item.status === '1'"
-              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="handleAcceptTask(item)"
-            >接受委托</div>
-            <div
-              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="handleRefuseTask(item)"
-            >拒绝委托</div>
-            <div
-              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
-              @click.stop="handleFinishTask(item)"
-            >交付确认</div>
-            <div
-              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
-              @click.stop="() => {}"
-            >
-              联系委托方
-            </div>
-          </div>
-        </div>
-        <infinite-loading
-          :identifier="infiniteId"
-          @infinite="infiniteHandler"
-        />
-      </div>
+          <template v-if="!col.type" v-slot="scope">
+            <div>{{ scope.row[col.key] }}</div>
+          </template>
+        </el-table-column>
+      </k-table>
     </div>
     <a-drawer
       placement="right"
@@ -354,7 +312,7 @@ import KTable from '@/components/Kira/KTable'
 import { baseMixin } from '@/store/app-mixin'
 
 export default {
-  name: 'MyOrders',
+  name: 'OOrders',
   mixins: [baseMixin],
   components: {
     KTable
@@ -362,6 +320,23 @@ export default {
   data() {
     return {
       lingkeApi,
+      formData: {
+        id: '',
+        timeRange: [],
+        type: undefined,
+        teacher: '',
+        status: ''
+      },
+      options: {
+        type: []
+      },
+      tabParams: {
+        loading: false,
+        tabList: []
+      },
+      tableCols: [
+
+      ],
       searchParams: {
         pageIndex: 1,
         pageSize: 8,
@@ -374,10 +349,6 @@ export default {
       teacherAccountParams: {
         accountInfo: {},
         loading: false
-      },
-      tabParams: {
-        loading: false,
-        tabList: []
       },
       canWithdrawModalParams: {
         show: false,
@@ -460,6 +431,16 @@ export default {
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
     }),
+    orderTypeOptions() {
+      return [
+        ...Object.entries(this.codeDict.order?.type || {}).map(([key, value]) => (
+          {
+            key,
+            value
+          }
+        ))
+      ]
+    },
     detailId() {
       return this.$route.query.id
     }
@@ -473,33 +454,21 @@ export default {
     }
   },
   async mounted() {
-    this.handleGetTeacherAccount()
-    this.handleGetTabData()
+    this.options['type'] = this.orderTypeOptions
+    this.handleGetOrderOrganizationOrderTotal()
   },
   methods: {
-    async handleGetTeacherAccount() {
-      this.teacherAccountParams.loading = true
-      try {
-        const res = await lingkeApi.teacherGetAccount({
-          userId: this.userInfo.userId
-        })
-        if (res && res.code === 1000) {
-          this.teacherAccountParams.accountInfo = res.data
-        } else {
-          throw new Error(res.msg || '加载失败')
-        }
-      } catch (error) {
-        this.$message.error(error.message)
-        console.log(error)
-      }
-      this.teacherAccountParams.loading = false
-    },
-    async handleGetTabData() {
+    async handleGetOrderOrganizationOrderTotal() {
       this.tabParams.loading = true
       let tabList = []
       try {
-        const res = await lingkeApi.orderTotal({
-          currentTeacherId: this.userInfo.userId
+        const formData = this.formData
+        const res = await lingkeApi.orderOrganizationOrderTotal({
+          id: formData.id || undefined,
+          beginTime: formData.timeRange[0] ? formData.timeRange[0].startOf('day').valueOf() : undefined,
+          endTime: formData.timeRange[1] ? formData.timeRange[1].endOf('day').valueOf() : undefined,
+          type: formData.type || undefined,
+          teacher: formData.teacher || undefined
         })
         if (res && res.code === 1000) {
           tabList = [
@@ -508,7 +477,7 @@ export default {
               value: '全 部',
               num: res.data.total
             },
-            ...res.data.tabList.map(tab => {
+            ...(res.data.tabList || []).map(tab => {
               return {
                 key: tab.status,
                 value: tab.name,
@@ -517,7 +486,7 @@ export default {
             })
           ]
         } else {
-          throw new Error(res.msg || '加载订单统计数据失败')
+          throw new Error(res.msg || '加载统计数据失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -526,35 +495,39 @@ export default {
       this.tabParams.tabList = tabList
       this.tabParams.loading = false
     },
-    async infiniteHandler($state) {
+    async handleGetOrderOrganizationOrderList(params) {
+      const tableData = {
+        rows: [],
+        total: 0
+      }
       try {
-        const res = await lingkeApi.orderGetList({
-          currentTeacherId: this.userInfo.userId,
-          pageIndex: this.searchParams.pageIndex,
-          pageSize: this.searchParams.pageSize,
-          status: this.searchParams.status
+        const formData = this.formData
+        const res = await lingkeApi.orderOrganizationOrderList({
+          pageIndex: params.pageNum,
+          pageSize: params.pageSize,
+          id: formData.id || undefined,
+          beginTime: formData.timeRange[0] ? formData.timeRange[0].startOf('day').valueOf() : undefined,
+          endTime: formData.timeRange[1] ? formData.timeRange[1].endOf('day').valueOf() : undefined,
+          type: formData.type || undefined,
+          teacher: formData.teacher || undefined,
+          status: formData.status || undefined
         })
         if (res && res.code === 1000) {
-          this.dataList = [...this.dataList, ...res.data.list]
-          if (this.dataList.length) $state.loaded()
-          if (this.searchParams.pageIndex < res.data.totalPage) {
-            this.searchParams.pageIndex++
-          } else {
-            $state.complete()
-          }
+          tableData.rows = res.data.list.map(row => ({
+            ...row
+          }))
+          tableData.total = res.data.total
         } else {
-          throw new Error(res.msg || '加载失败')
+          throw new Error(res.message || '加载失败')
         }
       } catch (error) {
-        this.$message.error(error.message)
-        $state.error()
         console.log(error)
+        this.$message.error(error.message)
       }
+      return tableData
     },
     reloadAllData() {
       if (this.detailId) this.handleDetailIdChange()
-      this.handleGetTeacherAccount()
-      this.handleGetTabData()
       this.handleTabClick()
     },
     handleTabClick(tab) {
