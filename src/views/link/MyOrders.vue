@@ -102,15 +102,15 @@
             <div
               v-if="item.status === '1'"
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="handleAcceptTask(item)"
+              @click.stop="() => $refs.LinkOrderDetailDrawer.handleCatchTask(item)"
             >接受委托</div>
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="handleRefuseTask(item)"
+              @click.stop="() => $refs.LinkOrderDetailDrawer.handleRefuseTask(item)"
             >拒绝委托</div>
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
-              @click.stop="handleFinishTask(item)"
+              @click.stop="() => $refs.LinkOrderDetailDrawer.handleFinishTask(item)"
             >交付确认</div>
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
@@ -126,101 +126,14 @@
         />
       </div>
     </div>
-    <a-drawer
-      placement="right"
-      :closable="false"
-      :visible="!!detailId"
-      :get-container="false"
-      :wrap-style="{ position: 'absolute' }"
-      width="100%"
-    >
-      <div>
-        <div class="pb-6">
-          <a-icon
-            type="left-circle"
-            theme="filled"
-            class="cursor-pointer text-blue-600 hover:text-blue-400 text-4xl"
-            @click="handleBack"
-          />
-        </div>
-        <div class="text-2xl font-bold text-slate-900">订单详情</div>
-        <div class="text-sm text-slate-400">Order details</div>
-        <div v-if="!detailData" class="pt-8">
-          <a-skeleton avatar active :paragraph="{ rows: 4 }" />
-        </div>
-        <div
-          v-else
-          class="flex flex-col gap-5 sm:flex-row pt-8"
-          v-loading="detailDataLoading"
-        >
-          <div class="flex items-center justify-center sm:items-start">
-            <div class="w-full sm:w-36 h-36 rounded-lg overflow-hidden bg-blue-50">
-              <el-image
-                class="w-full h-full"
-                :src="require('@/assets/link/task-type-1.png')"
-              />
-            </div>
-          </div>
-          <div class="link-style-form flex flex-col sm:flex-auto">
-            <div class="flex gap-x-5">
-              <div class="flex-auto text-lg text-slate-900 font-bold">{{ detailData.task }}</div>
-              <div
-                class="text-yellow-500 text-xl"
-              >{{ detailData.statusName }}</div>
-            </div>
-            <div class="flex flex-wrap pt-2">
-              <div
-                class="text-sm text-blue-600 pr-2 cursor-pointer"
-              >#{{ detailData.typeName }}</div>
-              <div class="text-sm text-slate-400 sm:pl-2">{{ detailData.updateTime }}</div>
-            </div>
-            <div class="pt-2 pb-4 flex">
-              <div
-                class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
-              >价格：￥{{ `${detailData.unitPrice}/h x ${detailData.duration}h` }}</div>
-            </div>
-            <div class="text-base text-slate-800">
-              {{ detailData.detail }}
-            </div>
-            <div v-if="detailData.fileList && detailData.fileList.length" class="pt-8">
-              <div class="text-gray-400">相关文件：</div>
-              <a-upload-dragger
-                class="dragUploader"
-                :fileList="detailData.fileList"
-                disabled
-                @preview="handleFileDownload"
-              >
-              </a-upload-dragger>
-            </div>
-            <div class="flex gap-x-6 gap-y-3 pt-8 flex-wrap whitespace-nowrap">
-              <div
-                v-if="detailData.status === '1'"
-                class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-                @click.stop="handleAcceptTask(detailData)"
-              >接受委托</div>
-              <div
-                class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-                @click.stop="handleRefuseTask(item)"
-              >拒绝委托</div>
-              <div
-                class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
-                @click.stop="handleFinishTask(item)"
-              >交付确认</div>
-              <div
-                class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
-                @click.stop="() => {}"
-              >
-                联系委托方
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </a-drawer>
+    <LinkOrderDetailDrawer
+      ref="LinkOrderDetailDrawer"
+      @reload="reloadAllData"
+    />
     <!-- canWithdrawModal -->
     <a-modal
       v-if="canWithdrawModalParams.show"
-      title="提现"
+      title="提现( 测试，返回全列表 )"
       :visible="true"
       :footer="null"
       :maskClosable="false"
@@ -349,15 +262,16 @@
 import { mapState, mapGetters } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
-import { downloadFile } from '@/utils//util.js'
 import KTable from '@/components/Kira/KTable'
+import LinkOrderDetailDrawer from '@/components/Kira/LinkOrderDetailDrawer'
 import { baseMixin } from '@/store/app-mixin'
 
 export default {
   name: 'MyOrders',
   mixins: [baseMixin],
   components: {
-    KTable
+    KTable,
+    LinkOrderDetailDrawer
   },
   data() {
     return {
@@ -368,9 +282,7 @@ export default {
         status: ''
       },
       dataList: [],
-      detailData: null,
       infiniteId: 1,
-      detailDataLoading: false,
       teacherAccountParams: {
         accountInfo: {},
         loading: false
@@ -384,8 +296,8 @@ export default {
         loading: false,
         cols: [
           {
-            key: 'tempColLocal1',
-            label: '下单人（缺失key）',
+            key: 'organizationName',
+            label: '下单人',
             width: 160
           },
           {
@@ -440,14 +352,64 @@ export default {
         },
         cols: [
           {
-            key: 'tempColLocal1',
+            key: 'orderId',
             label: '订单号',
             width: 160
           },
           {
-            key: 'tempColLocal2',
+            key: 'organizationName',
             label: '下单人',
-            minWidth: 160
+            width: 160
+          },
+          {
+            key: 'organizationId',
+            label: '下单人ID',
+            width: 160
+          },
+          {
+            key: 'createTime',
+            label: '下单时间',
+            width: 160
+          },
+          {
+            key: 'typeName',
+            label: '订单类型',
+            width: 160
+          },
+          {
+            key: 'detail',
+            label: '订单详细说明',
+            minWidth: 200
+          },
+          {
+            key: 'unitPrice',
+            label: '一小时单价',
+            width: 120
+          },
+          {
+            key: 'duration',
+            label: '课程时间(小时)',
+            width: 120
+          },
+          {
+            key: 'amount',
+            label: '委托价格',
+            width: 120
+          },
+          {
+            key: 'updateTime',
+            label: '提现时间',
+            width: 120
+          },
+          {
+            key: 'fee',
+            label: '手续费',
+            width: 120
+          },
+          {
+            key: 'statusName',
+            label: '提现状态',
+            width: 120
           }
         ]
       }
@@ -461,15 +423,7 @@ export default {
       codeDict: 'codeDict'
     }),
     detailId() {
-      return this.$route.query.id
-    }
-  },
-  watch: {
-    detailId: {
-      handler() {
-        this.handleDetailIdChange()
-      },
-      immediate: true
+      return this.$route.query.orderId
     }
   },
   async mounted() {
@@ -498,8 +452,7 @@ export default {
       this.tabParams.loading = true
       let tabList = []
       try {
-        const res = await lingkeApi.orderTotal({
-          currentTeacherId: this.userInfo.userId
+        const res = await lingkeApi.orderTeacherOrderTotal({
         })
         if (res && res.code === 1000) {
           tabList = [
@@ -528,8 +481,7 @@ export default {
     },
     async infiniteHandler($state) {
       try {
-        const res = await lingkeApi.orderGetList({
-          currentTeacherId: this.userInfo.userId,
+        const res = await lingkeApi.orderTeacherOrderList({
           pageIndex: this.searchParams.pageIndex,
           pageSize: this.searchParams.pageSize,
           status: this.searchParams.status
@@ -552,7 +504,6 @@ export default {
       }
     },
     reloadAllData() {
-      if (this.detailId) this.handleDetailIdChange()
       this.handleGetTeacherAccount()
       this.handleGetTabData()
       this.handleTabClick()
@@ -563,133 +514,8 @@ export default {
       this.dataList = []
       this.infiniteId++
     },
-    handleAcceptTask(item) {
-      this.$confirm({
-        title: '提示',
-        content: `待委托方确认并完成支付。`,
-        okText: '确定',
-        okType: 'primary',
-        cancelText: '取消',
-        onOk: async () => {
-          try {
-            const res = await lingkeApi.orderUpdate({
-              teacherId: this.userInfo.userId,
-              id: item.id,
-              status: '2'
-            })
-            if (res && res.code === 1000 && res.data === 1) {
-              this.$message.success('提交成功')
-              this.reloadAllData()
-            } else {
-              throw new Error(res.msg || '失败')
-            }
-          } catch (error) {
-            this.$message.error(error.message)
-            console.log(error)
-          }
-        }
-      })
-    },
-    handleRefuseTask(item) {
-      this.$confirm({
-        title: '提示',
-        content: `确认拒绝委托?`,
-        okText: '确定',
-        okType: 'primary',
-        cancelText: '取消',
-        onOk: async () => {
-          try {
-            // TODO: 此处要考虑怎么传达 当前这人拒绝 这个逻辑概念，目前暂用重置状态为 未处理 代替
-            // 拒绝，如果是用 status 6 表示，其他人呢？当前人拒绝过则无法接 而其他未拒绝的人可以接，在字段层面如何表达
-            // 公开未指定接收人的呢？-》 转化为 限制人列表 的字段逻辑？
-            const res = await lingkeApi.orderUpdate({
-              teacherId: this.userInfo.userId,
-              id: item.id,
-              status: '1'
-            })
-            if (res && res.code === 1000 && res.data === 1) {
-              this.$message.success('提交成功')
-              this.reloadAllData()
-            } else {
-              throw new Error(res.msg || '失败')
-            }
-          } catch (error) {
-            this.$message.error(error.message)
-            console.log(error)
-          }
-        }
-      })
-    },
-    handleFinishTask(item) {
-      this.$confirm({
-        title: '提示',
-        content: `若已完成订单交付，点击确认，可以提交到委托方进行订单完成确认`,
-        okText: '确定',
-        okType: 'primary',
-        cancelText: '取消',
-        onOk: async () => {
-          try {
-            const res = await lingkeApi.orderUpdate({
-              teacherId: this.userInfo.userId,
-              id: item.id,
-              status: '4'
-            })
-            if (res && res.code === 1000 && res.data === 1) {
-              this.$message.success('已提交委托方进行确认')
-              this.reloadAllData()
-            } else {
-              throw new Error(res.msg || '失败')
-            }
-          } catch (error) {
-            this.$message.error(error.message)
-            console.log(error)
-          }
-        }
-      })
-    },
     handleToDetail(row) {
-      this.$router.push({ name: 'MyOrders', query: { id: row.id } })
-    },
-    handleBack() {
-      this.$router.push({ name: 'MyOrders' })
-    },
-    async handleDetailIdChange() {
-      if (this.detailId) {
-        this.detailDataLoading = true
-        try {
-          const res = await lingkeApi.orderGetOne({
-            Id: parseInt(this.detailId)
-          })
-          if (res && res.code === 1000) {
-            const detailData = res.data
-            detailData.fileList = detailData.files ? this.parseFileNamesToObjs(detailData.files.split(',')) : []
-            this.detailData = detailData
-          } else {
-            throw new Error(res.msg || '加载失败')
-          }
-        } catch (error) {
-          this.$message.error(error.message)
-          console.log(error)
-        }
-        this.detailDataLoading = false
-      } else {
-        this.detailData = null
-      }
-    },
-    parseFileNamesToObjs(names) {
-      return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: (fileName + fileExtension) || name,
-          status: 'done',
-          uploadResName: name,
-          downloadUrl: `${lingkeApi.downloadBaseUrl}?file=${name}`
-        }
-      })
-    },
-    handleFileDownload(file) {
-      downloadFile(file.downloadUrl, file.name, true)
+      this.$router.push({ name: this.$route.name, query: { orderId: row.id } })
     },
     async handleOpenCanWithdrawModal() {
       this.canWithdrawModalParams = {
@@ -701,8 +527,7 @@ export default {
       }
       try {
         const res = await lingkeApi.orderGetList({
-          currentTeacherId: this.userInfo.userId,
-          teacher_id: this.userInfo.userId,
+          teacherId: this.userInfo.userId,
           status: ''
         })
         if (res && res.code === 1000) {

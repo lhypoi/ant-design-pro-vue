@@ -138,43 +138,49 @@ const asyncRouterMapAll = {
       name: 'index',
       component: BasicLayout,
       meta: { title: 'menu.home' },
-      redirect: '/task-square',
+      // redirect: '/task-square',
       children: [
         {
           path: '/task-square',
           name: 'TaskSquare',
           component: () => import('@/views/link/TaskSquare'),
-          meta: { title: '任务广场', icon: 'appstore' }
+          meta: { title: '任务广场', icon: 'appstore', permission: ['1'] }
         },
         {
           path: '/personal-center',
           name: 'PersonalCenter',
           component: () => import('@/views/link/PersonalCenter'),
-          meta: { title: '个人中心', icon: 'user' }
+          meta: { title: '个人中心', icon: 'user', permission: ['1'] }
         },
         {
           path: '/my-orders',
           name: 'MyOrders',
           component: () => import('@/views/link/MyOrders'),
-          meta: { title: '我的订单', icon: 'database' }
+          meta: { title: '我的订单', icon: 'database', permission: ['1'] }
+        },
+        {
+          path: '/t-account-setting',
+          name: 'TAccountSetting',
+          component: () => import('@/views/link/TAccountSetting'),
+          meta: { title: '账号设置', icon: 'container', permission: ['1'] }
         },
         {
           path: '/o-home',
           name: 'OHome',
           component: () => import('@/views/link/OHome'),
-          meta: { title: '首页', icon: 'database' }
+          meta: { title: '首页', icon: 'database', permission: ['2'] }
         },
         {
           path: '/o-orders',
           name: 'OOrders',
           component: () => import('@/views/link/OOrders'),
-          meta: { title: '我的委托', icon: 'database' }
+          meta: { title: '我的委托', icon: 'database', permission: ['2'] }
         },
         {
           path: '/o-personal-center',
           name: 'OPersonalCenter',
           component: () => import('@/views/link/OPersonalCenter'),
-          meta: { title: '个人中心', icon: 'user' }
+          meta: { title: '个人中心', icon: 'user', permission: ['2'] }
         }
       ]
     },

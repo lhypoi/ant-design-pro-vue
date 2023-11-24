@@ -124,7 +124,7 @@ const user = {
               if (userInfoRes && userInfoRes.code === 1000) {
                 const role = {
                   id: userInfoRes.data.role,
-                  permissions: []
+                  permissionList: [userInfoRes.data.role]
                 }
                 result.role = role
                 commit('SET_ROLES', role)

@@ -14,11 +14,11 @@
           <a-icon type="setting" />
           {{ $t('menu.account.settings') }}
         </a-menu-item> -->
-        <a-menu-item v-if="menu" key="profile" @click="handleToProfile">
+        <!-- <a-menu-item v-if="menu" key="profile" @click="handleToProfile">
           <a-icon type="file-sync" />
           {{ 'Profile' }}
         </a-menu-item>
-        <a-menu-divider v-if="menu" />
+        <a-menu-divider v-if="menu" /> -->
         <a-menu-item key="logout" @click="handleLogout">
           <a-icon type="logout" />
           {{ $t('menu.account.logout') }}
@@ -26,12 +26,12 @@
       </a-menu>
     </template>
   </a-dropdown>
-  <span v-else style="display: block; background: transparent;">
+  <!-- <span v-else style="display: block; background: transparent;">
     <div class="h-full flex flex-row items-center">
       <div class="text-base text-gray-400 cursor-pointer hover:text-gray-700 pr-4" @click="handleToLogin">Log In</div>
       <div class="text-base text-gray-400 cursor-pointer hover:text-gray-700" @click="handleToRegister">Sign Up</div>
     </div>
-  </span>
+  </span> -->
 </template>
 
 <script>

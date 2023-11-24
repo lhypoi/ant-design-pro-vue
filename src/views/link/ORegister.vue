@@ -74,7 +74,7 @@
                             :disabled="sendBtnData.disabled"
                             :loading="sendBtnData.loading"
                             @click="handleSendSmsCode(item.key)"
-                          >发送验证码</a-button>
+                          >{{ sendBtnData.disabled ? `发送验证码(${ sendBtnData.countdown }s)` : '发送验证码' }}</a-button>
                         </div>
                       </a-form-model-item>
                     </template>
@@ -349,7 +349,7 @@ export default {
       sendBtnData: {
         disabled: false,
         loading: false,
-        countdown: 60,
+        countdown: 0,
         timer: null
       },
       showResultPanel: false,
@@ -385,6 +385,7 @@ export default {
           phoneNumber: this.formData[formKey].phoneNumber
         })
         if (res && res.code === 1000) {
+          this.$message.success('发送成功')
           this.sendBtnData.timer = setInterval(() => {
             this.sendBtnData.countdown--
             if (this.sendBtnData.countdown <= 0) {

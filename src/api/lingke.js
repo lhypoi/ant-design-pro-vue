@@ -203,6 +203,14 @@ export function organizationChangePasswd (parameter) {
   })
 }
 
+export function teacherChangePasswd (parameter) {
+  return request({
+    url: url + '/teacher/changePasswd',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -231,5 +239,6 @@ export default {
   orderOrganizationOrderTotal,
   organizationGetOne,
   organizationUpdate,
-  organizationChangePasswd
+  organizationChangePasswd,
+  teacherChangePasswd
 }

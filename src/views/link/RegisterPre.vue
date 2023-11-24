@@ -6,8 +6,9 @@
           <div class="text-white text-5xl pb-10">领克数云</div>
           <div class="text-white text-2xl pb-2">一个提供高学历学术人才</div>
           <div class="text-white text-2xl">帮助客户解决学术难题的平台</div>
-          <div class="flex-auto flex flex-col justify-center h-[160px]">
-            <a-button size="large" class="rounded-md w-36 h-12 text-xl">立即注册</a-button>
+          <div class="flex-auto pt-5 flex flex-row gap-x-5">
+            <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="toRegister('tRegister')">教师注册</a-button>
+            <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="toRegister('oRegister')">机构注册</a-button>
           </div>
         </div>
         <div class="px-10 flex flex-row justify-center">
@@ -34,6 +35,9 @@ export default {
   async mounted() {
   },
   methods: {
+    toRegister(name) {
+      this.$router.push({ name })
+    }
   }
 }
 </script>

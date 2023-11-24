@@ -468,7 +468,7 @@ export default {
       })
     },
     handleToTab(tab) {
-      this.$router.push({ name: 'OPersonalCenter', query: { tab: tab.key } })
+      this.$router.push({ name: this.$route.name, query: { tab: tab.key } })
     },
     handleFileChange(info, formKey, itemKey, single) {
       let fileList = [...info.fileList]

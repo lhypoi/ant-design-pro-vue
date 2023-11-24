@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <div class="link-style-form flex-auto overflow-hidden bg-white rounded-3xl p-6 sm:pt-12 sm:px-12">
+    <div class="link-style-form flex-auto overflow-hidden bg-white rounded-3xl p-6 sm:pt-12 sm:px-12" v-loading="loading">
       <div class="">
         <a-form-model
           :ref="'form_' + curTabKey"
@@ -403,6 +403,7 @@ export default {
   data() {
     return {
       lingkeApi,
+      loading: false,
       tabList: [
         {
           title: '个人信息',
@@ -634,39 +635,53 @@ export default {
     }
   },
   created() {
-    this.initFormData()
   },
   async mounted() {
+    this.initFormData()
   },
   methods: {
-    initFormData() {
-      const teacherInfo = this.userInfo
-      const formData = {
-        '1': {
-          name: teacherInfo.name,
-          highEduLevel: teacherInfo.highEduLevel,
-          major: teacherInfo.major,
-          college: teacherInfo.college,
-          advantage: teacherInfo.advantage,
-          tools: teacherInfo.tools.split(','),
-          want: teacherInfo.want.split(','),
-          sample: this.parseFileNamesToObjs(teacherInfo.sampleList || [])
-        },
-        '2': {
-          cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
-        },
-        '3': {
-          diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
-          transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || []),
-          visa: this.parseFileNamesToObjs(teacherInfo.visaList || [])
-        },
-        '4': {
-          bankNum: teacherInfo.bankNum,
-          bankBranch: teacherInfo.bankBranch,
-          idNo: teacherInfo.idNo
+    async initFormData() {
+      this.loading = true
+      try {
+        const res = await lingkeApi.teacherGetOne({
+          userId: this.userInfo.userId
+        })
+        if (res && res.code === 1000) {
+          const teacherInfo = res.data
+          const formData = {
+            '1': {
+              name: teacherInfo.name,
+              highEduLevel: teacherInfo.highEduLevel,
+              major: teacherInfo.major,
+              college: teacherInfo.college,
+              advantage: teacherInfo.advantage,
+              tools: teacherInfo.tools.split(','),
+              want: teacherInfo.want.split(','),
+              sample: this.parseFileNamesToObjs(teacherInfo.sampleList || [])
+            },
+            '2': {
+              cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
+            },
+            '3': {
+              diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
+              transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || []),
+              visa: this.parseFileNamesToObjs(teacherInfo.visaList || [])
+            },
+            '4': {
+              bankNum: teacherInfo.bankNum,
+              bankBranch: teacherInfo.bankBranch,
+              idNo: teacherInfo.idNo
+            }
+          }
+          this.formData = formData
+        } else {
+          throw new Error(res.msg || '加载失败')
         }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
       }
-      this.formData = formData
+      this.loading = false
     },
     async handleSave() {
       try {
@@ -725,6 +740,7 @@ export default {
             if (res && res.data === 1) {
               await this.$store.dispatch('GetInfo')
               this.$message.success('保存成功')
+              this.initFormData()
             } else {
               throw new Error(res.msg || '保存失败')
             }

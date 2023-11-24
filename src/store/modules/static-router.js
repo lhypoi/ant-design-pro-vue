@@ -78,6 +78,10 @@ const permission = {
           case APP_NAME.NUCLEAR_LAB:
             accessedRouters[0].redirect = accessedRouters[0].children[0].path
             break
+          case APP_NAME.LINK_DEV:
+            console.log(accessedRouters)
+            accessedRouters[0].redirect = accessedRouters[0].children[0].path
+            break
           default:
             break
         }
