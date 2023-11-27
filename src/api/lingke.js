@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 
-const url = 'https://api.ukshuxi.com/lingke/api/v1'
+// const url = 'https://api.ukshuxi.com/lingke/api/v1'
+const url = '/lingke/api/v1'
 export const uploadUrl = url + '/base/uploadFile'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'

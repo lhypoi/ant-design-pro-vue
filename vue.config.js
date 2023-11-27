@@ -168,6 +168,11 @@ const vueConfig = {
         target: 'https://api.ukshuxi.com',
         ws: false,
         changeOrigin: true
+      },
+      '/lingke/api': {
+        target: 'https://api.ukshuxi.com',
+        ws: false,
+        changeOrigin: true
       }
     }
   },

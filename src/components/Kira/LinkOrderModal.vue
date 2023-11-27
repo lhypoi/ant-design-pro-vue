@@ -64,7 +64,7 @@
               <a-upload-dragger
                 class="dragUploader"
                 :multiple="true"
-                name="fileList"
+                name="files"
                 :action="lingkeApi.uploadUrl"
                 :fileList="linkOrderModalParams.formData.files"
                 @change="info => handleFormFileChange(info, linkOrderModalParams.formData, 'files', false)"
@@ -270,10 +270,10 @@ export default {
         ))
         if (orderId) {
           const formDataRes = await lingkeApi.orderGetOne({
-            Id: parseInt(this.detailId)
+            Id: parseInt(orderId)
           })
           const formData = formDataRes.data
-          formData.fileList = formData.files ? this.parseFileNamesToObjs(formData.files.split(',')) : []
+          formData.files = formData.files ? this.parseFileNamesToObjs(formData.files.split(',')) : []
           this.linkOrderModalParams.formData = formData
         }
       } catch (error) {
@@ -334,6 +334,7 @@ export default {
         }) : await lingkeApi.orderCreate(params)
         if (res && res.code === 1000) {
           this.$message.success('发布成功')
+          this.$emit('reload')
           this.linkOrderModalParams.show = false
         } else {
           throw new Error(res.msg || '发布失败')

@@ -66,25 +66,47 @@
             </a-upload-dragger>
           </div>
           <div class="flex gap-x-6 gap-y-3 pt-8 flex-wrap whitespace-nowrap">
-            <div
-              v-if="detailData.status === '1'"
-              class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="handleCatchTask(detailData)"
-            >接受委托</div>
-            <div
-              class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="handleRefuseTask(detailData)"
-            >拒绝委托</div>
-            <div
-              class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
-              @click.stop="handleFinishTask(detailData)"
-            >交付确认</div>
-            <div
-              class="cursor-pointer flex items-center justify-center px-4 h-10 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
-              @click.stop="() => {}"
+            <a-button
+              class="h-10 rounded-md"
+              type="primary"
+              @click="handleCatchTask(detailData)"
+            >
+              接受委托
+            </a-button>
+            <a-button
+              class="h-10 rounded-md"
+              type="danger"
+              @click="handleRefuseTask(detailData)"
+            >
+              拒绝委托
+            </a-button>
+            <a-button
+              class="success-btn h-10 rounded-md"
+              type="primary"
+              @click="handlePayTask(detailData)"
+            >
+              支付
+            </a-button>
+            <a-button
+              class="success-btn h-10 rounded-md"
+              type="primary"
+              @click="handleFinishTask(detailData)"
+            >
+              交付确认
+            </a-button>
+            <a-button
+              class="h-10 rounded-md"
+              type="primary"
             >
               联系委托方
-            </div>
+            </a-button>
+            <a-button
+              class="h-10 rounded-md"
+              type="danger"
+              @click="handleCancelTask(detailData)"
+            >
+              撤销委托
+            </a-button>
           </div>
         </div>
       </div>
@@ -188,8 +210,7 @@ export default {
             })
             if (res && res.code === 1000 && res.data === 1) {
               this.$message.success('提交成功')
-              if (this.detailId) this.handleDetailIdChange()
-              this.$emit('reload')
+              this.handleReload()
             } else {
               throw new Error(res.msg || '失败')
             }
@@ -216,8 +237,59 @@ export default {
             })
             if (res && res.code === 1000 && res.data === 1) {
               this.$message.success('拒绝成功')
-              if (this.detailId) this.handleDetailIdChange()
-              this.$emit('reload')
+              this.handleReload()
+            } else {
+              throw new Error(res.msg || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleCancelTask(item) {
+      this.$confirm({
+        title: '提示',
+        content: `确认撤销委托?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await lingkeApi.orderUpdate({
+              id: item.id,
+              isDeleted: '1'
+            })
+            if (res && res.code === 1000 && res.data === 1) {
+              this.$message.success('撤销成功')
+              this.handleReload()
+            } else {
+              throw new Error(res.msg || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handlePayTask(item) {
+      this.$confirm({
+        title: '提示',
+        content: `确认支付?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await lingkeApi.orderUpdate({
+              id: item.id,
+              status: '3'
+            })
+            if (res && res.code === 1000 && res.data === 1) {
+              this.$message.success('确认成功')
+              this.handleReload()
             } else {
               throw new Error(res.msg || '失败')
             }
@@ -244,8 +316,7 @@ export default {
             })
             if (res && res.code === 1000 && res.data === 1) {
               this.$message.success('已提交委托方进行确认')
-              if (this.detailId) this.handleDetailIdChange()
-              this.$emit('reload')
+              this.handleReload()
             } else {
               throw new Error(res.msg || '失败')
             }
@@ -255,6 +326,10 @@ export default {
           }
         }
       })
+    },
+    handleReload() {
+      if (this.detailId) this.handleDetailIdChange()
+      this.$emit('reload')
     }
   }
 }

@@ -10,7 +10,7 @@
         :class="[
           searchParams.type === orderTyp.key ? 'bg-blue-600 text-white' : 'bg-slate-100 hover:bg-blue-400 hover:text-white text-slate-400'
         ]"
-        @click="handleTabClick(orderTyp.key)"
+        @click="handleTabClick(orderTyp)"
       >
         {{ orderTyp.value }}</div>
     </div>

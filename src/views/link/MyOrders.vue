@@ -463,9 +463,9 @@ export default {
             },
             ...res.data.tabList.map(tab => {
               return {
-                key: tab.status,
-                value: tab.name,
-                num: tab.num
+                key: tab.Status,
+                value: tab.Name,
+                num: tab.Num
               }
             })
           ]
