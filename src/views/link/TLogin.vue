@@ -7,12 +7,12 @@
         <div class="flex flex-row pt-4">
           <img :src="logoImg" alt="" class="h-6">
         </div>
-        <div class="pt-14 flex flex-row">
-          <div class="flex-1 flex row justify-end items-center">
-            <img src="@/assets/link//l1.webp" alt="" class="w-[450px]">
+        <div class="flex flex-col sm:flex-row gap-y-10 pt-5 sm:pt-14 ">
+          <div class="flex-1 flex row justify-center items-center">
+            <img src="@/assets/link//l1.webp" alt="" class="w-[160px] sm:w-[450px]">
           </div>
-          <div class="flex-1 flex flex-row justify-end pr-5">
-            <div class="w-[450px]">
+          <div class="flex-1 flex flex-row justify-center">
+            <div class="sm:w-[450px]">
               <a-form-model
                 ref="loginForm"
                 class="link-style-form"
@@ -251,7 +251,8 @@ export default {
           try {
             const params = {
               loginType: this.formData.loginType,
-              phoneNumber: this.formData.phoneNumber
+              phoneNumber: this.formData.phoneNumber,
+              loginMode: this.$route.meta.loginMode
             }
             if (this.formData.loginType === '1') params.passWord = this.formData.passWord
             if (this.formData.loginType === '2') params.smsCode = this.formData.smsCode

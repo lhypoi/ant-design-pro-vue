@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
-// const url = 'https://api.ukshuxi.com/lingke/api/v1'
-const url = '/lingke/api/v1'
+const url = 'https://api.ukshuxi.com/lingke/api/v1'
+// const url = '/lingke/api/v1'
 export const uploadUrl = url + '/base/uploadFile'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'
@@ -32,6 +32,14 @@ export function teacherSignup (parameter) {
 export function login (parameter) {
   return request({
     url: url + '/user/login',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function adminLogin (parameter) {
+  return request({
+    url: url + '/admin/login',
     method: 'post',
     data: parameter
   })
@@ -212,6 +220,14 @@ export function teacherChangePasswd (parameter) {
   })
 }
 
+export function organizationGetList (parameter) {
+  return request({
+    url: url + '/organization/getList',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -241,5 +257,7 @@ export default {
   organizationGetOne,
   organizationUpdate,
   organizationChangePasswd,
-  teacherChangePasswd
+  teacherChangePasswd,
+  adminLogin,
+  organizationGetList
 }

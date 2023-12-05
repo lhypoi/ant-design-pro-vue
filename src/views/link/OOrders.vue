@@ -251,7 +251,7 @@ export default {
       ]
     },
     detailId() {
-      return this.$route.query.id
+      return this.$route.query.orderId
     }
   },
   async mounted() {

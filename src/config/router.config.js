@@ -181,6 +181,12 @@ const asyncRouterMapAll = {
           name: 'OPersonalCenter',
           component: () => import('@/views/link/OPersonalCenter'),
           meta: { title: '个人中心', icon: 'user', permission: ['2'] }
+        },
+        {
+          path: '/organization-manage',
+          name: 'OrganizationManage',
+          component: () => import('@/views/link/OrganizationManage'),
+          meta: { title: '机构管理', icon: 'appstore', permission: ['1'] }
         }
       ]
     },
@@ -214,6 +220,15 @@ const asyncRouterMapAll = {
       publiclyAccessible: true,
       defaultLoginRoute: true,
       component: () => import('@/views/link/TLogin'),
+      meta: { title: '登录' },
+      hidden: true
+    },
+    {
+      path: '/admin-login',
+      name: 'adminLogin',
+      publiclyAccessible: true,
+      component: () => import('@/views/link/TLogin'),
+      meta: { title: '登录', loginMode: 'admin' },
       hidden: true
     }
   ],

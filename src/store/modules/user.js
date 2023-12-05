@@ -58,7 +58,13 @@ const user = {
             })
             break
           case APP_NAME.LINK_DEV:
-            lingkeApi.login(userInfo).then(res => {
+            const loginApi = userInfo.loginMode === 'admin' ? lingkeApi.adminLogin : lingkeApi.login
+            loginApi({
+              loginType: userInfo.loginType,
+              phoneNumber: userInfo.phoneNumber,
+              passWord: userInfo.passWord,
+              smsCode: userInfo.smsCode
+            }).then(res => {
               if (res && res.code === 1000) {
                 const token = res.data.token
                 storage.set(ACCESS_TOKEN, token, new Date().getTime() + 10 * 60 * 60 * 1000)
