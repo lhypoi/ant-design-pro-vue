@@ -124,6 +124,7 @@
 import { mapState } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import { sendSmsCode } from '@/api/lingke'
+import storage from 'store'
 
 export default {
   name: 'TLogin',
@@ -209,6 +210,7 @@ export default {
     this.formData.loginType = Object.keys(this.loginTypeEnum)[0]
   },
   mounted() {
+    storage.set('defaultLoginRoute', this.$route.meta.loginMode ? 'adminLogin' : 'tLogin')
   },
   methods: {
     async handleSendSmsCode() {

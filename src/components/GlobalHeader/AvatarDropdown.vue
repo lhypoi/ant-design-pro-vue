@@ -37,6 +37,7 @@
 <script>
 import { Modal } from 'ant-design-vue'
 import { mapState, mapGetters } from 'vuex'
+import storage from 'store'
 
 export default {
   name: 'AvatarDropdown',
@@ -78,7 +79,7 @@ export default {
           //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
           // }).catch(() => console.log('Oops errors!'))
           return this.$store.dispatch('Logout').then(() => {
-            this.$router.push({ name: 'Login' })
+            this.$router.push({ name: storage.get('defaultLoginRoute') || 'Login' })
           })
         },
         onCancel () {}

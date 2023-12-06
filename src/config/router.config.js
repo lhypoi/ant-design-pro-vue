@@ -2,6 +2,7 @@
 import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
 // import { bxAnaalyse } from '@/core/icons'
 import { APP_NAME, CUR_APP } from '@/store/mutation-types'
+import storage from 'store'
 
 const RouteView = {
   name: 'RouteView',
@@ -186,7 +187,7 @@ const asyncRouterMapAll = {
           path: '/organization-manage',
           name: 'OrganizationManage',
           component: () => import('@/views/link/OrganizationManage'),
-          meta: { title: '机构管理', icon: 'appstore', permission: ['1'] }
+          meta: { title: '机构管理', icon: 'appstore', permission: ['3'] }
         }
       ]
     },
@@ -218,7 +219,7 @@ const asyncRouterMapAll = {
       path: '/t-login',
       name: 'tLogin',
       publiclyAccessible: true,
-      defaultLoginRoute: true,
+      defaultLoginRoute: storage.get('loginMode') !== 'admin',
       component: () => import('@/views/link/TLogin'),
       meta: { title: '登录' },
       hidden: true
@@ -227,6 +228,7 @@ const asyncRouterMapAll = {
       path: '/admin-login',
       name: 'adminLogin',
       publiclyAccessible: true,
+      defaultLoginRoute: storage.get('loginMode') === 'admin',
       component: () => import('@/views/link/TLogin'),
       meta: { title: '登录', loginMode: 'admin' },
       hidden: true
