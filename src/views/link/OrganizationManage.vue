@@ -56,7 +56,8 @@
           :min-width="col.minWidth"
         >
           <template v-if="!col.type" v-slot="scope">
-            <div>{{ scope.row[col.key] }}</div>
+            <div v-if="col.key === 'status'">{{ `${ scope.row['statusName'] }${ scope.row['status'] === '3' ? '，' + scope.row['remark'] : '' }` }}</div>
+            <div v-else>{{ scope.row[col.key] }}</div>
           </template>
         </el-table-column>
         <el-table-column label="操作" :align="'center'" width="120" fixed="right">
@@ -72,7 +73,7 @@
               <a-button
                 class="success-btn h-7 rounded-md"
                 type="primary"
-                @click="$refs.LinkOrganizationDetailDrawer.handlePayTask(scope.row)"
+                @click="$refs.LinkOrganizationDetailDrawer.handleShowAdminAuditOrganizationModal(scope.row)"
               >
                 审核
               </a-button>
@@ -81,10 +82,6 @@
         </el-table-column>
       </k-table>
     </div>
-    <LinkOrderModal
-      ref="LinkOrderModal"
-      @reload="handleOrganizationOrderSearch"
-    />
     <LinkOrganizationDetailDrawer
       ref="LinkOrganizationDetailDrawer"
       @reload="handleOrganizationOrderSearch"
@@ -98,7 +95,6 @@ import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import KTable from '@/components/Kira/KTable'
 import { baseMixin } from '@/store/app-mixin'
-import LinkOrderModal from '@/components/Kira/LinkOrderModal'
 import LinkOrganizationDetailDrawer from '@/components/Kira/LinkOrganizationDetailDrawer'
 
 export default {
@@ -106,7 +102,6 @@ export default {
   mixins: [baseMixin],
   components: {
     KTable,
-    LinkOrderModal,
     LinkOrganizationDetailDrawer
   },
   data() {
@@ -143,7 +138,7 @@ export default {
           width: 120
         },
         {
-          key: 'statusName',
+          key: 'status',
           label: '认证状态',
           width: 200
         }

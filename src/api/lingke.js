@@ -228,6 +228,14 @@ export function organizationGetList (parameter) {
   })
 }
 
+export function adminAuditOrganization (parameter) {
+  return request({
+    url: url + '/admin/auditOrganization',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -259,5 +267,6 @@ export default {
   organizationChangePasswd,
   teacherChangePasswd,
   adminLogin,
-  organizationGetList
+  organizationGetList,
+  adminAuditOrganization
 }
