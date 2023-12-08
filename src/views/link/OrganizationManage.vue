@@ -72,7 +72,7 @@
               <a-button
                 class="success-btn h-7 rounded-md"
                 type="primary"
-                @click="$refs.LinkOrderDetailDrawer.handlePayTask(scope.row)"
+                @click="$refs.LinkOrganizationDetailDrawer.handlePayTask(scope.row)"
               >
                 审核
               </a-button>
@@ -85,8 +85,8 @@
       ref="LinkOrderModal"
       @reload="handleOrganizationOrderSearch"
     />
-    <LinkOrderDetailDrawer
-      ref="LinkOrderDetailDrawer"
+    <LinkOrganizationDetailDrawer
+      ref="LinkOrganizationDetailDrawer"
       @reload="handleOrganizationOrderSearch"
     />
   </div>
@@ -99,7 +99,7 @@ import lingkeApi from '@/api/lingke'
 import KTable from '@/components/Kira/KTable'
 import { baseMixin } from '@/store/app-mixin'
 import LinkOrderModal from '@/components/Kira/LinkOrderModal'
-import LinkOrderDetailDrawer from '@/components/Kira/LinkOrderDetailDrawer'
+import LinkOrganizationDetailDrawer from '@/components/Kira/LinkOrganizationDetailDrawer'
 
 export default {
   name: 'OrganizationManage',
@@ -107,7 +107,7 @@ export default {
   components: {
     KTable,
     LinkOrderModal,
-    LinkOrderDetailDrawer
+    LinkOrganizationDetailDrawer
   },
   data() {
     return {
@@ -192,7 +192,7 @@ export default {
       return tableData
     },
     handleToDetail(row) {
-      this.$router.push({ name: this.$route.name, query: { orderId: row.id } })
+      this.$router.push({ name: this.$route.name, query: { userId: row.userId } })
     },
     handleOrganizationOrderSearch() {
       this.$refs.organizationListTable.refresh()
