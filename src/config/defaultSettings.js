@@ -4,6 +4,7 @@ const appTitleAll = {
   [APP_NAME.ZND]: '1KCIGP',
   [APP_NAME.LINK_DEV]: '领克数云',
   [APP_NAME.NUCLEAR_LAB]: '核与辐射工作场所管理系统',
+  [APP_NAME.MEDICAL_FORUM]: '第七届岭南微创介入医学高峰论坛',
   [APP_NAME.REPAYMENT_PLAN]: '还款计划'
 }
 

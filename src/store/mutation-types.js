@@ -27,6 +27,7 @@ export const APP_NAME = {
   ZND: 'znd',
   LINK_DEV: 'link_dev',
   NUCLEAR_LAB: 'nuclear_lab',
+  MEDICAL_FORUM: 'medical_forum',
   REPAYMENT_PLAN: 'repayment_plan'
 }
 
@@ -34,7 +35,8 @@ export const APP_ROUTE_BASE_NAME = {
   [APP_NAME.ZND]: '',
   [APP_NAME.LINK_DEV]: 'link-dev',
   [APP_NAME.NUCLEAR_LAB]: 'nuclear-lab',
+  [APP_NAME.MEDICAL_FORUM]: 'medical-forum',
   [APP_NAME.REPAYMENT_PLAN]: '/repayment_plan/'
 }
 
-export const CUR_APP = APP_NAME.LINK_DEV
+export const CUR_APP = APP_NAME.MEDICAL_FORUM

@@ -338,6 +338,16 @@ const asyncRouterMapAll = {
       component: () => import('@/views/repayment_plan/List'),
       hidden: true
     }
+  ],
+  [APP_NAME.MEDICAL_FORUM]: [
+    {
+      path: '/list',
+      name: 'List',
+      publiclyAccessible: true,
+      defaultLoginRoute: true,
+      component: () => import('@/views/medical_forum/List'),
+      hidden: true
+    }
   ]
 }
 
