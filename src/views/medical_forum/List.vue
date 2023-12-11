@@ -42,7 +42,7 @@
         v-else
         class="flex items-center justify-center p-5 text-gray-400"
       >
-        无匹配的讲者主持
+        无匹配的人员
       </div>
     </div>
     <a-drawer
@@ -86,7 +86,7 @@
               :key="listItem['时间'] + listItem['环节'] + listItem['序号']"
               class="bg-white"
             >
-              <div class="px-3 py-2 text-lg text-gray-700 border-b border-solid border-gray-300">主持</div>
+              <div class="px-3 py-2 text-lg text-gray-700 border-b border-solid border-gray-300">{{ listItem['角色'] }}</div>
               <div class="px-3 py-3 flex flex-col gap-y-3">
                 <div class="flex flex-row text-base">
                   <div class="text-blue-400 whitespace-nowrap">环节：</div>
@@ -186,7 +186,7 @@ export default {
       })
       this.list = data.filter(item => item['姓名'] && item['姓名'].trim()).map(item => ({
         ...item,
-        '姓名': item['姓名'].trim()
+        '姓名': item['姓名'].trim().replaceAll(' ', '')
       }))
       this.listLoading = false
     },
