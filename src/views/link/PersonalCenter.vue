@@ -663,6 +663,7 @@ export default {
               cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
             },
             '3': {
+              ...teacherInfo,
               diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
               transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || []),
               visa: this.parseFileNamesToObjs(teacherInfo.visaList || [])
@@ -788,11 +789,11 @@ export default {
       this.pdfBoxParams.loading = loaded !== total
     },
     getTeacherCertifiStatusText(formKey) {
-      const isFileEmpty = !this.formData[this.curTabKey][formKey][0]
-      if (isFileEmpty) {
-        return null
-      }
-      const formKeyStatus = this.userInfo[formKey + 'Status'] || '1'
+      // const isFileEmpty = !this.formData[this.curTabKey][formKey][0]
+      // if (isFileEmpty) {
+      //   return null
+      // }
+      const formKeyStatus = this.formData[this.curTabKey][formKey + 'Status'] || '1'
       const text = this.codeDict.teacher[formKey + 'Status'][formKeyStatus]
       const colorMap = {
         1: '#2db7f5',
