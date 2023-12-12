@@ -702,36 +702,37 @@ export default {
             const params = {
               userId: this.userInfo.userId
             }
+            const formData = this.formData[this.curTabKey]
             switch (this.curTabKey) {
               case '1':
                 Object.assign(params, {
-                  name: this.formData[this.curTabKey].name,
-                  highEduLevel: this.formData[this.curTabKey].highEduLevel,
-                  major: this.formData[this.curTabKey].major,
-                  college: this.formData[this.curTabKey].college,
-                  advantage: this.formData[this.curTabKey].advantage,
-                  tools: this.formData[this.curTabKey].tools.join(','),
-                  want: this.formData[this.curTabKey].want.join(','),
-                  sample: this.formData[this.curTabKey].sample[0].uploadResName
+                  name: formData.name,
+                  highEduLevel: formData.highEduLevel,
+                  major: formData.major,
+                  college: formData.college,
+                  advantage: formData.advantage,
+                  tools: formData.tools.join(','),
+                  want: formData.want.join(','),
+                  sample: formData.sample[0]?.response && formData.sample[0].uploadResName
                 })
                 break
               case '2':
                 Object.assign(params, {
-                  cv: this.formData[this.curTabKey].cv[0].uploadResName
+                  cv: formData.cv[0]?.response && formData.cv[0].uploadResName
                 })
                 break
               case '3':
                 Object.assign(params, {
-                  diploma: this.formData[this.curTabKey].diploma[0]?.uploadResName || '',
-                  transcript: this.formData[this.curTabKey].transcript[0]?.uploadResName || '',
-                  visa: this.formData[this.curTabKey].visa[0]?.uploadResName || ''
+                  diploma: formData.diploma[0]?.response && formData.diploma[0].uploadResName,
+                  transcript: formData.transcript[0]?.response && formData.transcript[0].uploadResName,
+                  visa: formData.visa[0]?.response && formData.visa[0].uploadResName
                 })
                 break
               case '4':
                 Object.assign(params, {
-                  bankNum: this.formData[this.curTabKey].bankNum,
-                  bankBranch: this.formData[this.curTabKey].bankBranch,
-                  idNo: this.formData[this.curTabKey].idNo
+                  bankNum: formData.bankNum,
+                  bankBranch: formData.bankBranch,
+                  idNo: formData.idNo
                 })
                 break
               default:
@@ -760,8 +761,12 @@ export default {
       if (single) fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
         if (file.response) {
-          file.uploadResName = file.response.data[0]
-          file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
+          if (file.response.code === 1000) {
+            file.uploadResName = file.response.data[0]
+            file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
+          } else {
+            this.$message.error(file.response.msg || '上传失败')
+          }
         }
         return file
       })
@@ -789,12 +794,13 @@ export default {
       this.pdfBoxParams.loading = loaded !== total
     },
     getTeacherCertifiStatusText(formKey) {
-      // const isFileEmpty = !this.formData[this.curTabKey][formKey][0]
-      // if (isFileEmpty) {
-      //   return null
-      // }
-      const formKeyStatus = this.formData[this.curTabKey][formKey + 'Status'] || '1'
-      const text = this.codeDict.teacher[formKey + 'Status'][formKeyStatus]
+      const fileItem = this.formData[this.curTabKey][formKey][0]
+      if (!fileItem) {
+        return null
+      }
+      const isFileChange = !!(fileItem.response)
+      const formKeyStatus = isFileChange ? '1' : (this.formData[this.curTabKey][formKey + 'Status'] || '1')
+      const text = isFileChange ? '文件上传成功，请保存' : this.codeDict.teacher[formKey + 'Status'][formKeyStatus]
       const colorMap = {
         1: '#2db7f5',
         2: '#87d068',
