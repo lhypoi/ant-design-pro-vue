@@ -125,6 +125,7 @@ import { mapState } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import { sendSmsCode } from '@/api/lingke'
 import storage from 'store'
+import { resetRouter } from '@/router/index'
 
 export default {
   name: 'TLogin',
@@ -260,6 +261,7 @@ export default {
             if (this.formData.loginType === '2') params.smsCode = this.formData.smsCode
             await this.$store.dispatch('Login', params)
             this.$message.success('登录成功')
+            resetRouter()
             this.$router.push({ path: '/' })
           } catch (error) {
             this.$message.error(error.message)
