@@ -175,7 +175,7 @@ export default {
   methods: {
     async getList() {
       this.listLoading = true
-      const f = await fetch(process.env.VUE_APP_PUBLICPATH + 'medical_forum/list.xlsx?v=3')
+      const f = await fetch(process.env.VUE_APP_PUBLICPATH + 'medical_forum/list.xlsx?v=4')
       const ab = await f.arrayBuffer()
       const wb = read(ab)
       const ws = wb.Sheets[wb.SheetNames[0]]
