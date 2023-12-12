@@ -11,7 +11,6 @@ import { APP_NAME, CUR_APP } from '@/store/mutation-types'
  */
 function hasPermission (permission, route) {
   if (route.meta && route.meta.permission) {
-    console.log('hasPermission', permission)
     if (permission === undefined) {
       return false
     }

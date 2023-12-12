@@ -225,18 +225,26 @@ const asyncRouterMapAll = {
       path: '/t-login',
       name: 'tLogin',
       publiclyAccessible: true,
-      defaultLoginRoute: storage.get('loginMode') !== 'admin',
       component: () => import('@/views/link/TLogin'),
-      meta: { title: '登录' },
+      meta: {
+        title: '登录',
+        routerBeforeEachFun: () => {
+          storage.set('defaultLoginRoute', 'tLogin')
+        }
+      },
       hidden: true
     },
     {
       path: '/admin-login',
       name: 'adminLogin',
       publiclyAccessible: true,
-      defaultLoginRoute: storage.get('loginMode') === 'admin',
       component: () => import('@/views/link/TLogin'),
-      meta: { title: '登录', loginMode: 'admin' },
+      meta: {
+        title: '登录',
+        routerBeforeEachFun: () => {
+          storage.set('defaultLoginRoute', 'adminLogin')
+        }
+      },
       hidden: true
     }
   ],

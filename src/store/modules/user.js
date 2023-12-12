@@ -58,7 +58,7 @@ const user = {
             })
             break
           case APP_NAME.LINK_DEV:
-            const loginApi = userInfo.loginMode === 'admin' ? lingkeApi.adminLogin : lingkeApi.login
+            const loginApi = storage.get('defaultLoginRoute') === 'adminLogin' ? lingkeApi.adminLogin : lingkeApi.login
             loginApi({
               loginType: userInfo.loginType,
               phoneNumber: userInfo.phoneNumber,

@@ -13,7 +13,7 @@ import { asyncRouterMap } from '@/config/router.config'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 // 递归提取 可公开访问的路由names 和 登录names
-const [publicRouteNames, loginRouteNames] = ((target) => {
+const getDynamicRouteNames = (target) => {
   const getNames = (target, res) => {
     return target.reduce((res, routeItem) => {
       const [publicRouteNames, loginRouteNames] = res
@@ -32,24 +32,25 @@ const [publicRouteNames, loginRouteNames] = ((target) => {
     }, res)
   }
   return getNames(target, [[], []])
-})(asyncRouterMap)
-
-const allowList = [
-  ...publicRouteNames,
-  '404'
-]
-const loginRouteName = loginRouteNames[0] || '404'
-const defaultRoutePath = '/'
+}
 
 router.beforeEach(async (to, from, next) => {
   console.log(to)
   NProgress.start() // start progress bar
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`)
+  to.meta && to.meta.routerBeforeEachFun && to.meta.routerBeforeEachFun()
   try {
     await store.dispatch('asyncConfig/getAsyncConfig')
   } catch (error) {
     console.log(error)
   }
+  const [publicRouteNames, loginRouteNames] = getDynamicRouteNames(asyncRouterMap)
+  const allowList = [
+    ...publicRouteNames,
+    '404'
+  ]
+  const loginRouteName = loginRouteNames[0] || storage.get('defaultLoginRoute') || '404'
+  const defaultRoutePath = '/'
   /* has token */
   const token = storage.get(ACCESS_TOKEN)
   if (token) {
@@ -90,7 +91,7 @@ router.beforeEach(async (to, from, next) => {
             })
             // 失败时，获取用户信息失败时，调用登出，来清空历史保留信息
             store.dispatch('Logout').then(() => {
-              next({ name: storage.get('defaultLoginRoute') || loginRouteName, query: { redirect: to.fullPath } })
+              next({ name: loginRouteName, query: { redirect: to.fullPath } })
             })
           })
       } else {

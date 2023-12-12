@@ -124,7 +124,6 @@
 import { mapState } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import { sendSmsCode } from '@/api/lingke'
-import storage from 'store'
 import { resetRouter } from '@/router/index'
 
 export default {
@@ -211,7 +210,6 @@ export default {
     this.formData.loginType = Object.keys(this.loginTypeEnum)[0]
   },
   mounted() {
-    storage.set('defaultLoginRoute', this.$route.meta.loginMode ? 'adminLogin' : 'tLogin')
   },
   methods: {
     async handleSendSmsCode() {
@@ -254,8 +252,7 @@ export default {
           try {
             const params = {
               loginType: this.formData.loginType,
-              phoneNumber: this.formData.phoneNumber,
-              loginMode: this.$route.meta.loginMode
+              phoneNumber: this.formData.phoneNumber
             }
             if (this.formData.loginType === '1') params.passWord = this.formData.passWord
             if (this.formData.loginType === '2') params.smsCode = this.formData.smsCode
