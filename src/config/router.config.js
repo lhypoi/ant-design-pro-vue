@@ -194,6 +194,12 @@ const asyncRouterMapAll = {
           name: 'TeacherManage',
           component: () => import('@/views/link/TeacherManage'),
           meta: { title: '老师管理', icon: 'database', permission: ['3'] }
+        },
+        {
+          path: '/order-manage',
+          name: 'OrderManage',
+          component: () => import('@/views/link/OrderManage'),
+          meta: { title: '订单管理', icon: 'container', permission: ['3'] }
         }
       ]
     },
