@@ -200,6 +200,12 @@ const asyncRouterMapAll = {
           name: 'OrderManage',
           component: () => import('@/views/link/OrderManage'),
           meta: { title: '订单管理', icon: 'container', permission: ['3'] }
+        },
+        {
+          path: '/withdrawal-manage',
+          name: 'WithdrawalManage',
+          component: () => import('@/views/link/WithdrawalManage'),
+          meta: { title: '提现管理', icon: 'table', permission: ['3'] }
         }
       ]
     },
