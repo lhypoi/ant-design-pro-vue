@@ -165,7 +165,7 @@
                           class="flex justify-between"
                         />
                       </a-form-model-item>
-                      <a-form-model-item prop="sample">
+                      <a-form-model-item v-if="formData[item.key].want.includes('3')" prop="sample">
                         <a-upload-dragger
                           class="dragUploader"
                           :multiple="true"
@@ -586,7 +586,7 @@ export default {
           advantage: this.formData[3].advantage,
           tools: this.formData[3].tools.join(','),
           want: this.formData[3].want.join(','),
-          sample: this.formData[3].sample[0].url
+          sample: this.formData[3].want.includes('3') ? this.formData[3].sample[0].url : ''
         })
         if (res && res.data === 1) {
           this.showResultPanel = true

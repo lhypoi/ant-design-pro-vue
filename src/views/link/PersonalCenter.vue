@@ -92,7 +92,7 @@
                 class="flex justify-between"
               />
             </a-form-model-item>
-            <a-form-model-item prop="sample">
+            <a-form-model-item v-if="formData[curTabKey].want.includes('3')" prop="sample">
               <a-upload-dragger
                 class="dragUploader"
                 :multiple="true"
@@ -713,7 +713,7 @@ export default {
                   advantage: formData.advantage,
                   tools: formData.tools.join(','),
                   want: formData.want.join(','),
-                  sample: formData.sample[0]?.response && formData.sample[0].uploadResName
+                  sample: formData.want.includes('3') ? (formData.sample[0]?.response && formData.sample[0].uploadResName) : ''
                 })
                 break
               case '2':
