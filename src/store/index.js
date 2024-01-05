@@ -20,10 +20,13 @@ import { CUR_APP } from '@/store/mutation-types'
 
 Vue.use(Vuex)
 
-let curAppModule = {}
+const curAppModule = {}
 try {
-  curAppModule = require(`@/store/modules/cur_app/${CUR_APP}`).default
-} catch {}
+  // curAppModule = require(`@/store/modules/cur_app/${CUR_APP}`).default
+  console.log(curAppModule)
+} catch (e) {
+  console.log(e)
+}
 
 export default new Vuex.Store({
   modules: {
