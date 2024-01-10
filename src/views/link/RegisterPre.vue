@@ -7,11 +7,18 @@
           <div class="text-white text-2xl pb-2">一个提供高学历学术人才</div>
           <div class="text-white text-2xl">帮助客户解决学术难题的平台</div>
           <div class="flex-auto pt-5 flex flex-row gap-x-5">
-            <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="toRegister('tRegister')">教师注册</a-button>
-            <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="toRegister('oRegister')">机构注册</a-button>
+            <template v-if="mode === USER_TYPE.TEACHER">
+              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'tRegister' })">教师注册</a-button>
+              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'tLogin' })">教师登录</a-button>
+            </template>
+            <template v-if="mode === USER_TYPE.ORGANIZATION">
+              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oRegister' })">机构注册</a-button>
+              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oLogin' })">机构登录</a-button>
+            </template>
           </div>
         </div>
-        <div class="px-10 flex flex-row justify-center">
+        <div class="px-10 flex flex-col items-center justify-center gap-y-5">
+          <div class="flex justify-center text-white text-2xl">待定：对应角色的文案图</div>
           <img src="@/assets/p1.png" alt="" srcset="" class="max-w-[320px] xl:max-w-[400px]">
         </div>
       </div>
@@ -20,24 +27,27 @@
 </template>
 
 <script>
+import { USER_TYPE } from '@/store/mutation-types-link-dev'
+
 export default {
   name: 'RegisterPre',
   components: {
   },
   data() {
     return {
+      USER_TYPE
     }
   },
   computed: {
+    mode() {
+      return this.$route.meta.mode
+    }
   },
   created() {
   },
   async mounted() {
   },
   methods: {
-    toRegister(name) {
-      this.$router.push({ name })
-    }
   }
 }
 </script>

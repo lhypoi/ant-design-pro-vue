@@ -2,6 +2,7 @@
 import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
 // import { bxAnaalyse } from '@/core/icons'
 import { APP_NAME, CUR_APP } from '@/store/mutation-types'
+import { USER_TYPE } from '@/store/mutation-types-link-dev'
 import storage from 'store'
 
 const RouteView = {
@@ -210,11 +211,19 @@ const asyncRouterMapAll = {
       ]
     },
     {
-      path: '/register-pre',
-      name: 'registerPre',
+      path: '/register-pre-teacher',
+      name: 'registerPreTeacher',
       publiclyAccessible: true,
       component: () => import('@/views/link/RegisterPre'),
-      meta: { title: '介绍' },
+      meta: { title: '教师介绍', mode: USER_TYPE.TEACHER },
+      hidden: true
+    },
+    {
+      path: '/register-pre-organization',
+      name: 'registerPreOrganization',
+      publiclyAccessible: true,
+      component: () => import('@/views/link/RegisterPre'),
+      meta: { title: '机构介绍', mode: USER_TYPE.ORGANIZATION },
       hidden: true
     },
     {
@@ -239,9 +248,22 @@ const asyncRouterMapAll = {
       publiclyAccessible: true,
       component: () => import('@/views/link/TLogin'),
       meta: {
-        title: '登录',
+        title: '教师登录',
         routerBeforeEachFun: () => {
           storage.set('defaultLoginRoute', 'tLogin')
+        }
+      },
+      hidden: true
+    },
+    {
+      path: '/o-login',
+      name: 'oLogin',
+      publiclyAccessible: true,
+      component: () => import('@/views/link/TLogin'),
+      meta: {
+        title: '机构登录',
+        routerBeforeEachFun: () => {
+          storage.set('defaultLoginRoute', 'oLogin')
         }
       },
       hidden: true
@@ -252,7 +274,7 @@ const asyncRouterMapAll = {
       publiclyAccessible: true,
       component: () => import('@/views/link/TLogin'),
       meta: {
-        title: '登录',
+        title: '管理员登录',
         routerBeforeEachFun: () => {
           storage.set('defaultLoginRoute', 'adminLogin')
         }
