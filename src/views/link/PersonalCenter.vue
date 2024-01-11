@@ -342,11 +342,19 @@
             </div>
           </template>
           <template v-if="curTabKey === '4'">
-            <div class="text-sm text-gray-500 pb-3">银行卡号：</div>
+            <div class="text-sm text-gray-500 pb-3">收款人姓名：</div>
+            <a-form-model-item prop="name">
+              <a-input
+                v-model="formData[curTabKey].name"
+                placeholder="请输入收款人姓名"
+                disabled
+              />
+            </a-form-model-item>
+            <div class="text-sm text-gray-500 pb-3">收款人账号：</div>
             <a-form-model-item prop="bankNum">
               <a-input
                 v-model="formData[curTabKey].bankNum"
-                placeholder="请输入银行卡号"
+                placeholder="请输入收款人账号"
               />
             </a-form-model-item>
             <div class="text-sm text-gray-500 pb-3">开户行支行：</div>
@@ -354,13 +362,6 @@
               <a-input
                 v-model="formData[curTabKey].bankBranch"
                 placeholder="请输入开户行支行"
-              />
-            </a-form-model-item>
-            <div class="text-sm text-gray-500 pb-3">身份证号码：</div>
-            <a-form-model-item prop="idNo">
-              <a-input
-                v-model="formData[curTabKey].idNo"
-                placeholder="请输入身份证号码"
               />
             </a-form-model-item>
           </template>
@@ -421,7 +422,7 @@ export default {
           icon: 'safety-certificate'
         },
         {
-          title: '银行卡信息',
+          title: '收款信息',
           key: '4',
           icon: 'hdd'
         }
@@ -669,6 +670,7 @@ export default {
               visa: this.parseFileNamesToObjs(teacherInfo.visaList || [])
             },
             '4': {
+              name: teacherInfo.name,
               bankNum: teacherInfo.bankNum,
               bankBranch: teacherInfo.bankBranch,
               idNo: teacherInfo.idNo

@@ -244,12 +244,19 @@
               <div
                 class="text-gray-800 text-lg font-bold px-2 py-2 border-b-2 mb-6 border-solid border-gray-600"
               >
-                银行卡信息：
+                收款信息：
               </div>
-              <a-form-model-item prop="bankNum" label="银行卡号">
+              <a-form-model-item prop="name" label="收款人姓名">
+                <a-input
+                  v-model="detailData.name"
+                  placeholder="请输入收款人姓名"
+                  :disabled="true"
+                />
+              </a-form-model-item>
+              <a-form-model-item prop="bankNum" label="收款人账号">
                 <a-input
                   v-model="detailData.bankNum"
-                  placeholder="请输入银行卡号"
+                  placeholder="请输入收款人账号"
                   :disabled="true"
                 />
               </a-form-model-item>
@@ -257,13 +264,6 @@
                 <a-input
                   v-model="detailData.bankBranch"
                   placeholder="请输入开户行支行"
-                  :disabled="true"
-                />
-              </a-form-model-item>
-              <a-form-model-item prop="idNo" label="身份证号码">
-                <a-input
-                  v-model="detailData.idNo"
-                  placeholder="请输入身份证号码"
                   :disabled="true"
                 />
               </a-form-model-item>
