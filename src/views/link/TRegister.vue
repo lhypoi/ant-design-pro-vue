@@ -102,6 +102,7 @@
                     </template>
                     <template v-if="item.key === 3">
                       <div class="text-sm font-bold text-black pb-3">基本信息：</div>
+                      <div class="pb-1 text-xs text-red-400">请务必输入真实姓名，将用于后续佣金提现验证</div>
                       <a-form-model-item prop="name">
                         <a-input
                           v-model="formData[item.key].name"
@@ -172,12 +173,12 @@
                           name="fileList"
                           :action="uploadUrl"
                           :fileList="formData[item.key].sample"
-                          @change="info => handleFileChange(info, item.key, 'sample', true)"
+                          @change="info => handleFileChange(info, item.key, 'sample', -5)"
                         >
                           <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
                             <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
                             <div class="pt-4 text-slate-950 text-lg font-bold">
-                              将文书拖到此处，或<span class="text-indigo-500">点击上传</span>
+                              请上传留学文书sample，支持上传多个，<span class="text-red-400">至多五個</span>
                             </div>
                             <div class="pt-2 text-sm text-gray-400">
                               可导入pdf / docx / doc 格式简历，最大10MB
@@ -523,7 +524,11 @@ export default {
     },
     handleFileChange(info, formKey, itemKey, single) {
       let fileList = [...info.fileList]
-      if (single) fileList = fileList.slice(-1)
+      if (single === true) {
+        fileList = fileList.slice(-1)
+      } else if (single < 0) {
+        fileList = fileList.slice(single)
+      }
       fileList = fileList.map(file => {
         if (file.response) {
           file.url = file.response.data[0]
