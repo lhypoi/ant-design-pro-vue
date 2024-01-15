@@ -21,6 +21,8 @@ import './permission' // permission control
 import './utils/filter' // global filter
 import './global.less' // global style
 
+import wxlogin from 'vue-wxlogin'
+
 import InfiniteLoading from 'vue-infinite-loading'
 
 Vue.config.productionTip = false
@@ -31,6 +33,8 @@ Vue.use(VueAxios)
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-container', PageHeaderWrapper)
 Vue.component('page-header-wrapper', PageHeaderWrapper)
+
+Vue.component('wxlogin', wxlogin)
 
 Vue.use(InfiniteLoading, {
   slots: {

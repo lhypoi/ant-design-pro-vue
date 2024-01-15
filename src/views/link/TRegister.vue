@@ -71,12 +71,31 @@
                           <a-button
                             class="send-code-btn"
                             type="primary"
-                            :disabled="sendBtnData.disabled"
+                            :disabled="sendBtnData.disabled || !!wxParams.openId"
                             :loading="sendBtnData.loading"
                             @click="handleSendSmsCode(item.key)"
                           >发送验证码</a-button>
                         </div>
                       </a-form-model-item>
+                      <div class="pb-3">
+                        <a-divider style="margin-top: 0; margin-bottom: 8px; padding: 0 16px;">
+                          <span class="text-gray-400 font-normal">Or</span>
+                        </a-divider>
+                        <a-button
+                          type="primary"
+                          block
+                          class="step-btn success-btn"
+                          @click="$refs.WxLoginModal.handleShowWxLoginModalParams({
+                            state: WX_LOGIN_STATE.T_REGISTER
+                          })"
+                        >
+                          {{ !!wxParams.openId ? '微信重新扫码' : '微信扫码注册' }}
+                        </a-button>
+                        <div class="flex justify-end pt-4 text-blue-400">
+                          已有账号？
+                          <span class="underline underline-offset-4 cursor-pointer" @click="handleToLogin">前往登录</span>
+                        </div>
+                      </div>
                     </template>
                     <template v-if="item.key === 2">
                       <a-form-model-item prop="cv">
@@ -217,6 +236,7 @@
         </div>
       </div>
     </div>
+    <WxLoginModal ref="WxLoginModal" />
   </div>
 </template>
 
@@ -224,6 +244,8 @@
 import { mapState, mapGetters } from 'vuex'
 import { uploadUrl, sendSmsCode, teacherSignup } from '@/api/lingke'
 import { CUR_APP } from '@/store/mutation-types'
+import { WX_LOGIN_STATE } from '@/store/mutation-types-link-dev'
+import WxLoginModal from '@/components/Kira/WxLoginModal'
 
 const regexConfig = {
   phoneNumber: /^1[0-9]{10}$/
@@ -232,10 +254,16 @@ const regexConfig = {
 export default {
   name: 'TRegister',
   components: {
+    WxLoginModal
   },
   data() {
     return {
+      WX_LOGIN_STATE,
       uploadUrl,
+      wxParams: {
+        openId: '',
+        isTeacherRegistered: false
+      },
       stepList: [
         {
           key: 1,
@@ -486,9 +514,27 @@ export default {
       return this.codeDict.order && this.codeDict.order.type || {}
     }
   },
+  created() {
+    this.handleWxRedirect()
+  },
   async mounted() {
   },
   methods: {
+    handleWxRedirect() {
+      const params = this.$route.params
+      const openId = params.openId
+      if (!openId) return
+      const isTeacherRegistered = params.isTeacherRegistered
+      if (isTeacherRegistered) {
+        this.$message.error('该微信已绑定信息，请前往登录，或是更换微信注册')
+      } else {
+        this.wxParams = {
+          openId,
+          isTeacherRegistered
+        }
+        this.curStep = 2
+      }
+    },
     async handleSendSmsCode(formKey) {
       const isFormValid = await new Promise((resolve) => {
         this.$refs['form_' + formKey][0].validateField('phoneNumber', (err) => {
@@ -553,6 +599,10 @@ export default {
       }
     },
     async handleToStep2() {
+      if (this.wxParams.openId) {
+        this.curStep++
+        return
+      }
       try {
         await this.$refs['form_' + this.curStep][0].validate()
       } catch {

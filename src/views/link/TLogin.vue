@@ -83,7 +83,12 @@
                         <template slot="title">
                           微信扫码登录
                         </template>
-                        <div class="group w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center cursor-pointer">
+                        <div
+                          class="group w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center cursor-pointer"
+                          @click="$refs.WxLoginModal.handleShowWxLoginModalParams({
+                            state: WX_LOGIN_STATE.T_LOGIN
+                          })"
+                        >
                           <a-icon type="wechat" class="text-lg text-green-400 group-hover:text-green-500" />
                         </div>
                       </a-tooltip>
@@ -117,6 +122,7 @@
         往下待补充文案
       </div>
     </div>
+    <WxLoginModal ref="WxLoginModal" />
   </div>
 </template>
 
@@ -125,11 +131,17 @@ import { mapState } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import { sendSmsCode } from '@/api/lingke'
 import { resetRouter } from '@/router/index'
+import { WX_LOGIN_STATE } from '@/store/mutation-types-link-dev'
+import WxLoginModal from '@/components/Kira/WxLoginModal'
 
 export default {
   name: 'TLogin',
+  components: {
+    WxLoginModal
+  },
   data() {
     return {
+      WX_LOGIN_STATE,
       formData: {
         loginType: '',
         phoneNumber: '',

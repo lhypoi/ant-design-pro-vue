@@ -280,6 +280,16 @@ const asyncRouterMapAll = {
         }
       },
       hidden: true
+    },
+    {
+      path: '/wx-login-handle',
+      name: 'WxLoginHandle',
+      publiclyAccessible: true,
+      component: () => import('@/views/link/WxLoginHandle'),
+      meta: {
+        title: '微信登录'
+      },
+      hidden: true
     }
   ],
   [APP_NAME.NUCLEAR_LAB]: [

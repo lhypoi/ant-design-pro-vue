@@ -41,7 +41,7 @@ const user = {
   actions: {
     // 登录
     Login ({ commit }, userInfo) {
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         switch (CUR_APP) {
           case APP_NAME.ZND:
             signin(userInfo).then(res => {
@@ -58,24 +58,33 @@ const user = {
             })
             break
           case APP_NAME.LINK_DEV:
-            const loginApi = storage.get('defaultLoginRoute') === 'adminLogin' ? lingkeApi.adminLogin : lingkeApi.login
-            loginApi({
-              loginType: userInfo.loginType,
-              phoneNumber: userInfo.phoneNumber,
-              passWord: userInfo.passWord,
-              smsCode: userInfo.smsCode
-            }).then(res => {
-              if (res && res.code === 1000) {
-                const token = res.data.token
+            try {
+              let token = userInfo.token || ''
+              let resMsg = ''
+              if (!token) {
+                const loginApi = storage.get('defaultLoginRoute') === 'adminLogin' ? lingkeApi.adminLogin : lingkeApi.login
+                const res = await loginApi({
+                  loginType: userInfo.loginType,
+                  phoneNumber: userInfo.phoneNumber,
+                  passWord: userInfo.passWord,
+                  smsCode: userInfo.smsCode
+                })
+                if (res && res.code === 1000) {
+                  token = res.data.token
+                } else {
+                  resMsg = res.msg || '登录失败'
+                }
+              }
+              if (token) {
                 storage.set(ACCESS_TOKEN, token, new Date().getTime() + 10 * 60 * 60 * 1000)
                 commit('SET_TOKEN', token)
                 resolve()
               } else {
-                reject(new Error(res.msg || '登录失败'))
+                reject(new Error(resMsg))
               }
-            }).catch(error => {
+            } catch (error) {
               reject(error)
-            })
+            }
             break
           case APP_NAME.NUCLEAR_LAB:
             nuclearLabApi.login(userInfo).then(res => {
