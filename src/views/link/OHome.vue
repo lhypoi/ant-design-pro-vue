@@ -1,9 +1,18 @@
 <template>
   <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
-    <div class="flex items-center justify-center bg-gray-300 h-[200px]">
-      待定轮播
+    <div v-loading="true">
+      <el-carousel :interval="4000" type="card" height="200px">
+        <el-carousel-item v-for="item in 6" :key="item">
+          <div class="h-full bg-gray-200 overflow-hidden rounded-xl">
+            <el-image
+              class="w-full h-full"
+              :src="require('@/assets/znd/logo.png')"
+            />
+          </div>
+        </el-carousel-item>
+      </el-carousel>
     </div>
-    <div class="flex flex-wrap items-end gap-3 min-h-[72px] pt-7 -mb-1">
+    <div class="flex flex-wrap items-end gap-3 min-h-[72px] pt-3 -mb-1">
       <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
         <a-form-model
           :model="searchParams"
