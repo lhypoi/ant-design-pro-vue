@@ -28,7 +28,34 @@
           :rules="formRules[curTabKey]"
         >
           <template v-if="curTabKey === '1'">
-            <a-form-model-item prop="phoneNumber" label="当前账号">
+            <a-form-model-item prop="name" label="当前ID">
+              <a-input
+                v-model="formData[curTabKey].name"
+                :disabled="true"
+              />
+            </a-form-model-item>
+            <a-divider style="margin: 0px; padding: 16px 0 0;">
+              <span class="text-gray-400 font-normal text-sm">微信绑定</span>
+            </a-divider>
+            <a-form-model-item prop="wxName" label="微信名" ref="wxName">
+              <div class="flex flex-row gap-3">
+                <a-input
+                  v-model="formData[curTabKey].wxName"
+                  :disabled="true"
+                />
+                <a-button
+                  class="send-code-btn success-btn"
+                  type="primary"
+                  @click="$refs.WxLoginModal.handleShowWxLoginModalParams({
+                    state: WX_LOGIN_STATE.T_ACCOUNT_SETTING
+                  })"
+                >{{ formData[curTabKey].wxName ? `重新绑定` : '添加微信' }}</a-button>
+              </div>
+            </a-form-model-item>
+            <a-divider style="margin: 0px; padding: 16px 0 0;">
+              <span class="text-gray-400 font-normal text-sm">手机号绑定</span>
+            </a-divider>
+            <a-form-model-item prop="phoneNumber" label="当前手机号">
               <a-input
                 v-model="formData[curTabKey].phoneNumber"
                 :disabled="true"
@@ -109,6 +136,7 @@
         </a-button>
       </div>
     </div>
+    <WxLoginModal ref="WxLoginModal" />
   </div>
 </template>
 
@@ -117,14 +145,18 @@ import { mapState, mapGetters } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
+import { WX_LOGIN_STATE } from '@/store/mutation-types-link-dev'
+import WxLoginModal from '@/components/Kira/WxLoginModal'
 
 export default {
   name: 'TAccountSetting',
   components: {
+    WxLoginModal
   },
   data() {
     return {
       lingkeApi,
+      WX_LOGIN_STATE,
       loading: false,
       tabList: [
         {
@@ -140,6 +172,7 @@ export default {
       ],
       formData: {
         '1': {
+          name: '',
           phoneNumber: '',
           newPhoneNumber: '',
           smsCode: ''
@@ -305,6 +338,7 @@ export default {
           const teacherInfo = res.data
           const formData = {
             '1': {
+              name: teacherInfo.name,
               phoneNumber: teacherInfo.phoneNumber,
               newPhoneNumber: '',
               smsCode: ''

@@ -46,7 +46,7 @@ export default {
         if (res && res.code === 1000) {
           openId = res.data.openId
           // isTeacherRegistered = res.data.isTeacherRegistered
-          isTeacherRegistered = true
+          isTeacherRegistered = false
         } else {
           throw new Error(res.msg || '微信登录失败')
         }
@@ -55,7 +55,7 @@ export default {
         console.log(error)
         if (state) {
           setTimeout(async () => {
-            await this.$store.dispatch('Logout')
+            // await this.$store.dispatch('Logout')
             this.$router.replace({
               name: state
             })
@@ -90,6 +90,16 @@ export default {
                 }
               })
               this.$message.error('请完善信息')
+            }
+            break
+          case WX_LOGIN_STATE.T_ACCOUNT_SETTING:
+            // http://localhost:8000/link-dev/wx-login-handle?code=11111&state=TAccountSetting
+            if (isTeacherRegistered) {
+              this.$message.error('该微信已有绑定账号')
+              this.$router.replace({ name: state })
+            } else {
+              this.$message.success('绑定微信成功')
+              this.$router.replace({ name: state })
             }
             break
           default:

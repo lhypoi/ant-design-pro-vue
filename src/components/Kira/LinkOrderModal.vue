@@ -87,7 +87,7 @@
                 option-filter-prop="children"
               >
                 <a-select-option v-for="item in linkOrderModalParams.options['teacherId']" :key="item.key" :value="item.key">
-                  {{ item.value + ' ID:' + item.key }}
+                  {{ item.value }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>

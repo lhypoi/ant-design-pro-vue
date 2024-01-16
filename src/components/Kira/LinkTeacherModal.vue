@@ -24,7 +24,7 @@
               <div class="flex-auto pl-4 flex flex-col gap-y-1 text-base">
                 <div class="flex gap-x-4 justify-between">
                   <div class="font-bold">{{ teacher.name }}</div>
-                  <div class="font-bold">{{ `ID: ${ teacher.userId }` }}</div>
+                  <!-- <div class="font-bold">{{ `ID: ${ teacher.userId }` }}</div> -->
                 </div>
                 <div class="flex gap-x-4">
                   <div>{{ teacher.college }}</div>

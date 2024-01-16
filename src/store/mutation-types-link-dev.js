@@ -5,5 +5,6 @@ export const USER_TYPE = {
 
 export const WX_LOGIN_STATE = {
   T_REGISTER: 'tRegister',
-  T_LOGIN: 'tLogin'
+  T_LOGIN: 'tLogin',
+  T_ACCOUNT_SETTING: 'TAccountSetting'
 }
