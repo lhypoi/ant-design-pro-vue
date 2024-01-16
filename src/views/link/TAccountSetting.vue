@@ -124,9 +124,20 @@
               </div>
             </a-form-model-item>
           </template>
+          <template v-if="curTabKey === '3'">
+            <div class="flex flex-col items-center gap-y-8">
+              <div class="relative w-56 h-56" >
+                <el-image
+                  class="absolute w-full h-full"
+                  :src="require('@/assets/link/avatar.png')"
+                />
+              </div>
+              <div class="text-lg">扫码关注公众号，可及时接收平台消息，防止客官漏掉重要消息哦。</div>
+            </div>
+          </template>
         </a-form-model>
       </div>
-      <div class="pt-1 flex flex-row gap-5">
+      <div v-if="curTabKey === '1' || curTabKey === '2'" class="pt-1 flex flex-row gap-5">
         <a-button
           type="primary"
           class="step-btn w-40"
@@ -168,6 +179,11 @@ export default {
           title: '密码修改',
           key: '2',
           icon: 'hdd'
+        },
+        {
+          title: '消息提醒设置',
+          key: '3',
+          icon: 'message'
         }
       ],
       formData: {
