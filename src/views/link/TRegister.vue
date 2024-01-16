@@ -148,7 +148,7 @@
                           placeholder="请输入专业"
                         />
                       </a-form-model-item>
-                      <a-form-model-item prop="college">
+                      <a-form-model-item prop="college" has-feedback>
                         <a-input
                           v-model="formData[item.key].college"
                           placeholder="请输入毕业大学"
@@ -246,6 +246,7 @@ import { uploadUrl, sendSmsCode, teacherSignup } from '@/api/lingke'
 import { CUR_APP } from '@/store/mutation-types'
 import { WX_LOGIN_STATE } from '@/store/mutation-types-link-dev'
 import WxLoginModal from '@/components/Kira/WxLoginModal'
+import { debounce } from 'lodash-es'
 
 const regexConfig = {
   phoneNumber: /^1[0-9]{10}$/
@@ -257,6 +258,15 @@ export default {
     WxLoginModal
   },
   data() {
+    const checkCollege = debounce(async (params, callback) => {
+      console.log(params)
+      const res = await new Promise(resolve => {
+        setTimeout(() => {
+          resolve(false)
+        }, 400)
+      })
+      callback(res)
+    }, 500)
     return {
       WX_LOGIN_STATE,
       uploadUrl,
@@ -414,16 +424,29 @@ export default {
           ],
           college: [
             {
-              validator: (rule, value, callback) => {
+              validator: async (rule, value, callback) => {
+                this.formItemValidatorIds['college'] += 1
+                const validatorIds = this.formItemValidatorIds['college']
                 try {
                   if (!value.trim()) {
                     callback(new Error('请输入毕业大学'))
+                  } else {
+                    const res = await new Promise(resolve => {
+                      checkCollege(value, resolve)
+                    })
+                    await new Promise(resolve => {
+                      if (validatorIds === this.formItemValidatorIds['college']) resolve()
+                    })
+                    if (res) {
+                      callback()
+                    } else {
+                      callback(new Error('未查询到大学信息'))
+                    }
                   }
                 } catch (error) {
                   console.log(error)
                   callback(error)
                 }
-                callback()
               }
             }
           ],
@@ -488,6 +511,9 @@ export default {
             }
           ]
         }
+      },
+      formItemValidatorIds: {
+        college: 1
       },
       sendBtnData: {
         disabled: false,
