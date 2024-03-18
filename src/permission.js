@@ -46,10 +46,9 @@ router.beforeEach(async (to, from, next) => {
   }
   const [publicRouteNames, loginRouteNames] = getDynamicRouteNames(asyncRouterMap)
   const allowList = [
-    ...publicRouteNames,
-    '404'
+    ...publicRouteNames
   ]
-  const loginRouteName = loginRouteNames[0] || storage.get('defaultLoginRoute') || '404'
+  const loginRouteName = storage.get('defaultLoginRoute') || loginRouteNames[0] || '404'
   const defaultRoutePath = '/'
   /* has token */
   const token = storage.get(ACCESS_TOKEN)

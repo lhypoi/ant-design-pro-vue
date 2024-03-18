@@ -247,6 +247,7 @@ const asyncRouterMapAll = {
       name: 'tLogin',
       publiclyAccessible: true,
       component: () => import('@/views/link/TLogin'),
+      defaultLoginRoute: true,
       meta: {
         title: '教师登录',
         routerBeforeEachFun: () => {
