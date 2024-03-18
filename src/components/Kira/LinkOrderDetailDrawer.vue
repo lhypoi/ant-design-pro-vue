@@ -38,7 +38,7 @@
           <div class="flex gap-x-5">
             <div class="flex-auto text-lg text-slate-900 font-bold break-all ">{{ detailData.task }}</div>
             <div
-              class="text-yellow-500 text-xl"
+              class="text-yellow-500 text-xl whitespace-nowrap"
             >{{ detailData.statusName }}</div>
           </div>
           <div class="flex flex-wrap pt-2">
