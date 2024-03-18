@@ -36,7 +36,7 @@
         </div>
         <div class="link-style-form flex flex-col sm:flex-auto">
           <div class="flex gap-x-5">
-            <div class="flex-auto text-lg text-slate-900 font-bold">{{ detailData.task }}</div>
+            <div class="flex-auto text-lg text-slate-900 font-bold break-all ">{{ detailData.task }}</div>
             <div
               class="text-yellow-500 text-xl"
             >{{ detailData.statusName }}</div>
@@ -52,7 +52,7 @@
               class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
             >价格：￥{{ `${detailData.unitPrice}/h x ${detailData.duration}h` }}</div>
           </div>
-          <div class="text-base text-slate-800">
+          <div class="text-base text-slate-800 break-all ">
             {{ detailData.detail }}
           </div>
           <div v-if="detailData.fileList && detailData.fileList.length" class="pt-8">
