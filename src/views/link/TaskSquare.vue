@@ -12,7 +12,8 @@
         ]"
         @click="handleTabClick(orderTyp)"
       >
-        {{ orderTyp.value }}</div>
+        {{ orderTyp.value }}
+      </div>
     </div>
     <div
       class="flex-auto flex flex-col"
@@ -39,9 +40,7 @@
           <div class="flex flex-col sm:flex-auto sm:w-0">
             <div class="text-lg text-slate-900 font-bold break-all line-clamp-1">{{ item.task }}</div>
             <div class="flex flex-wrap">
-              <div
-                class="text-sm text-blue-600 pr-2"
-              >#{{ item.typeName }}</div>
+              <div class="text-sm text-blue-600 pr-2">#{{ item.typeName }}</div>
               <div class="text-sm text-slate-400 sm:pl-2">{{ item.updateTime }}</div>
             </div>
             <div class="text-sm text-slate-800 break-all line-clamp-2 pt-1">
@@ -51,9 +50,11 @@
           <div class="flex flex-row justify-start items-center sm:justify-center sm:w-48">
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
-            >价格：￥{{ `${ item.unitPrice }/h x ${ item.duration }h` }}</div>
+            >价格：￥{{ `${item.unitPrice}/h x ${item.duration}h` }}</div>
           </div>
-          <div class="flex justify-between items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28">
+          <div
+            class="flex justify-between items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28"
+          >
             <div
               v-if="item.status === '1'"
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
@@ -62,7 +63,7 @@
             <div
               v-if="item.status === '1'"
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
-              @click.stop="() => {}"
+              @click.stop="() => { }"
             >
               联系委托方
             </div>
