@@ -264,7 +264,7 @@ export default {
           tableData.rows = res.data.list.map(row => ({
             ...row
           }))
-          tableData.total = res.data.total
+          tableData.total = res.data.totalCount
         } else {
           throw new Error(res.message || '加载失败')
         }

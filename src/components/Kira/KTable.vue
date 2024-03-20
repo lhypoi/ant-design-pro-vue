@@ -13,7 +13,7 @@
     <div v-if="!hidePage" class="flex flex-row justify-end pt-3">
       <el-pagination
         class="-mr-3"
-        :disabled="localLoading || sizeChangeFlag"
+        :disabled="localLoading"
         :current-page.sync="pageNum"
         :page-size.sync="pageSize"
         :layout="isMobile ? 'prev, pager, next' : 'total, sizes, prev, pager, next'"
@@ -52,13 +52,26 @@ export default {
   }),
   data () {
     return {
+      shouldUpdate: false,
       localLoading: false,
       pageNum: 1,
       pageSize: 50,
       pageSizes: [50, 100, 200, 500],
       total: 0,
-      sizeChangeFlag: false,
       rows: []
+    }
+  },
+  watch: {
+    shouldUpdate: {
+      handler () {
+        if (this.shouldUpdate) {
+          this.$nextTick(async () => {
+            await this.loadData()
+            this.shouldUpdate = false
+          })
+        }
+      },
+      immediate: true
     }
   },
   created () {
@@ -66,14 +79,11 @@ export default {
   },
   methods: {
     async handleSizeChange() {
-      this.sizeChangeFlag = true
       this.pageNum = 1
-      await this.loadData()
-      this.sizeChangeFlag = false
+      this.shouldUpdate = true
     },
     async handleCurrentChange() {
-      if (this.sizeChangeFlag) return
-      await this.loadData()
+      this.shouldUpdate = true
     },
     async loadData() {
       this.localLoading = true
@@ -90,10 +100,8 @@ export default {
       this.localLoading = false
     },
     async refresh () {
-      this.sizeChangeFlag = true
       this.pageNum = 1
-      await this.loadData()
-      this.sizeChangeFlag = false
+      this.shouldUpdate = true
     }
   }
 }
