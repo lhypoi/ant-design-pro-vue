@@ -75,7 +75,7 @@ export default {
     }
   },
   created () {
-    this.loadData()
+    this.shouldUpdate = true
   },
   methods: {
     async handleSizeChange() {
