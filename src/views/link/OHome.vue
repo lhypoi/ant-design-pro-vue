@@ -117,7 +117,7 @@
     <div class="flex flex-row justify-end pt-3">
       <el-pagination
         class="-mr-3"
-        :disabled="dataListLoading || searchParams.sizeChangeFlag"
+        :disabled="dataListLoading"
         :current-page.sync="searchParams.pageIndex"
         :page-size.sync="searchParams.pageSize"
         :layout="isMobile ? 'prev, pager, next' : 'total, sizes, prev, pager, next'"
@@ -161,7 +161,6 @@ export default {
       pageSizes: [50, 100, 200, 500],
       total: 0,
       searchParams: {
-        sizeChangeFlag: false,
         pageIndex: 1,
         pageSize: 50,
         name: ''
@@ -207,16 +206,13 @@ export default {
       this.dataListLoading = false
     },
     async handleSearch() {
-      this.searchParams.sizeChangeFlag = true
       this.searchParams.pageIndex = 1
       await this.handleGetDataList()
-      this.searchParams.sizeChangeFlag = false
     },
     handleSizeChange() {
       this.handleSearch()
     },
     handleCurrentChange() {
-      if (this.searchParams.sizeChangeFlag) return
       this.handleGetDataList()
     }
   }
