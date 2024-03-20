@@ -94,7 +94,6 @@ router.beforeEach(async (to, from, next) => {
             })
           })
       } else {
-        // TODO: 登录后意外访问到的页面，暂时都去 404，后续扩展权限提示
         if (!to.matched.length) {
           next({ name: '404' })
           return
