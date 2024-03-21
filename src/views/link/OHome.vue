@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
-    <div v-loading="true">
+    <div v-loading="dataListLoading">
       <el-carousel :interval="4000" type="card" height="200px">
         <el-carousel-item v-for="item in 6" :key="item">
           <div class="h-full bg-gray-200 overflow-hidden rounded-xl">
@@ -14,9 +14,7 @@
     </div>
     <div class="flex flex-wrap items-end gap-3 min-h-[72px] pt-3 -mb-1">
       <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
-        <a-form-model
-          :model="searchParams"
-        >
+        <a-form-model :model="searchParams">
           <div class="flex flex-row items-start gap-4 overflow-x-auto">
             <a-form-model-item key="name" prop="name" class="flex-auto min-w-[170px]">
               <a-input
@@ -48,11 +46,7 @@
         </a-form-model>
       </div>
     </div>
-    <div
-      class="flex-auto flex flex-col"
-      :class="'h-[60vh]'"
-      v-loading="dataListLoading"
-    >
+    <div class="flex-auto flex flex-col h-[60vh]" v-loading="dataListLoading">
       <div class="h-full pb-4 px-2 -mx-2 py-1 overflow-auto">
         <div class="grid grid-cols-1 xl:grid-cols-3 justify-between gap-5">
           <div
@@ -72,11 +66,10 @@
               <div class="flex-auto pl-4 flex flex-col gap-y-1 text-base">
                 <div class="flex gap-x-4 justify-between">
                   <div class="font-bold">{{ teacher.name }}</div>
-                  <!-- <div class="font-bold">{{ `ID: ${ teacher.userId }` }}</div> -->
                 </div>
                 <div class="flex gap-x-4">
                   <div>{{ teacher.college }}</div>
-                  <div>{{ `${ teacher.highEduLevelName }` }}</div>
+                  <div>{{ teacher.highEduLevelName }}</div>
                 </div>
                 <div class="flex gap-x-4">
                   <div>{{ `专业: ${ teacher.major }` }}</div>
@@ -139,10 +132,9 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
-import KTable from '@/components/Kira/KTable'
 import LinkOrderModal from '@/components/Kira/LinkOrderModal'
 import LinkTeacherModal from '@/components/Kira/LinkTeacherModal'
 import { baseMixin } from '@/store/app-mixin'
@@ -151,7 +143,6 @@ export default {
   name: 'OHome',
   mixins: [baseMixin],
   components: {
-    KTable,
     LinkOrderModal,
     LinkTeacherModal
   },
@@ -172,19 +163,14 @@ export default {
   computed: {
     ...mapState(CUR_APP, [
       'userInfo'
-    ]),
-    ...mapGetters('asyncConfig', {
-      codeDict: 'codeDict'
-    })
+    ])
   },
   async mounted() {
-    this.handleGetDataList()
+    await this.handleGetDataList()
   },
   methods: {
     async handleGetDataList() {
       this.dataListLoading = true
-      let dataList = []
-      let total = 0
       try {
         const res = await lingkeApi.teacherGetList({
           pageIndex: this.searchParams.pageIndex,
@@ -192,18 +178,17 @@ export default {
           name: this.searchParams.name || undefined
         })
         if (res && res.code === 1000) {
-          dataList = res.data.list
-          total = res.data.totalCount
+          this.dataList = res.data.list
+          this.total = res.data.totalCount
         } else {
           throw new Error(res.msg || '加载列表数据失败')
         }
       } catch (error) {
         this.$message.error(error.message)
         console.log(error)
+      } finally {
+        this.dataListLoading = false
       }
-      this.dataList = dataList
-      this.total = total
-      this.dataListLoading = false
     },
     async handleSearch() {
       this.searchParams.pageIndex = 1
