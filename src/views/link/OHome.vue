@@ -1,8 +1,8 @@
 <template>
   <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
-    <div v-loading="dataListLoading">
+    <div v-loading="dataTopLoading">
       <el-carousel :interval="4000" type="card" height="200px">
-        <el-carousel-item v-for="item in 6" :key="item">
+        <el-carousel-item v-for="item in dataTopList" :key="item">
           <div class="h-full bg-gray-200 overflow-hidden rounded-xl">
             <el-image
               class="w-full h-full"
@@ -157,7 +157,9 @@ export default {
         name: ''
       },
       dataList: [],
-      dataListLoading: false
+      dataListLoading: false,
+      dataTopLoading: false,
+      dataTopList: []
     }
   },
   computed: {
@@ -169,6 +171,27 @@ export default {
     await this.handleGetDataList()
   },
   methods: {
+    async handleGetDataTop() {
+      this.dataTopLoading = true
+      try {
+        // TODO: new url
+        const res = await lingkeApi.teacherGetList({
+          pageIndex: this.searchParams.pageIndex,
+          pageSize: this.searchParams.pageSize,
+          name: this.searchParams.name || undefined
+        })
+        if (res && res.code === 1000) {
+          this.dataTopList = res.data.list
+        } else {
+          throw new Error(res.msg || '加载数据失败')
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
+      } finally {
+        this.dataTopLoading = false
+      }
+    },
     async handleGetDataList() {
       this.dataListLoading = true
       try {
