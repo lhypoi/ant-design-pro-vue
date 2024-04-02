@@ -55,32 +55,32 @@
         <div
           v-for="item in dataList"
           :key="item.id"
-          class="flex flex-col gap-3 sm:flex-row bg-white rounded-lg p-3 cursor-pointer hover:ring-2"
+          class="flex flex-col gap-1 sm:gap-3 sm:flex-row bg-white rounded-lg p-3 cursor-pointer hover:ring-2 min-h-[90px]"
         >
-          <div class="flex items-center justify-center sm:items-start">
-            <div class="w-16 h-16 rounded-lg overflow-hidden bg-blue-50">
-              <el-image class="w-full h-full" :src="require('@/assets/link/task-type-1.png')" />
+          <div class="flex-auto flex items-center justify-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
+              {{ item.organizationName[0].toUpperCase() }}
+            </div>
+            <div class="flex-auto w-0 flex flex-col sm:gap-1 justify-center">
+              <div class="text-sm text-[#171515] break-all line-clamp-1">{{ item.task }}</div>
+              <div class="text-sm text-[#6D6D6D] break-all line-clamp-1">
+                {{ item.detail }}
+              </div>
             </div>
           </div>
-          <div class="h-16 flex flex-col justify-center sm:flex-auto sm:w-0">
-            <div class="text-sm text-[#171515] break-all line-clamp-1">{{ item.task }}</div>
-            <div class="text-sm text-[#6D6D6D] break-all line-clamp-1 pt-1">
-              {{ item.detail }}
-            </div>
-          </div>
-          <div class="h-16 flex flex-col justify-center sm:w-24">
+          <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-24">
             <div class="text-sm text-[#2192EF]">#{{ item.typeName }}</div>
-            <div class="text-sm text-[#FDA643] pt-1">{{ `￥${item.unitPrice}/${item.duration}h` }}</div>
+            <div class="text-sm text-[#FDA643]">{{ `￥${item.unitPrice}/${item.duration}h` }}</div>
           </div>
-          <div class="h-16 flex flex-col justify-center sm:w-48">
+          <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-48">
             <div class="text-sm text-[#6D6D6D]">发布时间</div>
-            <div class="text-sm text-[#6D6D6D] pt-1">{{ item.createTime }}</div>
+            <div class="text-sm text-[#6D6D6D]">{{ item.createTime }}</div>
           </div>
-          <div class="h-16 flex flex-col justify-center sm:w-48">
+          <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-48">
             <div class="text-2xl text-[#FDA643]">{{ `￥${item.unitPrice * item.duration}` }}</div>
           </div>
           <div
-            class="flex justify-between items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28"
+            class="flex justify-start items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28"
           >
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-[#409EFF] text-white hover:opacity-80"
