@@ -236,6 +236,34 @@ const asyncRouterMapAll = {
             }
           },
           hidden: true
+        },
+        {
+          path: '/t-register',
+          name: 'tRegister',
+          publiclyAccessible: true,
+          component: () => import('@/views/link/LinkRegister'),
+          meta: {
+            title: '教师注册',
+            userType: USER_TYPE.TEACHER,
+            routerBeforeEachFun: () => {
+              storage.set('defaultLoginRoute', 'tLogin')
+            }
+          },
+          hidden: true
+        },
+        {
+          path: '/o-register',
+          name: 'oRegister',
+          publiclyAccessible: true,
+          component: () => import('@/views/link/LinkRegister'),
+          meta: {
+            title: '机构注册',
+            userType: USER_TYPE.ORGANIZATION,
+            routerBeforeEachFun: () => {
+              storage.set('defaultLoginRoute', 'oLogin')
+            }
+          },
+          hidden: true
         }
       ]
     },
@@ -253,22 +281,6 @@ const asyncRouterMapAll = {
       publiclyAccessible: true,
       component: () => import('@/views/link/RegisterPre'),
       meta: { title: '机构介绍', userType: USER_TYPE.ORGANIZATION },
-      hidden: true
-    },
-    {
-      path: '/t-register',
-      name: 'tRegister',
-      publiclyAccessible: true,
-      component: () => import('@/views/link/TRegister'),
-      meta: { title: '教师注册' },
-      hidden: true
-    },
-    {
-      path: '/o-register',
-      name: 'oRegister',
-      publiclyAccessible: true,
-      component: () => import('@/views/link/ORegister'),
-      meta: { title: '机构注册' },
       hidden: true
     },
     {

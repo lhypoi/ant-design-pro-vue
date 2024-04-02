@@ -324,13 +324,23 @@ input:-webkit-autofill:active {
 }
 
 
-.ant-modal-content {
-  border-radius: 8px;
-  overflow: hidden;
 
-  .ant-modal-title {
-    text-align: center;
-    padding: 0 16px;
-    color: #909090;
+
+.ant-modal-root {
+  .ant-modal-content {
+    border-radius: 8px;
+    overflow: hidden;
+
+    .ant-modal-title {
+      text-align: center;
+      padding: 0 16px;
+      color: #909090;
+    }
+  }
+
+  &.hidden-confirm-btns {
+    .ant-modal-confirm-btns {
+      display: none;
+    }
   }
 }

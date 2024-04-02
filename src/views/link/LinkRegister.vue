@@ -1,5 +1,5 @@
 <template>
-  <div class="LinkLogin flex-auto px-3 py-6 flex flex-col justify-center relative">
+  <div class="LinkRegister flex-auto px-3 py-6 flex flex-col justify-center relative">
     <div
       class="absolute -z-10 left-0 top-2 sm:top-0 bottom-0 flex sm:items-center items-start sm:mb-[10vh] overflow-hidden"
     >
@@ -11,22 +11,22 @@
       >
         <div class="m-auto max-w-[960px]">
           <div class="text-[30px] text-center text-gray-950 tracking-widest">{{ formTitle }}</div>
-          <div class="flex py-8 gap-x-6">
+          <div v-if="registerFormTabList.length > 1" class="flex pt-8 gap-x-6">
             <div
-              v-for="item in loginFormTabList"
+              v-for="item in registerFormTabList"
               :key="item.key"
               class="cursor-pointer text-2xl text-gray-400 hover:text-gray-800"
               :class="{
-                'text-gray-950': item.key === curLoginType,
+                'text-gray-950': item.key === curRegisterType,
               }"
-              @click="curLoginType = item.key"
+              @click="curRegisterType = item.key"
             >
               {{ item.value }}
             </div>
           </div>
-          <div>
-            <a-tabs :active-key="curLoginType" :tabBarStyle="{ display: 'none' }">
-              <a-tab-pane v-for="item in loginFormTabList" :key="item.key" :tab="item.key">
+          <div class="pt-8">
+            <a-tabs :active-key="curRegisterType" :tabBarStyle="{ display: 'none' }">
+              <a-tab-pane v-for="item in registerFormTabList" :key="item.key" :tab="item.key">
                 <div class="link-style-form">
                   <a-form-model :ref="'form_' + item.key" :model="formData[item.key]" :rules="formRules[item.key]">
                     <a-form-model-item v-if="formData[item.key].hasOwnProperty('email')" prop="email">
@@ -41,9 +41,6 @@
                         placeholder="请输入邮箱或手机号码"
                         size="large"
                       />
-                    </a-form-model-item>
-                    <a-form-model-item v-if="formData[item.key].hasOwnProperty('passWord')" prop="passWord">
-                      <a-input-password autocomplete="new-passWord" v-model="formData[item.key].passWord" placeholder="请输入密码" size="large" />
                     </a-form-model-item>
                     <a-form-model-item v-if="formData[item.key].hasOwnProperty('smsCode')" prop="smsCode" ref="smsCode">
                       <div class="flex flex-row gap-3">
@@ -72,6 +69,12 @@
                         >
                       </div>
                     </a-form-model-item>
+                    <a-form-model-item v-if="formData[item.key].hasOwnProperty('passWord')" prop="passWord">
+                      <a-input-password autocomplete="new-passWord" v-model="formData[item.key].passWord" placeholder="请输入密码" size="large" />
+                    </a-form-model-item>
+                    <a-form-model-item v-if="formData[item.key].hasOwnProperty('rePassWord')" prop="rePassWord">
+                      <a-input-password v-model="formData[item.key].rePassWord" placeholder="请再次输入密码" size="large" />
+                    </a-form-model-item>
                   </a-form-model>
                 </div>
               </a-tab-pane>
@@ -79,16 +82,12 @@
           </div>
           <div class="link-style-form pt-6 text-center">
             <a-button type="primary" block class="step-btn max-w-[500px]" :loading="submitting" @click="onSubmit">
-              登录
+              注册
             </a-button>
           </div>
           <div class="flex justify-center text-sm pt-7">
-            <div class="text-gray-400">没有账号？</div>
-            <div class="text-blue-400 cursor-pointer" @click="handleToRegister">前往注册</div>
-          </div>
-          <div class="pt-6 flex flex-col items-center">
-            <div class="text-sm text-gray-500 pb-4">—————— 其他登录方式 ——————</div>
-            <a-icon type="wechat" class="text-2xl text-green-400 bg-gray-200 rounded-full cursor-pointer p-2" @click="handleWxLogin" />
+            <div class="text-gray-400">已有账号？</div>
+            <div class="text-blue-400 cursor-pointer" @click="handleToLogin">前往登录</div>
           </div>
           <div class="flex justify-center items-center flex-wrap gap-y-1 whitespace-nowrap text-sm leading-none pt-8">
             <a-icon
@@ -105,32 +104,26 @@
         </div>
       </div>
     </div>
-    <WxLoginModal ref="WxLoginModal" />
   </div>
 </template>
 
 <script>
-import { USER_TYPE, WX_LOGIN_STATE } from '@/store/mutation-types-link-dev'
+import { USER_TYPE } from '@/store/mutation-types-link-dev'
 import { sendSmsCode } from '@/api/lingke'
-import { resetRouter } from '@/router/index'
-import WxLoginModal from '@/components/Kira/WxLoginModal'
 
 const FORM_RULES = {
   email: [
     { pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/, message: '请输入有效的邮箱地址', required: true }
   ],
   phone: [{ pattern: /^1[3456789]\d{9}$/, message: '请输入有效的手机号码', required: true }],
-  emailOrPhone: [
-    {
-      pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$|^1[3456789]\d{9}$/,
-      message: '请输入有效的邮箱地址或手机号码',
-      required: true
-    }
-  ],
   passWord: [
     {
       required: true,
       message: '请输入密码'
+    },
+    {
+      pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/,
+      message: '请确保您的密码长度为6-20位，且包含字母和数字'
     }
   ],
   smsCode: [
@@ -138,70 +131,69 @@ const FORM_RULES = {
       required: true,
       message: '请输入验证码'
     }
+  ],
+  rePassWord: [
+    {
+      validator(rule, value, callback) {
+        try {
+          if (!value.trim()) {
+            throw new Error('请再次输入密码')
+          } else if (value !== this.formData[this.curRegisterType].passWord) {
+            throw new Error('两次输入的密码不一致')
+          }
+          callback()
+        } catch (error) {
+          callback(error)
+        }
+      }
+    }
   ]
 }
 
-const LOGIN_FORM_TYPE = {
-  emailPwd: {
-    key: 'emailPwd',
-    value: '账号登录',
+const REGISTER_FORM_TYPE = {
+  email: {
+    key: 'email',
+    value: '邮箱注册',
     data: {
       email: '',
-      passWord: ''
+      smsCode: '',
+      passWord: '',
+      rePassWord: ''
     },
     rules: {
       email: FORM_RULES.email,
-      passWord: FORM_RULES.passWord
+      smsCode: FORM_RULES.smsCode,
+      passWord: FORM_RULES.passWord,
+      rePassWord: FORM_RULES.rePassWord
     }
   },
-  emailSms: {
-    key: 'emailSms',
-    value: '验证码登录',
-    data: {
-      email: '',
-      smsCode: ''
-    },
-    rules: {
-      email: FORM_RULES.email,
-      smsCode: FORM_RULES.smsCode
-    }
-  },
-  emailOrPhonePwd: {
-    key: 'emailOrPhonePwd',
-    value: '账号登录',
-    data: {
-      emailOrPhone: '',
-      passWord: ''
-    },
-    rules: {
-      emailOrPhone: FORM_RULES.emailOrPhone,
-      passWord: FORM_RULES.passWord
-    }
-  },
-  phoneSms: {
-    key: 'phoneSms',
-    value: '验证码登录',
+  phone: {
+    key: 'phone',
+    value: '手机注册',
     data: {
       phone: '',
-      smsCode: ''
+      smsCode: '',
+      passWord: '',
+      rePassWord: ''
     },
     rules: {
       phone: FORM_RULES.phone,
-      smsCode: FORM_RULES.smsCode
+      smsCode: FORM_RULES.smsCode,
+      passWord: FORM_RULES.passWord,
+      rePassWord: FORM_RULES.rePassWord
     }
   }
 }
 
 export default {
-  name: 'LinkLogin',
+  name: 'LinkRegister',
   components: {
-    WxLoginModal
   },
   data() {
     return {
       USER_TYPE,
-      loginFormTabList: [],
-      curLoginType: '',
+      registerFormTabList: [],
+      curRegisterType: '',
       formData: {},
       formRules: {},
       submitting: false,
@@ -220,8 +212,8 @@ export default {
     },
     formTitle() {
       return {
-        [USER_TYPE.TEACHER]: '登录领克数云教师账户',
-        [USER_TYPE.ORGANIZATION]: '登录领克数云机构账户'
+        [USER_TYPE.TEACHER]: '注册领克数云教师账户',
+        [USER_TYPE.ORGANIZATION]: '注册领克数云机构账户'
       }[this.userType]
     }
   },
@@ -232,15 +224,23 @@ export default {
   },
   methods: {
     initTabList() {
-      this.loginFormTabList = {
-        [USER_TYPE.TEACHER]: [LOGIN_FORM_TYPE.emailPwd, LOGIN_FORM_TYPE.emailSms],
-        [USER_TYPE.ORGANIZATION]: [LOGIN_FORM_TYPE.emailOrPhonePwd, LOGIN_FORM_TYPE.phoneSms]
+      this.registerFormTabList = {
+        [USER_TYPE.TEACHER]: [REGISTER_FORM_TYPE.email],
+        [USER_TYPE.ORGANIZATION]: [REGISTER_FORM_TYPE.phone, REGISTER_FORM_TYPE.email]
       }[this.userType]
-      this.curLoginType = this.loginFormTabList[0].key
-      const [formData, formRules] = this.loginFormTabList.reduce(
+      this.curRegisterType = this.registerFormTabList[0].key
+      const [formData, formRules] = this.registerFormTabList.reduce(
         (acc, item) => {
           acc[0][item.key] = item.data
-          acc[1][item.key] = item.rules
+          acc[1][item.key] = Object.keys(item.rules).reduce((acc, key) => {
+            acc[key] = item.rules[key].map((rule) => {
+              if (rule.validator) {
+                rule.validator = rule.validator.bind(this)
+              }
+              return rule
+            })
+            return acc
+          }, {})
           return acc
         },
         [{}, {}]
@@ -285,48 +285,23 @@ export default {
     },
     async onSubmit() {
       if (this.checkIsAgree() === false) return
-      switch (this.curLoginType) {
-        case 'emailPwd':
-        case 'emailSms':
-          await this.$store.dispatch('Login', {
-            loginType: '1',
-            phoneNumber: '18826102321',
-            passWord: '111111'
-          })
-          break
-        case 'emailOrPhonePwd':
-        case 'phoneSms':
-          await this.$store.dispatch('Login', {
-            loginType: '1',
-            phoneNumber: '123456',
-            passWord: '123456'
-          })
-          break
+      this.submitting = true
+      try {
+        const res = await new Promise(resolve => {
+          setTimeout(() => {
+            resolve({ data: 1 })
+          }, 500)
+        })
+        if (res && res.data === 1) {
+          this.showSuccessModal()
+        } else {
+          throw new Error(res.msg || '注册失败')
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
       }
-      this.$message.success('登录成功')
-      resetRouter()
-      this.$router.push({ path: '/' })
-      // this.$refs.loginForm.validate(async valid => {
-      //   if (valid) {
-      //     this.submitting = true
-      //     try {
-      //       const params = {
-      //         loginType: this.formData.loginType,
-      //         phoneNumber: this.formData.phoneNumber
-      //       }
-      //       if (this.formData.loginType === '1') params.passWord = this.formData.passWord
-      //       if (this.formData.loginType === '2') params.smsCode = this.formData.smsCode
-      //       await this.$store.dispatch('Login', params)
-      //       this.$message.success('登录成功')
-      //       resetRouter()
-      //       this.$router.push({ path: '/' })
-      //     } catch (error) {
-      //       this.$message.error(error.message)
-      //       console.log(error)
-      //     }
-      //     this.submitting = false
-      //   }
-      // })
+      this.submitting = false
     },
     checkIsAgree() {
       if (!this.isAgree) {
@@ -334,16 +309,53 @@ export default {
         return false
       }
     },
-    handleWxLogin() {
-      if (this.checkIsAgree() === false) return
-      this.$refs.WxLoginModal.handleShowWxLoginModalParams({
-        state: WX_LOGIN_STATE[this.$route.name]
+    handleToLogin() {
+      this.$router.push({
+        name: this.userType === USER_TYPE.TEACHER ? 'tLogin' : 'oLogin'
       })
     },
-    handleToRegister() {
-      this.$router.push({
-        name: this.userType === USER_TYPE.TEACHER ? 'tRegister' : 'oRegister'
+    showSuccessModal() {
+      const modal = this.$info({
+        icon: () => null,
+        class: 'hidden-confirm-btns',
+        centered: true,
+        width: 680,
+        content: () => {
+          return (
+            <div class="flex flex-col items-center pb-2">
+              <div class="w-[100px]">
+                <img src={ require('@/assets/link/r1.webp') } alt="" class="w-full" />
+              </div>
+              <div class="text-[32px] text-gray-800 pt-5">注册成功</div>
+              <div class="text-[24px] text-gray-800 pt-2">
+                —— 即将前往登陆 ——
+              </div>
+            </div>
+          )
+        }
       })
+      setTimeout(async () => {
+        switch (this.userType) {
+          case USER_TYPE.TEACHER:
+            await this.$store.dispatch('Login', {
+              loginType: '1',
+              phoneNumber: '18826102321',
+              passWord: '111111'
+            })
+            break
+          case USER_TYPE.ORGANIZATION:
+            await this.$store.dispatch('Login', {
+              loginType: '1',
+              phoneNumber: '123456',
+              passWord: '123456'
+            })
+            break
+        }
+        modal.destroy()
+        this.$nextTick(() => {
+          this.handleToLogin()
+        })
+      }, 1000)
     }
   }
 }
