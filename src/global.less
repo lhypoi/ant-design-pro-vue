@@ -239,77 +239,35 @@ input:-webkit-autofill:active {
 }
 
 .link-style-form {
-  .ant-form-item {
-    .ant-form-item-control {
-      @apply pb-1;
-    }
+  .ant-form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
 
     .ant-form-explain {
-      @apply pl-5;
+      padding-left: 12px;
     }
 
-    .ant-input, .ant-input-number {
-      @apply h-11 mb-1 rounded-md text-base border-gray-400 pl-5;
-    }
-
-    textarea.ant-input {
-      @apply h-auto align-middle;
-    }
-
-    .ant-select {
-      @apply block mb-1;
-
-      .ant-select-selection {
-        @apply rounded-md text-base border-gray-400;
-        min-height: 44px;
-        padding-top: 2px;
-        padding-bottom: 6px;
-      }
-
-      .ant-select-selection__rendered {
-        @apply ml-5 mr-7;
-      }
-
-      .ant-select-selection--multiple .ant-select-arrow,
-      .ant-select-selection--multiple .ant-select-selection__clear {
-        @apply top-6;
-      }
-    }
-
-    .ant-checkbox-group {
-      @apply mb-1;
-    }
-  }
-
-  .dragUploader {
-    @apply w-full mb-2;
-    display: block;
-  
-    .ant-upload-drag  {
-      @apply bg-transparent border-none rounded-none;
-  
-      .ant-upload {
-        @apply p-0;
-      }
+    .ant-input {
+      border-radius: 8px;
     }
   }
 
   .send-code-btn {
-    @apply h-11 rounded-md text-base border-0;
+    height: 40px;
+    @apply rounded-lg text-lg border-0;
   }
 
   .step-btn {
-    @apply h-12 rounded-md text-base border-0;
+    height: 48px;
+    box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.1608);
+    @apply rounded-3xl text-lg border-0;
   }
 
   .reset-btn {
-    @apply h-12 rounded-md text-base;
-  }
-
-  &.link-style-form-sm {
-    .ant-form-item {
-      @apply h-9;
-    }
+    height: 48px;
+    box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.1608);
+    @apply rounded-2xl text-lg;
   }
 }
 
@@ -363,4 +321,16 @@ input:-webkit-autofill:active {
 
 .el-loading-spinner .circular {
   display: inline;
+}
+
+
+.ant-modal-content {
+  border-radius: 8px;
+  overflow: hidden;
+
+  .ant-modal-title {
+    text-align: center;
+    padding: 0 16px;
+    color: #909090;
+  }
 }

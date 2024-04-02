@@ -1,117 +1,110 @@
 <template>
-  <a-drawer
-    placement="right"
-    :closable="false"
-    :visible="!!detailId"
-    :get-container="false"
-    :wrap-style="{ position: 'absolute' }"
-    width="100%"
-  >
-    <div>
-      <div class="pb-6">
-        <a-icon
-          type="left-circle"
-          theme="filled"
-          class="cursor-pointer text-blue-600 hover:text-blue-400 text-4xl"
-          @click="handleBack"
-        />
-      </div>
-      <div class="text-2xl font-bold text-slate-900">订单详情</div>
-      <div class="text-sm text-slate-400">Order details</div>
-      <div v-if="!detailData" class="pt-8">
-        <a-skeleton avatar active :paragraph="{ rows: 4 }" />
-      </div>
-      <div
-        v-else
-        class="flex flex-col gap-5 sm:flex-row pt-8"
-        v-loading="detailDataLoading"
-      >
-        <div class="flex items-center justify-center sm:items-start">
-          <div class="w-full sm:w-36 h-36 rounded-lg overflow-hidden bg-blue-50">
-            <el-image
-              class="w-full h-full"
-              :src="require('@/assets/link/task-type-1.png')"
-            />
-          </div>
+  <div class="w-0 h-0 overflow-hidden absolute">
+    <a-modal
+      v-if="!!detailId"
+      :title="modalTitle"
+      :visible="true"
+      :footer="null"
+      :maskClosable="false"
+      :width="isMobile ? '90vw' : '1200px'"
+      @cancel="handleBack"
+    >
+      <div>
+        <div v-if="!detailData">
+          <a-skeleton avatar active :paragraph="{ rows: 4 }" />
         </div>
-        <div class="link-style-form flex flex-col sm:flex-auto">
-          <div class="flex gap-x-5">
-            <div class="flex-auto text-lg text-slate-900 font-bold break-all ">{{ detailData.task }}</div>
-            <div
-              class="text-yellow-500 text-xl whitespace-nowrap"
-            >{{ detailData.statusName }}</div>
+        <div
+          v-else
+          class="flex flex-col gap-5 sm:flex-row"
+          v-loading="detailDataLoading"
+        >
+          <div class="flex items-center justify-center sm:items-start">
+            <div class="w-full sm:w-36 h-36 rounded-lg overflow-hidden bg-blue-50">
+              <el-image
+                class="w-full h-full"
+                :src="require('@/assets/link/task-type-1.png')"
+              />
+            </div>
           </div>
-          <div class="flex flex-wrap pt-2">
-            <div
-              class="text-sm text-blue-600 pr-2 cursor-pointer"
-            >#{{ detailData.typeName }}</div>
-            <div class="text-sm text-slate-400 sm:pl-2">{{ detailData.updateTime }}</div>
-          </div>
-          <div class="pt-2 pb-4 flex">
-            <div
-              class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
-            >价格：￥{{ `${detailData.unitPrice}/h x ${detailData.duration}h` }}</div>
-          </div>
-          <div class="text-base text-slate-800 break-all ">
-            {{ detailData.detail }}
-          </div>
-          <div v-if="detailData.fileList && detailData.fileList.length" class="pt-8">
-            <div class="text-gray-400">相关文件：</div>
-            <a-upload-dragger
-              class="dragUploader"
-              :fileList="detailData.fileList"
-              disabled
-              @preview="handleFileDownload"
-            >
-            </a-upload-dragger>
-          </div>
-          <div class="flex gap-x-6 gap-y-3 pt-8 flex-wrap whitespace-nowrap">
-            <a-button
-              class="h-10 rounded-md"
-              type="primary"
-              @click="handleCatchTask(detailData)"
-            >
-              接受委托
-            </a-button>
-            <a-button
-              class="h-10 rounded-md"
-              type="danger"
-              @click="handleRefuseTask(detailData)"
-            >
-              拒绝委托
-            </a-button>
-            <a-button
-              class="success-btn h-10 rounded-md"
-              type="primary"
-              @click="handlePayTask(detailData)"
-            >
-              支付
-            </a-button>
-            <a-button
-              class="success-btn h-10 rounded-md"
-              type="primary"
-              @click="handleFinishTask(detailData)"
-            >
-              交付确认
-            </a-button>
-            <a-button
-              class="h-10 rounded-md"
-              type="primary"
-            >
-              联系委托方
-            </a-button>
-            <a-button
-              class="h-10 rounded-md"
-              type="danger"
-              @click="handleCancelTask(detailData)"
-            >
-              撤销委托
-            </a-button>
+          <div class="link-style-form flex flex-col sm:flex-auto">
+            <div class="flex gap-x-5">
+              <div class="flex-auto text-lg text-slate-900 font-bold break-all ">{{ detailData.task }}</div>
+              <div
+                class="text-yellow-500 text-xl whitespace-nowrap"
+              >{{ detailData.statusName }}</div>
+            </div>
+            <div class="flex flex-wrap pt-2">
+              <div
+                class="text-sm text-blue-600 pr-2 cursor-pointer"
+              >#{{ detailData.typeName }}</div>
+              <div class="text-sm text-slate-400 sm:pl-2">{{ detailData.updateTime }}</div>
+            </div>
+            <div class="pt-2 pb-4 flex">
+              <div
+                class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
+              >价格：￥{{ `${detailData.unitPrice}/h x ${detailData.duration}h` }}</div>
+            </div>
+            <div class="text-base text-slate-800 break-all ">
+              {{ detailData.detail }}
+            </div>
+            <div v-if="detailData.fileList && detailData.fileList.length" class="pt-8">
+              <div class="text-gray-400">相关文件：</div>
+              <a-upload-dragger
+                class="dragUploader"
+                :fileList="detailData.fileList"
+                disabled
+                @preview="handleFileDownload"
+              >
+              </a-upload-dragger>
+            </div>
+            <div class="flex gap-x-6 gap-y-3 pt-8 flex-wrap whitespace-nowrap">
+              <a-button
+                class="h-10 rounded-md"
+                type="primary"
+                @click="handleCatchTask(detailData)"
+              >
+                接受委托
+              </a-button>
+              <a-button
+                class="h-10 rounded-md"
+                type="danger"
+                @click="handleRefuseTask(detailData)"
+              >
+                拒绝委托
+              </a-button>
+              <a-button
+                class="success-btn h-10 rounded-md"
+                type="primary"
+                @click="handlePayTask(detailData)"
+              >
+                支付
+              </a-button>
+              <a-button
+                class="success-btn h-10 rounded-md"
+                type="primary"
+                @click="handleFinishTask(detailData)"
+              >
+                交付确认
+              </a-button>
+              <a-button
+                class="h-10 rounded-md"
+                type="primary"
+              >
+                联系委托方
+              </a-button>
+              <a-button
+                class="h-10 rounded-md"
+                type="danger"
+                @click="handleCancelTask(detailData)"
+              >
+                撤销委托
+              </a-button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </a-drawer>
+    </a-modal>
+  </div>
 </template>
 
 <script>
@@ -142,6 +135,9 @@ export default {
     }),
     detailId() {
       return this.$route.query.orderId
+    },
+    modalTitle() {
+      return this.detailData ? `你在看${ this.detailData.organizationName }的委托` : '-'
     }
   },
   watch: {

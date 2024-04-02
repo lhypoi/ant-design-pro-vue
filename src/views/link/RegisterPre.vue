@@ -7,11 +7,11 @@
           <div class="text-white text-2xl pb-2">一个提供高学历学术人才</div>
           <div class="text-white text-2xl">帮助客户解决学术难题的平台</div>
           <div class="flex-auto pt-5 flex flex-row gap-x-5">
-            <template v-if="mode === USER_TYPE.TEACHER">
+            <template v-if="userType === USER_TYPE.TEACHER">
               <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'tRegister' })">教师注册</a-button>
               <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'tLogin' })">教师登录</a-button>
             </template>
-            <template v-if="mode === USER_TYPE.ORGANIZATION">
+            <template v-if="userType === USER_TYPE.ORGANIZATION">
               <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oRegister' })">机构注册</a-button>
               <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oLogin' })">机构登录</a-button>
             </template>
@@ -39,8 +39,8 @@ export default {
     }
   },
   computed: {
-    mode() {
-      return this.$route.meta.mode
+    userType() {
+      return this.$route.meta.userType
     }
   },
   created() {

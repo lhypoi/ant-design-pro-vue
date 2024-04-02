@@ -138,7 +138,7 @@ const asyncRouterMapAll = {
     {
       path: '/',
       name: 'index',
-      component: BasicLayout,
+      component: () => import('@/layouts/link/BasicLayout'),
       meta: { title: 'menu.home' },
       // redirect: '/task-square',
       children: [
@@ -207,6 +207,35 @@ const asyncRouterMapAll = {
           name: 'WithdrawalManage',
           component: () => import('@/views/link/WithdrawalManage'),
           meta: { title: '提现管理', icon: 'table', permission: ['3'] }
+        },
+        {
+          path: '/t-login',
+          name: 'tLogin',
+          publiclyAccessible: true,
+          component: () => import('@/views/link/LinkLogin'),
+          defaultLoginRoute: true,
+          meta: {
+            title: '教师登录',
+            userType: USER_TYPE.TEACHER,
+            routerBeforeEachFun: () => {
+              storage.set('defaultLoginRoute', 'tLogin')
+            }
+          },
+          hidden: true
+        },
+        {
+          path: '/o-login',
+          name: 'oLogin',
+          publiclyAccessible: true,
+          component: () => import('@/views/link/LinkLogin'),
+          meta: {
+            title: '机构登录',
+            userType: USER_TYPE.ORGANIZATION,
+            routerBeforeEachFun: () => {
+              storage.set('defaultLoginRoute', 'oLogin')
+            }
+          },
+          hidden: true
         }
       ]
     },
@@ -215,7 +244,7 @@ const asyncRouterMapAll = {
       name: 'registerPreTeacher',
       publiclyAccessible: true,
       component: () => import('@/views/link/RegisterPre'),
-      meta: { title: '教师介绍', mode: USER_TYPE.TEACHER },
+      meta: { title: '教师介绍', userType: USER_TYPE.TEACHER },
       hidden: true
     },
     {
@@ -223,7 +252,7 @@ const asyncRouterMapAll = {
       name: 'registerPreOrganization',
       publiclyAccessible: true,
       component: () => import('@/views/link/RegisterPre'),
-      meta: { title: '机构介绍', mode: USER_TYPE.ORGANIZATION },
+      meta: { title: '机构介绍', userType: USER_TYPE.ORGANIZATION },
       hidden: true
     },
     {
@@ -240,33 +269,6 @@ const asyncRouterMapAll = {
       publiclyAccessible: true,
       component: () => import('@/views/link/ORegister'),
       meta: { title: '机构注册' },
-      hidden: true
-    },
-    {
-      path: '/t-login',
-      name: 'tLogin',
-      publiclyAccessible: true,
-      component: () => import('@/views/link/TLogin'),
-      defaultLoginRoute: true,
-      meta: {
-        title: '教师登录',
-        routerBeforeEachFun: () => {
-          storage.set('defaultLoginRoute', 'tLogin')
-        }
-      },
-      hidden: true
-    },
-    {
-      path: '/o-login',
-      name: 'oLogin',
-      publiclyAccessible: true,
-      component: () => import('@/views/link/TLogin'),
-      meta: {
-        title: '机构登录',
-        routerBeforeEachFun: () => {
-          storage.set('defaultLoginRoute', 'oLogin')
-        }
-      },
       hidden: true
     },
     {
