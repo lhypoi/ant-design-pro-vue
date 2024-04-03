@@ -15,6 +15,126 @@
         </div>
         <div
           v-else
+          v-loading="detailDataLoading"
+
+        >
+          <div class="bg-slate-50 rounded-lg p-3">
+            <div class="text-gray-950 text-lg pb-1">{{ detailData.task }}</div>
+            <div class="flex flex-row gap-5">
+              <div class="text-gray-400 text-sm">{{ detailData.createTime }}</div>
+              <div class="text-blue-400 text-sm">#{{ detailData.typeName }}</div>
+            </div>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-y-2">
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">委托 ID</div>
+              <div class="text-gray-950">{{ detailData.id }}</div>
+              <div class="ml-2"><a-icon type="copy" class="cursor-pointer text-blue-400" /></div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">状态</div>
+              <div class="text-blue-400">{{ detailData.statusName }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">价格</div>
+              <div class="text-[#FDA643]">￥{{ `${detailData.unitPrice * detailData.duration}` }}</div>
+            </div>
+            <div class="w-full flex text-sm">
+              <div class="text-gray-400 w-20">相关资料</div>
+              <div class="flex-auto">
+                <a-upload
+                  v-if="detailData.fileList && detailData.fileList.length"
+                  :fileList="detailData.fileList"
+                  disabled
+                >
+                </a-upload>
+                <div v-else>-</div>
+              </div>
+            </div>
+            <div class="w-full flex text-sm">
+              <div class="text-gray-400 w-20">委托明细</div>
+              <div class="text-gray-950 w-0 flex-auto">{{ detailData.detail }}</div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-2">课程信息</div>
+            <div class="flex flex-wrap gap-y-2">
+              <div class="w-full sm:w-1/3 flex text-sm">
+                <div class="text-gray-400 w-20">模式</div>
+                <div class="text-gray-950">多课时</div>
+              </div>
+              <div class="w-full sm:w-2/3 flex text-sm">
+                <div class="text-gray-400 w-20">时长</div>
+                <div class="text-gray-950">2.5小时 * 5节课</div>
+              </div>
+              <div class="w-full sm:w-1/3 flex text-sm">
+                <div class="text-gray-400 w-20">老师</div>
+                <div v-if="detailData.teacherId" class="text-blue-400">{{ detailData.teacherName }}</div>
+                <div v-else class="text-gray-600">-</div>
+              </div>
+              <div class="w-full sm:w-2/3 flex text-sm">
+                <div class="text-gray-400 w-20">进度</div>
+                <div class="text-blue-400 min-w-[200px]">
+                  <a-progress :percent="2/5 * 100" :format="() => '2/5'" size="small" status="active" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3">交付记录</div>
+            <a-table
+              :pagination="false"
+              :columns="[
+                {
+                  title: 'Name',
+                  dataIndex: 'name',
+                },
+                {
+                  title: 'Age',
+                  dataIndex: 'age',
+                },
+                {
+                  title: 'Address',
+                  dataIndex: 'address',
+                },
+              ]"
+              :data-source="[
+                {
+                  key: '1',
+                  name: 'John Brown',
+                  age: 32,
+                  address: 'New York No. 1 Lake Park',
+                },
+                {
+                  key: '2',
+                  name: 'Jim Green',
+                  age: 42,
+                  address: 'London No. 1 Lake Park',
+                },
+                {
+                  key: '3',
+                  name: 'Joe Black',
+                  age: 32,
+                  address: 'Sidney No. 1 Lake Park',
+                },
+              ]"
+              size="small" />
+          </div>
+          <div class="mt-4 flex justify-end gap-4 items-center">
+            <div class="cursor-pointer text-blue-400 leading-none">
+              <a-icon type="message" class="text-2xl" />
+            </div>
+            <a-button
+              class="rounded-md"
+              type="primary"
+              @click="handleCatchTask(detailData)"
+            >
+              接受委托
+            </a-button>
+          </div>
+        </div>
+        <!-- <div
+          v-else
           class="flex flex-col gap-5 sm:flex-row"
           v-loading="detailDataLoading"
         >
@@ -101,7 +221,7 @@
               </a-button>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </a-modal>
   </div>
@@ -137,7 +257,7 @@ export default {
       return this.$route.query.orderId
     },
     modalTitle() {
-      return this.detailData ? `你在看${ this.detailData.organizationName }的委托` : '-'
+      return this.detailData ? `${ this.detailData.organizationName }的委托` : '-'
     }
   },
   watch: {

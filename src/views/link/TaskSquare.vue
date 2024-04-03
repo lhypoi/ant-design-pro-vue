@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col bg-white rounded-3x px-3 py-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x px-3 py-6">
     <div class="relative h-[340px] z-0 rounded-2xl overflow-hidden">
       <img src="@/assets/link/t3.webp" alt="" srcset="" class="absolute w-full h-full -z-10" />
       <div class="h-full flex flex-col px-8 pt-16 pb-4">
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div
-      class="mt-3 bg-[#F6F6F6] rounded-lg p-3 min-h-[90px]"
+      class="mt-5 min-h-[90px]"
       v-loading="dataListLoading"
       element-loading-spinner="el-icon-loading mt-3"
       element-loading-background="rgba(0, 0, 0, 0.8)"
@@ -55,10 +55,10 @@
         <div
           v-for="item in dataList"
           :key="item.id"
-          class="flex flex-col gap-1 sm:gap-3 sm:flex-row bg-white rounded-lg p-3 cursor-pointer hover:ring-2 min-h-[90px]"
+          class="flex flex-col gap-1 sm:gap-3 sm:flex-row bg-white rounded-lg shadow-sm p-3 cursor-pointer hover:ring-2 min-h-[90px]"
         >
           <div class="flex-auto flex items-center justify-center gap-3">
-            <div class="w-12 h-12 rounded-full bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
+            <div class="w-12 h-12 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
               {{ item.organizationName[0].toUpperCase() }}
             </div>
             <div class="flex-auto w-0 flex flex-col sm:gap-1 justify-center">
@@ -93,17 +93,16 @@
       </div>
       <div v-if="!dataList.length" class="h-20 flex justify-center items-center text-gray-400">空空如也</div>
     </div>
-    <div class="flex flex-row justify-center pt-3">
+    <div class="flex flex-row justify-center py-2 bg-white rounded-lg mt-5">
       <el-pagination
         class="-mr-3"
         :disabled="dataListLoading"
         :current-page.sync="searchParams.pageIndex"
         :page-size.sync="searchParams.pageSize"
-        :layout="isMobile ? 'prev, pager, next' : 'total, sizes, prev, pager, next'"
+        :layout="isMobile ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next'"
         :page-sizes="pageSizes"
         :total="total"
         :pager-count="5"
-        background
         :small="isMobile"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"

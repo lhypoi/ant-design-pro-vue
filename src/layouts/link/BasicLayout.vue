@@ -28,7 +28,7 @@
           <div class="h-full flex items-center">
             <a-dropdown>
               <div class="h-full flex items-center gap-x-3 cursor-pointer hover:bg-gray-100 px-3">
-                <div class="w-8 h-8 rounded-full bg-blue-400 text-white flex justify-center items-center text-xl leading-none">{{ userInfo.name[0].toUpperCase() }}</div>
+                <div class="w-8 h-8 rounded bg-blue-400 text-white flex justify-center items-center text-xl leading-none">{{ userInfo.name[0].toUpperCase() }}</div>
                 <span class="text-lg hover:text-blue-400 hidden sm:inline">{{ userInfo.name }}</span>
               </div>
               <a-menu slot="overlay">
@@ -41,7 +41,7 @@
     </div>
     <div class="min-h-screen flex flex-col pt-16">
       <div
-        class="flex-auto flex flex-col"
+        class="flex-auto flex flex-col bg-gray-100"
       >
         <router-view :key="$route.path" />
       </div>

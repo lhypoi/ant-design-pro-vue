@@ -1,5 +1,5 @@
 <template>
-  <div class="LinkLogin flex-auto px-3 py-6 flex flex-col justify-center relative">
+  <div class="LinkLogin z-0 bg-white flex-auto px-3 py-6 flex flex-col justify-center relative">
     <div
       class="absolute -z-10 left-0 top-2 sm:top-0 bottom-0 flex sm:items-center items-start sm:mb-[10vh] overflow-hidden"
     >
