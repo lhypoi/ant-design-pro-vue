@@ -437,8 +437,8 @@ export default {
                   type: this.formData[this.curTabKey].type,
                   name: this.formData[this.curTabKey].name,
                   legalPerson: this.formData[this.curTabKey].legalPerson,
-                  idCard: this.formData[this.curTabKey].idCard[0]?.uploadResName || '',
-                  businessLicense: this.formData[this.curTabKey].businessLicense[0]?.uploadResName || ''
+                  idCard: this.formData[this.curTabKey].idCard[0]?.downloadUrl || '',
+                  businessLicense: this.formData[this.curTabKey].businessLicense[0]?.downloadUrl || ''
                 })
                 res = await lingkeApi.organizationUpdate(params)
                 break
@@ -475,8 +475,7 @@ export default {
       if (single) fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
         if (file.response) {
-          file.uploadResName = file.response.data[0]
-          file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
+          file.downloadUrl = file.response.data[0]
         }
         return file
       })
@@ -484,13 +483,12 @@ export default {
     },
     parseFileNamesToObjs(names) {
       return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(\[.*?\])?(.*)(-.*?)(\..*)$/) || []
+        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
         return {
           uid: name,
           name: (fileName + fileExtension) || name,
           status: 'done',
-          uploadResName: name,
-          downloadUrl: `${lingkeApi.downloadBaseUrl}?file=${name}`
+          downloadUrl: name
         }
       })
     },

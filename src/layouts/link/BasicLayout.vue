@@ -19,7 +19,7 @@
                 @click="() => $router.push({ name: menu.name })"
               >
                 <a-icon :type="menu.meta.icon" />
-                <a-badge :count="1" :offset="[8, 0]">
+                <a-badge :count="0" :offset="[8, 0]">
                   <span>{{ menu.meta.title }}</span>
                 </a-badge>
               </a-menu-item>
@@ -28,8 +28,8 @@
           <div class="h-full flex items-center">
             <a-dropdown>
               <div class="h-full flex items-center gap-x-3 cursor-pointer hover:bg-gray-100 px-3">
-                <div class="w-8 h-8 rounded bg-blue-400 text-white flex justify-center items-center text-xl leading-none">{{ userInfo.name[0].toUpperCase() }}</div>
-                <span class="text-lg hover:text-blue-400 hidden sm:inline">{{ userInfo.name }}</span>
+                <div class="w-8 h-8 rounded bg-blue-400 text-white flex justify-center items-center text-xl leading-none">{{ userInfo.avatarFirstLetter }}</div>
+                <span class="text-lg hover:text-blue-400 hidden sm:inline">{{ userInfo.avatarName }}</span>
               </div>
               <a-menu slot="overlay">
                 <a-menu-item key="1" @click="handleLogout">退出登录</a-menu-item>
@@ -68,7 +68,7 @@ import {
 } from 'vuex'
 import { Modal } from 'ant-design-vue'
 import storage from 'store'
-import { TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
+import { TOGGLE_MOBILE_TYPE, CUR_APP } from '@/store/mutation-types'
 
 export default {
   name: 'BasicLayout',
@@ -80,9 +80,11 @@ export default {
   },
   computed: {
     ...mapState({
-      userInfo: state => state.user.info,
       mainMenu: state => state.permission.addRouters
     }),
+    ...mapState(CUR_APP, [
+      'userInfo'
+    ]),
     ...mapGetters(['hasLogin']),
     menus() {
       const routes = this.mainMenu.find(item => item.path === '/')

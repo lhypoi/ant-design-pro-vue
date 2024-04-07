@@ -2,7 +2,7 @@
   <div class="w-full mx-auto max-w-[1200px] px-3 py-6 flex-auto flex flex-col sm:flex-row gap-4">
     <div class="bg-white rounded-xl p-6 sm:w-60 shadow-sm">
       <div class="flex justify-center items-center">
-        <div class="w-20 h-20 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">{{ userInfo.name[0].toUpperCase() }}</div>
+        <div class="w-20 h-20 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">{{ userInfo.avatarFirstLetter }}</div>
       </div>
       <div class="pt-5 flex flex-row flex-wrap justify-between gap-4">
         <div
@@ -47,9 +47,9 @@
               信息越完善，自身信誉越高，同时在平台的曝光也会越大，可以吸引更多有辅导需求的同学。
             </div>
             <div class="text-base text-gray-950 font-bold pb-2">基本信息：</div>
-            <a-form-model-item prop="name" label="昵称">
+            <a-form-model-item prop="nickName" label="昵称">
               <a-input
-                v-model="formData[curTabKey].name"
+                v-model="formData[curTabKey].nickName"
                 placeholder="请输入姓名"
                 size="large"
               />
@@ -439,7 +439,7 @@ export default {
       ],
       formData: {
         '1': {
-          name: '',
+          nickName: '',
           highEduLevel: undefined,
           major: '',
           college: '',
@@ -464,7 +464,7 @@ export default {
       },
       formRules: {
         '1': {
-          name: [
+          nickName: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -650,7 +650,7 @@ export default {
           const teacherInfo = res.data
           const formData = {
             '1': {
-              name: teacherInfo.name,
+              nickName: teacherInfo.nickName,
               highEduLevel: teacherInfo.highEduLevel,
               major: teacherInfo.major,
               college: teacherInfo.college,
@@ -707,26 +707,26 @@ export default {
             switch (this.curTabKey) {
               case '1':
                 Object.assign(params, {
-                  name: formData.name,
+                  nickName: formData.nickName,
                   highEduLevel: formData.highEduLevel,
                   major: formData.major,
                   college: formData.college,
                   advantage: formData.advantage,
                   tools: formData.tools.join(','),
                   want: formData.want.join(','),
-                  sample: formData.want.includes('3') ? (formData.sample[0]?.response && formData.sample[0].uploadResName) : '',
-                  diploma: formData.diploma[0]?.response && formData.diploma[0].uploadResName,
-                  transcript: formData.transcript[0]?.response && formData.transcript[0].uploadResName
+                  sample: formData.want.includes('3') ? (formData.sample.filter(file => file.downloadUrl).map(file => file.downloadUrl).join(',')) : '',
+                  diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
+                  transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
                 })
                 break
               case '2':
                 Object.assign(params, {
-                  cv: formData.cv[0]?.response && formData.cv[0].uploadResName
+                  cv: formData.cv[0]?.response && formData.cv[0].downloadUrl
                 })
                 break
               case '3':
                 Object.assign(params, {
-                  visa: formData.visa[0]?.response && formData.visa[0].uploadResName
+                  visa: formData.visa[0]?.response && formData.visa[0].downloadUrl
                 })
                 break
               case '4':
@@ -767,8 +767,7 @@ export default {
       fileList = fileList.map(file => {
         if (file.response) {
           if (file.response.code === 200) {
-            file.uploadResName = file.response.data[0]
-            file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
+            file.downloadUrl = file.response.data[0]
           } else {
             this.$message.error(file.response.message || '上传失败')
           }
@@ -779,13 +778,12 @@ export default {
     },
     parseFileNamesToObjs(names) {
       return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(\[.*?\])?(.*)(-.*?)(\..*)$/) || []
+        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
         return {
           uid: name,
           name: (fileName + fileExtension) || name,
           status: 'done',
-          uploadResName: name,
-          downloadUrl: `${lingkeApi.downloadBaseUrl}?file=${name}`
+          downloadUrl: name
         }
       })
     },

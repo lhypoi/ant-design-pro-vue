@@ -168,13 +168,12 @@ export default {
     },
     parseFileNamesToObjs(names) {
       return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(\[.*?\])?(.*)(-.*?)(\..*)$/) || []
+        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
         return {
           uid: name,
           name: (fileName + fileExtension) || name,
           status: 'done',
-          uploadResName: name,
-          downloadUrl: `${lingkeApi.downloadBaseUrl}?file=${name}`
+          downloadUrl: name
         }
       })
     },

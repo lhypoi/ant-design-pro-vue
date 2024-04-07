@@ -137,14 +137,22 @@ const user = {
               const result = {}
               const userInfoRes = await lingkeApi.getUserInfo()
               if (userInfoRes && userInfoRes.code === 200) {
+                const userInfoData = userInfoRes.data
                 const role = {
-                  id: userInfoRes.data.roleId,
-                  permissionList: [userInfoRes.data.roleId]
+                  id: userInfoData.roleId,
+                  permissionList: [userInfoData.roleId]
                 }
                 result.role = role
                 commit('SET_ROLES', role)
-                commit('SET_INFO', userInfoRes.data)
-                commit(CUR_APP + '/SET_USER_INFO', userInfoRes.data)
+                const avatarName = userInfoData.nickName || userInfoData.email || userInfoData.phoneNumber || ''
+                const avatarFirstLetter = avatarName?.charAt(0).toUpperCase()
+                const userInfo = {
+                  ...userInfoData,
+                  avatarName,
+                  avatarFirstLetter
+                }
+                commit('SET_INFO', userInfo)
+                commit(CUR_APP + '/SET_USER_INFO', userInfo)
               } else {
                 throw new Error(userInfoRes.message || '获取用户信息失败')
               }

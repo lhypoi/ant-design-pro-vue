@@ -74,7 +74,7 @@ export default {
     },
     single: {
       type: [Boolean, Number],
-      default: false
+      default: true
     },
     illustrativeGraphsUrl: {
       type: String,
@@ -98,8 +98,7 @@ export default {
       fileList = fileList.map((file) => {
         if (file.response) {
           if (file.response.code === 200) {
-            file.uploadResName = file.response.data[0]
-            file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
+            file.downloadUrl = file.response.data[0]
           } else {
             this.$message.error(file.response.message || '上传失败')
           }
