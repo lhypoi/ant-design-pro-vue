@@ -6,7 +6,7 @@
         <div class="text-5xl text-white">任务广场</div>
         <div class="flex-auto pt-6">
           <div class="max-w-[560px] flex items-center h-10 rounded-full bg-[#4d6bc6] pl-2 pr-4">
-            <a-select
+            <!-- <a-select
               showSearch
               class="searchInput block flex-auto text-white"
               label-in-value
@@ -22,7 +22,12 @@
               <a-select-option v-for="d in fetchData" :key="d.value">
                 {{ d.text }}
               </a-select-option>
-            </a-select>
+            </a-select> -->
+            <a-input
+              class="searchInput2 block flex-auto text-white"
+              placeholder="请输入任务名称"
+              v-model="fetchWord"
+            />
             <div class="flex cursor-pointer" @click="handleSearch">
               <img src="@/assets/link/t4.webp" alt="" srcset="" class="w-6 h-6" />
             </div>
@@ -91,7 +96,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!dataList.length" class="h-20 flex justify-center items-center text-gray-400">空空如也</div>
+      <div v-if="!dataList.length" class="h-20 flex justify-center items-center text-gray-400 bg-white rounded-lg">空空如也</div>
     </div>
     <div class="flex flex-row justify-center py-2 bg-white rounded-lg mt-5">
       <el-pagination
@@ -177,8 +182,9 @@ export default {
         const res = await lingkeApi.orderGetList({
           pageIndex: this.searchParams.pageIndex,
           pageSize: this.searchParams.pageSize,
+          task: this.fetchWord || undefined,
           status: '1',
-          type: this.searchParams.type
+          type: this.searchParams.type || undefined
         })
         if (res && res.code === 200) {
           this.dataList = res.data.list
@@ -249,5 +255,12 @@ export default {
     box-shadow: none;
     cursor: text;
   }
+}
+
+.searchInput2 {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  cursor: text;
 }
 </style>
