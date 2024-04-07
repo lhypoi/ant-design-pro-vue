@@ -279,12 +279,12 @@ export default {
           const res = await lingkeApi.orderGetOne({
             Id: parseInt(this.detailId)
           })
-          if (res && res.code === 1000) {
+          if (res && res.code === 200) {
             const detailData = res.data
             detailData.fileList = detailData.files ? this.parseFileNamesToObjs(detailData.files.split(',')) : []
             this.detailData = detailData
           } else {
-            throw new Error(res.msg || '加载失败')
+            throw new Error(res.message || '加载失败')
           }
         } catch (error) {
           this.$message.error(error.message)
@@ -324,11 +324,11 @@ export default {
               id: item.id,
               status: '2'
             })
-            if (res && res.code === 1000 && res.data === 1) {
+            if (res && res.code === 200 && res.data === 1) {
               this.$message.success('提交成功')
               this.handleReload()
             } else {
-              throw new Error(res.msg || '失败')
+              throw new Error(res.message || '失败')
             }
           } catch (error) {
             this.$message.error(error.message)
@@ -351,11 +351,11 @@ export default {
               id: item.id,
               status: '6'
             })
-            if (res && res.code === 1000 && res.data === 1) {
+            if (res && res.code === 200 && res.data === 1) {
               this.$message.success('拒绝成功')
               this.handleReload()
             } else {
-              throw new Error(res.msg || '失败')
+              throw new Error(res.message || '失败')
             }
           } catch (error) {
             this.$message.error(error.message)
@@ -377,11 +377,11 @@ export default {
               id: item.id,
               isDeleted: '1'
             })
-            if (res && res.code === 1000 && res.data === 1) {
+            if (res && res.code === 200 && res.data === 1) {
               this.$message.success('撤销成功')
               this.handleReload()
             } else {
-              throw new Error(res.msg || '失败')
+              throw new Error(res.message || '失败')
             }
           } catch (error) {
             this.$message.error(error.message)
@@ -403,11 +403,11 @@ export default {
               id: item.id,
               status: '3'
             })
-            if (res && res.code === 1000 && res.data === 1) {
+            if (res && res.code === 200 && res.data === 1) {
               this.$message.success('确认成功')
               this.handleReload()
             } else {
-              throw new Error(res.msg || '失败')
+              throw new Error(res.message || '失败')
             }
           } catch (error) {
             this.$message.error(error.message)
@@ -430,11 +430,11 @@ export default {
               id: item.id,
               status: '4'
             })
-            if (res && res.code === 1000 && res.data === 1) {
+            if (res && res.code === 200 && res.data === 1) {
               this.$message.success('已提交委托方进行确认')
               this.handleReload()
             } else {
-              throw new Error(res.msg || '失败')
+              throw new Error(res.message || '失败')
             }
           } catch (error) {
             this.$message.error(error.message)

@@ -68,7 +68,7 @@
                           :disabled="sendBtnData.disabled"
                           :loading="sendBtnData.loading"
                           @click="handleSendSmsCode(item.key)"
-                        >{{ sendBtnData.disabled ? `发送验证码(${sendBtnData.countdown}s)` : '发送验证码' }}</a-button
+                        >{{ sendBtnData.loading ? '发送中' : sendBtnData.disabled ? `${sendBtnData.countdown}s 后重新发送` : '发送验证码' }}</a-button
                         >
                       </div>
                     </a-form-model-item>
@@ -111,9 +111,9 @@
 
 <script>
 import { USER_TYPE, WX_LOGIN_STATE } from '@/store/mutation-types-link-dev'
-import { sendSmsCode } from '@/api/lingke'
 import { resetRouter } from '@/router/index'
 import WxLoginModal from '@/components/Kira/WxLoginModal'
+import lingkeApi from '@/api/lingke'
 
 const FORM_RULES = {
   email: [
@@ -145,6 +145,7 @@ const LOGIN_FORM_TYPE = {
   emailPwd: {
     key: 'emailPwd',
     value: '账号登录',
+    loginFormAccountKey: 'email',
     data: {
       email: '',
       passWord: ''
@@ -157,6 +158,8 @@ const LOGIN_FORM_TYPE = {
   emailSms: {
     key: 'emailSms',
     value: '验证码登录',
+    smsCodeType: '2',
+    loginFormAccountKey: 'email',
     data: {
       email: '',
       smsCode: ''
@@ -169,6 +172,7 @@ const LOGIN_FORM_TYPE = {
   emailOrPhonePwd: {
     key: 'emailOrPhonePwd',
     value: '账号登录',
+    loginFormAccountKey: 'emailOrPhone',
     data: {
       emailOrPhone: '',
       passWord: ''
@@ -181,6 +185,8 @@ const LOGIN_FORM_TYPE = {
   phoneSms: {
     key: 'phoneSms',
     value: '验证码登录',
+    smsCodeType: '1',
+    loginFormAccountKey: 'phone',
     data: {
       phone: '',
       smsCode: ''
@@ -209,7 +215,7 @@ export default {
       sendBtnData: {
         disabled: false,
         loading: false,
-        countdown: 0,
+        countdown: 60,
         timer: null
       }
     }
@@ -259,10 +265,11 @@ export default {
       this.sendBtnData.disabled = true
       this.sendBtnData.loading = true
       try {
-        const res = await sendSmsCode({
-          [targetFormItemKey]: this.formData[formKey][targetFormItemKey]
+        const res = await lingkeApi.sendSmsCode({
+          account: this.formData[formKey][targetFormItemKey],
+          type: LOGIN_FORM_TYPE[formKey].smsCodeType
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.$message.success('发送成功')
           this.sendBtnData.timer = setInterval(() => {
             this.sendBtnData.countdown--
@@ -274,7 +281,7 @@ export default {
             }
           }, 1000)
         } else {
-          throw new Error(res.msg || '发送失败')
+          throw new Error(res.message || '发送失败')
         }
       } catch (error) {
         this.sendBtnData.disabled = false
@@ -284,49 +291,31 @@ export default {
       this.sendBtnData.loading = false
     },
     async onSubmit() {
+      const isFormValid = await new Promise((resolve) => {
+        this.$refs['form_' + this.curLoginType][0].validate(async valid => {
+          resolve(valid)
+        })
+      })
+      if (!isFormValid) return
       if (this.checkIsAgree() === false) return
-      switch (this.curLoginType) {
-        case 'emailPwd':
-        case 'emailSms':
-          await this.$store.dispatch('Login', {
-            loginType: '1',
-            phoneNumber: '18826102321',
-            passWord: '111111'
-          })
-          break
-        case 'emailOrPhonePwd':
-        case 'phoneSms':
-          await this.$store.dispatch('Login', {
-            loginType: '1',
-            phoneNumber: '123456',
-            passWord: '123456'
-          })
-          break
+      this.submitting = true
+      try {
+        const formData = this.formData[this.curLoginType]
+        const account = formData[LOGIN_FORM_TYPE[this.curLoginType].loginFormAccountKey]
+        await this.$store.dispatch('Login', {
+          loginType: LOGIN_FORM_TYPE[this.curLoginType].hasOwnProperty('smsCodeType') ? '2' : '1',
+          account: account,
+          passWord: formData.passWord,
+          smsCode: formData.smsCode
+        })
+        this.$message.success('登录成功')
+        resetRouter()
+        this.$router.push({ path: '/' })
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
       }
-      this.$message.success('登录成功')
-      resetRouter()
-      this.$router.push({ path: '/' })
-      // this.$refs.loginForm.validate(async valid => {
-      //   if (valid) {
-      //     this.submitting = true
-      //     try {
-      //       const params = {
-      //         loginType: this.formData.loginType,
-      //         phoneNumber: this.formData.phoneNumber
-      //       }
-      //       if (this.formData.loginType === '1') params.passWord = this.formData.passWord
-      //       if (this.formData.loginType === '2') params.smsCode = this.formData.smsCode
-      //       await this.$store.dispatch('Login', params)
-      //       this.$message.success('登录成功')
-      //       resetRouter()
-      //       this.$router.push({ path: '/' })
-      //     } catch (error) {
-      //       this.$message.error(error.message)
-      //       console.log(error)
-      //     }
-      //     this.submitting = false
-      //   }
-      // })
+      this.submitting = false
     },
     checkIsAgree() {
       if (!this.isAgree) {

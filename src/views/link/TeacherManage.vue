@@ -171,7 +171,7 @@ export default {
           userId: formData.userId ? parseInt(formData.userId) : undefined,
           name: formData.name || undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           tableData.rows = res.data.list.map(row => ({
             ...row
           }))

@@ -203,7 +203,7 @@ export default {
           beginTime: formData.timeRange[0] ? formData.timeRange[0].startOf('day').format() : undefined,
           endTime: formData.timeRange[1] ? formData.timeRange[1].endOf('day').format() : undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           tableData.rows = res.data.list.map(row => ({
             ...row
           }))

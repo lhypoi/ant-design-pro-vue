@@ -574,7 +574,7 @@ export default {
         const res = await sendSmsCode({
           phoneNumber: this.formData[formKey].phoneNumber
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.sendBtnData.timer = setInterval(() => {
             this.sendBtnData.countdown--
             if (this.sendBtnData.countdown <= 0) {
@@ -585,7 +585,7 @@ export default {
             }
           }, 1000)
         } else {
-          throw new Error(res.msg || '发送失败')
+          throw new Error(res.message || '发送失败')
         }
       } catch (error) {
         this.sendBtnData.disabled = false
@@ -672,7 +672,7 @@ export default {
         if (res && res.data === 1) {
           this.showResultPanel = true
         } else {
-          throw new Error(res.msg || '注册失败')
+          throw new Error(res.message || '注册失败')
         }
       } catch (error) {
         this.$message.error(error.message)

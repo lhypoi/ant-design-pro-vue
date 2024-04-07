@@ -383,7 +383,7 @@ export default {
         const res = await lingkeApi.organizationGetOne({
           userId: this.userInfo.userId
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           const organizationInfo = res.data
           const formData = {
             '1': {
@@ -404,7 +404,7 @@ export default {
           }
           this.formData = formData
         } else {
-          throw new Error(res.msg || '加载失败')
+          throw new Error(res.message || '加载失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -458,7 +458,7 @@ export default {
               this.$message.success('提交成功')
               this.initFormData()
             } else {
-              throw new Error(res.msg || '提交失败')
+              throw new Error(res.message || '提交失败')
             }
           } catch (error) {
             this.$message.error(error.message)

@@ -646,7 +646,7 @@ export default {
         const res = await lingkeApi.teacherGetOne({
           userId: this.userInfo.userId
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           const teacherInfo = res.data
           const formData = {
             '1': {
@@ -677,7 +677,7 @@ export default {
           }
           this.formData = formData
         } else {
-          throw new Error(res.msg || '加载失败')
+          throw new Error(res.message || '加载失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -745,7 +745,7 @@ export default {
               this.$message.success('保存成功')
               this.initFormData()
             } else {
-              throw new Error(res.msg || '保存失败')
+              throw new Error(res.message || '保存失败')
             }
           } catch (error) {
             this.$message.error(error.message)
@@ -766,11 +766,11 @@ export default {
       }
       fileList = fileList.map(file => {
         if (file.response) {
-          if (file.response.code === 1000) {
+          if (file.response.code === 200) {
             file.uploadResName = file.response.data[0]
             file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
           } else {
-            this.$message.error(file.response.msg || '上传失败')
+            this.$message.error(file.response.message || '上传失败')
           }
         }
         return file

@@ -271,7 +271,7 @@ export default {
           type: formData.type || undefined,
           teacher: formData.teacher || undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           tabList = [
             {
               key: '',
@@ -287,7 +287,7 @@ export default {
             })
           ]
         } else {
-          throw new Error(res.msg || '加载统计数据失败')
+          throw new Error(res.message || '加载统计数据失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -313,7 +313,7 @@ export default {
           teacher: formData.teacher || undefined,
           status: formData.status || undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           tableData.rows = res.data.list.map(row => ({
             ...row
           }))

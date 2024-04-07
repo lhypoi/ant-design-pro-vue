@@ -65,7 +65,7 @@
                           :disabled="sendBtnData.disabled"
                           :loading="sendBtnData.loading"
                           @click="handleSendSmsCode(item.key)"
-                        >{{ sendBtnData.disabled ? `发送验证码(${sendBtnData.countdown}s)` : '发送验证码' }}</a-button
+                        >{{ sendBtnData.loading ? '发送中' : sendBtnData.disabled ? `${sendBtnData.countdown}s 后重新发送` : '发送验证码' }}</a-button
                         >
                       </div>
                     </a-form-model-item>
@@ -109,7 +109,7 @@
 
 <script>
 import { USER_TYPE } from '@/store/mutation-types-link-dev'
-import { sendSmsCode } from '@/api/lingke'
+import lingkeApi from '@/api/lingke'
 
 const FORM_RULES = {
   email: [
@@ -154,6 +154,8 @@ const REGISTER_FORM_TYPE = {
   email: {
     key: 'email',
     value: '邮箱注册',
+    smsCodeType: '2',
+    loginFormAccountKey: 'email',
     data: {
       email: '',
       smsCode: '',
@@ -170,6 +172,8 @@ const REGISTER_FORM_TYPE = {
   phone: {
     key: 'phone',
     value: '手机注册',
+    smsCodeType: '1',
+    loginFormAccountKey: 'phone',
     data: {
       phone: '',
       smsCode: '',
@@ -201,7 +205,7 @@ export default {
       sendBtnData: {
         disabled: false,
         loading: false,
-        countdown: 0,
+        countdown: 60,
         timer: null
       }
     }
@@ -259,10 +263,11 @@ export default {
       this.sendBtnData.disabled = true
       this.sendBtnData.loading = true
       try {
-        const res = await sendSmsCode({
-          [targetFormItemKey]: this.formData[formKey][targetFormItemKey]
+        const res = await lingkeApi.sendSmsCode({
+          account: this.formData[formKey][targetFormItemKey],
+          type: REGISTER_FORM_TYPE[formKey].smsCodeType
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.$message.success('发送成功')
           this.sendBtnData.timer = setInterval(() => {
             this.sendBtnData.countdown--
@@ -274,7 +279,7 @@ export default {
             }
           }, 1000)
         } else {
-          throw new Error(res.msg || '发送失败')
+          throw new Error(res.message || '发送失败')
         }
       } catch (error) {
         this.sendBtnData.disabled = false
@@ -284,18 +289,37 @@ export default {
       this.sendBtnData.loading = false
     },
     async onSubmit() {
+      const isFormValid = await new Promise((resolve) => {
+        this.$refs['form_' + this.curRegisterType][0].validate(async valid => {
+          resolve(valid)
+        })
+      })
+      if (!isFormValid) return
       if (this.checkIsAgree() === false) return
       this.submitting = true
       try {
-        const res = await new Promise(resolve => {
-          setTimeout(() => {
-            resolve({ data: 1 })
-          }, 500)
-        })
+        const formData = this.formData[this.curRegisterType]
+        let res = null
+        if (this.userType === USER_TYPE.TEACHER && this.curRegisterType === 'email') {
+          res = await lingkeApi.teacherSignup({
+            email: formData.email,
+            smsCode: formData.smsCode,
+            passWord: formData.passWord,
+            rePassWord: formData.rePassWord
+          })
+        } else if (this.userType === USER_TYPE.ORGANIZATION) {
+          res = await lingkeApi.organizationSignup({
+            account: formData[REGISTER_FORM_TYPE[this.curRegisterType].loginFormAccountKey],
+            type: REGISTER_FORM_TYPE[this.curRegisterType].smsCodeType,
+            smsCode: formData.smsCode,
+            passWord: formData.passWord,
+            rePassWord: formData.rePassWord
+          })
+        }
         if (res && res.data === 1) {
           this.showSuccessModal()
         } else {
-          throw new Error(res.msg || '注册失败')
+          throw new Error(res.message || '注册失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -335,22 +359,13 @@ export default {
         }
       })
       setTimeout(async () => {
-        switch (this.userType) {
-          case USER_TYPE.TEACHER:
-            await this.$store.dispatch('Login', {
-              loginType: '1',
-              phoneNumber: '18826102321',
-              passWord: '111111'
-            })
-            break
-          case USER_TYPE.ORGANIZATION:
-            await this.$store.dispatch('Login', {
-              loginType: '1',
-              phoneNumber: '123456',
-              passWord: '123456'
-            })
-            break
-        }
+        const formData = this.formData[this.curRegisterType]
+        const account = formData[REGISTER_FORM_TYPE[this.curRegisterType].loginFormAccountKey]
+        await this.$store.dispatch('Login', {
+          loginType: '1',
+          account: account,
+          passWord: formData.passWord
+        })
         modal.destroy()
         this.$nextTick(() => {
           this.handleToLogin()

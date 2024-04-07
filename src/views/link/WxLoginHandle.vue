@@ -43,12 +43,12 @@ export default {
             })
           }, 1000)
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           openId = res.data.openId
           // isTeacherRegistered = res.data.isTeacherRegistered
           isTeacherRegistered = false
         } else {
-          throw new Error(res.msg || '微信登录失败')
+          throw new Error(res.message || '微信登录失败')
         }
       } catch (error) {
         this.$message.error(error.message)

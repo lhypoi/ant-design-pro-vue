@@ -65,14 +65,14 @@ const user = {
                 const loginApi = storage.get('defaultLoginRoute') === 'adminLogin' ? lingkeApi.adminLogin : lingkeApi.login
                 const res = await loginApi({
                   loginType: userInfo.loginType,
-                  phoneNumber: userInfo.phoneNumber,
+                  account: userInfo.account,
                   passWord: userInfo.passWord,
                   smsCode: userInfo.smsCode
                 })
-                if (res && res.code === 1000) {
+                if (res && res.code === 200) {
                   token = res.data.token
                 } else {
-                  resMsg = res.msg || '登录失败'
+                  resMsg = res.message || '登录失败'
                 }
               }
               if (token) {
@@ -94,7 +94,7 @@ const user = {
                 commit('SET_TOKEN', token)
                 resolve()
               } else {
-                reject(new Error(res.msg || '登录失败'))
+                reject(new Error(res.message || '登录失败'))
               }
             }).catch(error => {
               reject(error)
@@ -136,17 +136,17 @@ const user = {
             try {
               const result = {}
               const userInfoRes = await lingkeApi.getUserInfo()
-              if (userInfoRes && userInfoRes.code === 1000) {
+              if (userInfoRes && userInfoRes.code === 200) {
                 const role = {
-                  id: userInfoRes.data.role,
-                  permissionList: [userInfoRes.data.role]
+                  id: userInfoRes.data.roleId,
+                  permissionList: [userInfoRes.data.roleId]
                 }
                 result.role = role
                 commit('SET_ROLES', role)
                 commit('SET_INFO', userInfoRes.data)
                 commit(CUR_APP + '/SET_USER_INFO', userInfoRes.data)
               } else {
-                throw new Error(userInfoRes.msg || '获取用户信息失败')
+                throw new Error(userInfoRes.message || '获取用户信息失败')
               }
               resolve(result)
             } catch (error) {
@@ -166,7 +166,7 @@ const user = {
                 commit('SET_ROLES', role)
                 commit('SET_INFO', userInfoRes.data)
               } else {
-                throw new Error(userInfoRes.msg || '获取用户信息失败')
+                throw new Error(userInfoRes.message || '获取用户信息失败')
               }
               resolve(result)
             } catch (error) {

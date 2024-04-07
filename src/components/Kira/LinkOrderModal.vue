@@ -332,12 +332,12 @@ export default {
           id: this.linkOrderModalParams.orderId,
           ...params
         }) : await lingkeApi.orderCreate(params)
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.$message.success('发布成功')
           this.$emit('reload')
           this.linkOrderModalParams.show = false
         } else {
-          throw new Error(res.msg || '发布失败')
+          throw new Error(res.message || '发布失败')
         }
       } catch (error) {
         this.$message.error(error.message)

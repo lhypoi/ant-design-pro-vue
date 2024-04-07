@@ -146,67 +146,67 @@ const asyncRouterMapAll = {
           path: '/task-square',
           name: 'TaskSquare',
           component: () => import('@/views/link/TaskSquare'),
-          meta: { title: '任务广场', icon: 'appstore', permission: ['1'] }
+          meta: { title: '任务广场', icon: 'appstore', permission: [1] }
         },
         {
           path: '/personal-center',
           name: 'PersonalCenter',
           component: () => import('@/views/link/PersonalCenter'),
-          meta: { title: '个人中心', icon: 'user', permission: ['1'] }
+          meta: { title: '个人中心', icon: 'user', permission: [1] }
         },
         {
           path: '/my-orders',
           name: 'MyOrders',
           component: () => import('@/views/link/MyOrders'),
-          meta: { title: '我的订单', icon: 'database', permission: ['1'] }
+          meta: { title: '我的订单', icon: 'database', permission: [1] }
         },
         {
           path: '/t-account-setting',
           name: 'TAccountSetting',
           component: () => import('@/views/link/TAccountSetting'),
-          meta: { title: '账号设置', icon: 'container', permission: ['1'] }
+          meta: { title: '账号设置', icon: 'container', permission: [1] }
         },
         {
           path: '/o-home',
           name: 'OHome',
           component: () => import('@/views/link/OHome'),
-          meta: { title: '首页', icon: 'database', permission: ['2'] }
+          meta: { title: '首页', icon: 'database', permission: [2] }
         },
         {
           path: '/o-orders',
           name: 'OOrders',
           component: () => import('@/views/link/OOrders'),
-          meta: { title: '我的委托', icon: 'database', permission: ['2'] }
+          meta: { title: '我的委托', icon: 'database', permission: [2] }
         },
         {
           path: '/o-personal-center',
           name: 'OPersonalCenter',
           component: () => import('@/views/link/OPersonalCenter'),
-          meta: { title: '个人中心', icon: 'user', permission: ['2'] }
+          meta: { title: '个人中心', icon: 'user', permission: [2] }
         },
         {
           path: '/organization-manage',
           name: 'OrganizationManage',
           component: () => import('@/views/link/OrganizationManage'),
-          meta: { title: '机构管理', icon: 'appstore', permission: ['3'] }
+          meta: { title: '机构管理', icon: 'appstore', permission: [3] }
         },
         {
           path: '/teacher-manage',
           name: 'TeacherManage',
           component: () => import('@/views/link/TeacherManage'),
-          meta: { title: '老师管理', icon: 'database', permission: ['3'] }
+          meta: { title: '老师管理', icon: 'database', permission: [3] }
         },
         {
           path: '/order-manage',
           name: 'OrderManage',
           component: () => import('@/views/link/OrderManage'),
-          meta: { title: '订单管理', icon: 'container', permission: ['3'] }
+          meta: { title: '订单管理', icon: 'container', permission: [3] }
         },
         {
           path: '/withdrawal-manage',
           name: 'WithdrawalManage',
           component: () => import('@/views/link/WithdrawalManage'),
-          meta: { title: '提现管理', icon: 'table', permission: ['3'] }
+          meta: { title: '提现管理', icon: 'table', permission: [3] }
         },
         {
           path: '/t-login',

@@ -292,7 +292,7 @@ export default {
           const res = await lingkeApi.organizationGetOne({
             userId: parseInt(this.detailId)
           })
-          if (res && res.code === 1000) {
+          if (res && res.code === 200) {
             const detailData = res.data
             this.detailData = {
               userId: parseInt(this.detailId),
@@ -305,7 +305,7 @@ export default {
               remark: detailData.remark
             }
           } else {
-            throw new Error(res.msg || '加载失败')
+            throw new Error(res.message || '加载失败')
           }
         } catch (error) {
           this.$message.error(error.message)
@@ -345,11 +345,11 @@ export default {
               status: this.detailData.status,
               remark: this.detailData.status === '3' ? this.detailData.remark : ''
             })
-            if (res && res.code === 1000 && res.data === 1) {
+            if (res && res.code === 200 && res.data === 1) {
               this.$message.success('提交成功')
               this.handleReload()
             } else {
-              throw new Error(res.msg || '失败')
+              throw new Error(res.message || '失败')
             }
           } catch (error) {
             this.$message.error(error.message)
@@ -367,7 +367,7 @@ export default {
           const res = await lingkeApi.organizationGetOne({
             userId: item.userId
           })
-          if (res && res.code === 1000) {
+          if (res && res.code === 200) {
             const detailData = res.data
             this.detailData = {
               userId: item.userId,
@@ -380,7 +380,7 @@ export default {
               remark: detailData.remark
             }
           } else {
-            throw new Error(res.msg || '加载失败')
+            throw new Error(res.message || '加载失败')
           }
         } catch (error) {
           this.$message.error(error.message)

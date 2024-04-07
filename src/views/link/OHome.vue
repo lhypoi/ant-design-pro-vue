@@ -180,10 +180,10 @@ export default {
           pageSize: this.searchParams.pageSize,
           name: this.searchParams.name || undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.dataTopList = res.data.list
         } else {
-          throw new Error(res.msg || '加载数据失败')
+          throw new Error(res.message || '加载数据失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -200,11 +200,11 @@ export default {
           pageSize: this.searchParams.pageSize,
           name: this.searchParams.name || undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.dataList = res.data.list
           this.total = res.data.totalCount
         } else {
-          throw new Error(res.msg || '加载列表数据失败')
+          throw new Error(res.message || '加载列表数据失败')
         }
       } catch (error) {
         this.$message.error(error.message)

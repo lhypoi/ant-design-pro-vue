@@ -23,12 +23,12 @@ const asyncConfig = {
             switch (CUR_APP) {
               case APP_NAME.LINK_DEV:
                 const res = await lingkeApi.getCodeDict()
-                if (res && res.code === 1000) {
+                if (res && res.code === 200) {
                   commit('SET_' + CUR_APP, {
                     codeDict: res.data
                   })
                 } else {
-                  reject(new Error(res.msg || 'getCodeDict fail'))
+                  reject(new Error(res.message || 'getCodeDict fail'))
                 }
                 break
               case APP_NAME.NUCLEAR_LAB:
@@ -38,7 +38,7 @@ const asyncConfig = {
                     codeDict: nuclearLabRes.data
                   })
                 } else {
-                  reject(new Error(nuclearLabRes.msg || 'getCodeDict fail'))
+                  reject(new Error(nuclearLabRes.message || 'getCodeDict fail'))
                 }
                 break
               default:

@@ -402,7 +402,7 @@ export default {
           const res = await lingkeApi.teacherGetOne({
             userId: parseInt(this.detailId)
           })
-          if (res && res.code === 1000) {
+          if (res && res.code === 200) {
             const teacherInfo = res.data
             this.detailData = {
               ...teacherInfo,
@@ -424,7 +424,7 @@ export default {
               idNo: teacherInfo.idNo
             }
           } else {
-            throw new Error(res.msg || '加载失败')
+            throw new Error(res.message || '加载失败')
           }
         } catch (error) {
           this.$message.error(error.message)
@@ -505,11 +505,11 @@ export default {
               [this.adminAuditTeacherModalParams.formKey + 'Status']: this.adminAuditTeacherModalParams.formData.status,
               [this.adminAuditTeacherModalParams.formKey + 'Remark']: this.adminAuditTeacherModalParams.formData.status === '3' ? this.adminAuditTeacherModalParams.formData.remark : ''
             })
-            if (res && res.code === 1000 && res.data === 1) {
+            if (res && res.code === 200 && res.data === 1) {
               this.$message.success('提交成功')
               this.handleReload()
             } else {
-              throw new Error(res.msg || '失败')
+              throw new Error(res.message || '失败')
             }
           } catch (error) {
             this.$message.error(error.message)

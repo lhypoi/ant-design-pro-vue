@@ -437,10 +437,10 @@ export default {
         const res = await lingkeApi.teacherGetAccount({
           userId: this.userInfo.userId
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.teacherAccountParams.accountInfo = res.data
         } else {
-          throw new Error(res.msg || '加载失败')
+          throw new Error(res.message || '加载失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -454,7 +454,7 @@ export default {
       try {
         const res = await lingkeApi.orderTeacherOrderTotal({
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           tabList = [
             {
               key: '',
@@ -470,7 +470,7 @@ export default {
             })
           ]
         } else {
-          throw new Error(res.msg || '加载订单统计数据失败')
+          throw new Error(res.message || '加载订单统计数据失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -486,7 +486,7 @@ export default {
           pageSize: this.searchParams.pageSize,
           status: this.searchParams.status
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.dataList = [...this.dataList, ...res.data.list]
           if (this.dataList.length) $state.loaded()
           if (this.searchParams.pageIndex < res.data.totalPage) {
@@ -495,7 +495,7 @@ export default {
             $state.complete()
           }
         } else {
-          throw new Error(res.msg || '加载失败')
+          throw new Error(res.message || '加载失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -530,10 +530,10 @@ export default {
           teacherId: this.userInfo.userId,
           status: ''
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.canWithdrawModalParams.rows = res.data.list
         } else {
-          throw new Error(res.msg || '加载失败')
+          throw new Error(res.message || '加载失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -556,10 +556,10 @@ export default {
             amount: amount,
             fee: 0
           })
-          if (res && res.data && res.data.code === 1000) {
+          if (res && res.data && res.data.code === 200) {
             resText = `订单【${ row.task }】提现成功`
           } else {
-            throw new Error(res?.msg || '系统繁忙')
+            throw new Error(res?.message || '系统繁忙')
           }
         } catch (error) {
           resText = `订单【${ row.task }】提现失败，${ error.message }`
@@ -609,7 +609,7 @@ export default {
           beginTime: formData.timeRange[0] ? formData.timeRange[0].startOf('day').valueOf() : undefined,
           endTime: formData.timeRange[1] ? formData.timeRange[1].endOf('day').valueOf() : undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           tableData.rows = res.data.list.map(row => ({
             ...row
           }))

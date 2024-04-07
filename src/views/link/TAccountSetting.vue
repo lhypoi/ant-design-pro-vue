@@ -323,7 +323,7 @@ export default {
         const res = await lingkeApi.sendSmsCode({
           phoneNumber: this.formData[this.curTabKey][formItemKey]
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           this.$message.success('发送成功')
           this.sendBtnData.timer = setInterval(() => {
             this.sendBtnData.countdown--
@@ -335,7 +335,7 @@ export default {
             }
           }, 1000)
         } else {
-          throw new Error(res.msg || '发送失败')
+          throw new Error(res.message || '发送失败')
         }
       } catch (error) {
         this.sendBtnData.disabled = false
@@ -350,7 +350,7 @@ export default {
         const res = await lingkeApi.teacherGetOne({
           userId: this.userInfo.userId
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           const teacherInfo = res.data
           const formData = {
             '1': {
@@ -374,7 +374,7 @@ export default {
             timer: null
           }
         } else {
-          throw new Error(res.msg || '加载失败')
+          throw new Error(res.message || '加载失败')
         }
       } catch (error) {
         this.$message.error(error.message)
@@ -426,7 +426,7 @@ export default {
               this.$message.success('提交成功')
               this.initFormData()
             } else {
-              throw new Error(res.msg || '提交失败')
+              throw new Error(res.message || '提交失败')
             }
           } catch (error) {
             this.$message.error(error.message)

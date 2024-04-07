@@ -97,11 +97,11 @@ export default {
       }
       fileList = fileList.map((file) => {
         if (file.response) {
-          if (file.response.code === 1000) {
+          if (file.response.code === 200) {
             file.uploadResName = file.response.data[0]
             file.downloadUrl = `${lingkeApi.tempFileBaseUrl}/${file.response.data[0]}`
           } else {
-            this.$message.error(file.response.msg || '上传失败')
+            this.$message.error(file.response.message || '上传失败')
           }
         }
         return file

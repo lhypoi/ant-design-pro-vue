@@ -173,6 +173,11 @@ const vueConfig = {
         target: 'https://api.ukshuxi.com',
         ws: false,
         changeOrigin: true
+      },
+      '/lgk/api': {
+        target: 'https://api.ukshuxi.com',
+        ws: false,
+        changeOrigin: true
       }
     }
   },

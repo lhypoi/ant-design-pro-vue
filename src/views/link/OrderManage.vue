@@ -260,7 +260,7 @@ export default {
           teacher: formData.teacher || undefined,
           status: formData.status || undefined
         })
-        if (res && res.code === 1000) {
+        if (res && res.code === 200) {
           tableData.rows = res.data.list.map(row => ({
             ...row
           }))
