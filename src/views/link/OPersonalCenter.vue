@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-auto flex flex-col sm:flex-row gap-4">
+  <div class="w-full mx-auto max-w-[1200px] px-3 py-6 flex-auto flex flex-col sm:flex-row gap-4">
     <div class="bg-white rounded-3xl p-6 sm:w-60">
       <div class="text-2xl font-bold text-slate-900">个人中心</div>
       <div class="text-sm text-slate-400">Personal center</div>

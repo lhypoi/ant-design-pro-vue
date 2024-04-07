@@ -1,41 +1,60 @@
 <template>
-  <div class="flex-auto flex flex-col sm:flex-row gap-4">
-    <div class="bg-white rounded-3xl p-6 sm:w-60">
-      <div class="text-2xl font-bold text-slate-900">个人中心</div>
-      <div class="text-sm text-slate-400">Personal center</div>
-      <div class="pt-5 sm:pt-8 flex flex-row flex-wrap justify-between gap-4">
+  <div class="w-full mx-auto max-w-[1200px] px-3 py-6 flex-auto flex flex-col sm:flex-row gap-4">
+    <div class="bg-white rounded-xl p-6 sm:w-60 shadow-sm">
+      <div class="flex justify-center items-center">
+        <div class="w-20 h-20 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">{{ userInfo.name[0].toUpperCase() }}</div>
+      </div>
+      <div class="pt-5 flex flex-row flex-wrap justify-between gap-4">
         <div
           v-for="tab in tabList"
           :key="tab.key"
-          class="w-[calc(50%-8px)] flex flex-row justify-between p-3 rounded-lg sm:w-full cursor-pointer"
-          :class="tab.key === curTabKey ? 'bg-blue-500 text-white' : 'bg-slate-100 text-blue-400 hover:bg-blue-400 hover:text-white'"
+          class="w-[calc(50%-8px)] flex flex-row justify-center gap-2 p-3 rounded-full sm:w-full cursor-pointer"
+          :class="tab.key === curTabKey ? 'bg-blue-500 text-white' : 'bg-slate-100 text-gray-950 hover:bg-blue-400 hover:text-white'"
           @click="handleToTab(tab)"
         >
           <div>
-            {{ tab.title }}
+            <a-icon :type="tab.icon" theme="filled" class="text-inherit" />
           </div>
           <div>
-            <a-icon :type="tab.icon" theme="filled" class="text-inherit" />
+            {{ tab.title }}
           </div>
         </div>
       </div>
     </div>
-    <div class="link-style-form flex-auto overflow-hidden bg-white rounded-3xl p-6 sm:pt-12 sm:px-12" v-loading="loading">
-      <div class="">
+    <div class="link-style-form link-style-form-sm flex-auto min-h-[75vh] overflow-hidden bg-white rounded-xl py-5 px-2 shadow-sm flex flex-col" v-loading="loading">
+      <div class="flex-auto h-0 overflow-auto px-3">
         <a-form-model
           :ref="'form_' + curTabKey"
           :model="formData[curTabKey]"
           :rules="formRules[curTabKey]"
+          :label-col="{ span: 3 }"
+          :wrapper-col="{ span: 21 }"
+          labelAlign="right"
         >
           <template v-if="curTabKey === '1'">
-            <div class="text-base text-gray-500 pb-3">基本信息：</div>
-            <a-form-model-item prop="name">
+            <div class="text-base text-gray-950 font-bold pb-2">信息完善进度：{{ infoFullPercent }}%</div>
+            <div>
+              <a-progress
+                :percent="infoFullPercent"
+                :show-info="false"
+                :stroke-color="{
+                  '0%': '#108ee9',
+                  '100%': '#87d068',
+                }"
+              />
+            </div>
+            <div class="pt-2 pb-5 text-gray-400">
+              信息越完善，自身信誉越高，同时在平台的曝光也会越大，可以吸引更多有辅导需求的同学。
+            </div>
+            <div class="text-base text-gray-950 font-bold pb-2">基本信息：</div>
+            <a-form-model-item prop="name" label="昵称">
               <a-input
                 v-model="formData[curTabKey].name"
                 placeholder="请输入姓名"
+                size="large"
               />
             </a-form-model-item>
-            <a-form-model-item prop="highEduLevel">
+            <a-form-model-item prop="highEduLevel" label="最高学历">
               <a-select
                 show-search
                 allowClear
@@ -49,50 +68,51 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item prop="major">
+            <a-form-model-item prop="major" label="专业">
               <a-input
                 v-model="formData[curTabKey].major"
                 placeholder="请输入专业"
+                size="large"
               />
             </a-form-model-item>
-            <a-form-model-item prop="college">
+            <a-form-model-item prop="college" label="学校">
               <a-input
                 v-model="formData[curTabKey].college"
                 placeholder="请输入毕业大学"
+                size="large"
               />
             </a-form-model-item>
-            <div class="text-base text-gray-500 pb-3">擅长做什么：</div>
-            <a-form-model-item prop="advantage">
+            <LinkFormItemImg
+              formItemKey="diploma"
+              formItemLabel="毕业证/学生证"
+              :fileList="formData[curTabKey]['diploma']"
+              :illustrativeGraphsUrl="illustrativeGraphs['diploma']"
+              @change="fileList => formData[curTabKey]['diploma'] = fileList"
+            />
+            <LinkFormItemImg
+              formItemKey="transcript"
+              formItemLabel="成绩单"
+              :fileList="formData[curTabKey]['transcript']"
+              :illustrativeGraphsUrl="illustrativeGraphs['transcript']"
+              @change="fileList => formData[curTabKey]['transcript'] = fileList"
+            />
+            <div class="text-base text-gray-950 font-bold pb-2">擅长做什么：</div>
+            <a-form-model-item prop="advantage" :wrapper-col="{ offset: 3 }">
               <a-textarea
                 v-model="formData[curTabKey].advantage"
                 :rows="5"
                 placeholder="请输入擅长领域：例如：擅长数据分析、数据挖掘、数据建模，精通SPSS、Python、R等分析工具，熟练掌握tableau、power等可视化工具。"
               />
             </a-form-model-item>
-            <div class="text-base text-gray-500 pb-3">会使用哪些工具：</div>
-            <a-form-model-item prop="tools">
-              <a-select
-                allowClear
-                showArrow
-                mode="tags"
-                size="large"
-                placeholder="请选择或直接输入"
-                v-model="formData[curTabKey].tools"
-              >
-                <a-select-option v-for="tool in localDict.toolsList" :key="tool" :value="tool" class="pl-5">
-                  {{ tool }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-            <div class="text-base text-gray-500 pb-3">我想做什么：</div>
-            <a-form-model-item prop="want">
+            <div class="text-base text-gray-950 font-bold pb-2">我想做什么：</div>
+            <a-form-model-item prop="want" :wrapper-col="{ offset: 3 }">
               <a-checkbox-group
                 v-model="formData[curTabKey].want"
                 :options="Object.keys(orderTypeDict).map(key => ({ value: key, label: orderTypeDict[key] }))"
                 class="flex justify-between"
               />
             </a-form-model-item>
-            <a-form-model-item v-if="formData[curTabKey].want.includes('3')" prop="sample">
+            <a-form-model-item v-if="formData[curTabKey].want.includes('3')" prop="sample" label="文书sample">
               <a-upload-dragger
                 class="dragUploader"
                 :multiple="true"
@@ -132,7 +152,7 @@
                 </a-upload-dragger>
               </a-form-model-item>
             </div>
-            <div class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
+            <div class="" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
               <a-spin
                 v-if="pdfBoxParams.loading"
                 class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-gray-300 flex flex-col gap-5 justify-center items-center"
@@ -151,18 +171,6 @@
             </div>
           </template>
           <template v-if="curTabKey === '3'">
-            <div class="text-base text-gray-500 pb-3">认证进度：</div>
-            <div>
-              <a-progress
-                :percent="teacherCertifiPercent"
-                :stroke-color="{
-                  '0%': '#108ee9',
-                  '100%': '#87d068',
-                }" />
-            </div>
-            <div class="pt-2 pb-10 text-gray-400">
-              说明：每完成一个认证，会加一颗星，星越多，认证等级越高，会提升自身信誉，同时在平台的曝光也会越大， 可以吸引更多有辅导需求的同学。
-            </div>
             <div class="text-sm text-gray-500 flex flex-row gap-3 items-center justify-between pt-3 pb-4 border-t border-solid border-gray-200">
               上传毕业证/学生证：
               <component :is="getTeacherCertifiStatusText('diploma')" />
@@ -367,7 +375,7 @@
           </template>
         </a-form-model>
       </div>
-      <div class="pt-1 flex flex-row gap-5">
+      <div class="pt-4 flex flex-row justify-center gap-5">
         <a-button
           v-if="curTabKey === '2'"
           type="danger"
@@ -395,11 +403,13 @@ import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
+import LinkFormItemImg from '@/components/Kira/LinkFormItemImg'
 
 export default {
   name: 'PersonalCenter',
   components: {
-    VuePdfEmbed
+    VuePdfEmbed,
+    LinkFormItemImg
   },
   data() {
     return {
@@ -436,14 +446,14 @@ export default {
           advantage: '',
           tools: [],
           want: [],
-          sample: []
+          sample: [],
+          diploma: [],
+          transcript: []
         },
         '2': {
           cv: []
         },
         '3': {
-          diploma: [],
-          transcript: [],
           visa: []
         },
         '4': {
@@ -620,19 +630,8 @@ export default {
     orderTypeDict() {
       return this.codeDict.order && this.codeDict.order.type || {}
     },
-    teacherCertifiPercent() {
-      const percentMap = {
-        diploma: 30,
-        transcript: 30,
-        visa: 40
-      }
-      let resPrecent = 0
-      Object.keys(percentMap).forEach(key => {
-        if (this.userInfo[key + 'Status'] === '2') {
-          resPrecent = resPrecent + percentMap[key]
-        }
-      })
-      return resPrecent
+    infoFullPercent() {
+      return 40
     }
   },
   created() {
@@ -658,15 +657,15 @@ export default {
               advantage: teacherInfo.advantage,
               tools: teacherInfo.tools.split(','),
               want: teacherInfo.want.split(','),
-              sample: this.parseFileNamesToObjs(teacherInfo.sampleList || [])
+              sample: this.parseFileNamesToObjs(teacherInfo.sampleList || []),
+              diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
+              transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || [])
             },
             '2': {
               cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
             },
             '3': {
               ...teacherInfo,
-              diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
-              transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || []),
               visa: this.parseFileNamesToObjs(teacherInfo.visaList || [])
             },
             '4': {
@@ -715,7 +714,9 @@ export default {
                   advantage: formData.advantage,
                   tools: formData.tools.join(','),
                   want: formData.want.join(','),
-                  sample: formData.want.includes('3') ? (formData.sample[0]?.response && formData.sample[0].uploadResName) : ''
+                  sample: formData.want.includes('3') ? (formData.sample[0]?.response && formData.sample[0].uploadResName) : '',
+                  diploma: formData.diploma[0]?.response && formData.diploma[0].uploadResName,
+                  transcript: formData.transcript[0]?.response && formData.transcript[0].uploadResName
                 })
                 break
               case '2':
@@ -725,8 +726,6 @@ export default {
                 break
               case '3':
                 Object.assign(params, {
-                  diploma: formData.diploma[0]?.response && formData.diploma[0].uploadResName,
-                  transcript: formData.transcript[0]?.response && formData.transcript[0].uploadResName,
                   visa: formData.visa[0]?.response && formData.visa[0].uploadResName
                 })
                 break
