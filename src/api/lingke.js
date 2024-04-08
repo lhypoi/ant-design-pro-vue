@@ -47,7 +47,7 @@ export function adminLogin (parameter) {
 
 export function getUserInfo () {
   return request({
-    url: url + '/base/getUserInfo',
+    url: url + '/user/info',
     method: 'get'
   })
 }
