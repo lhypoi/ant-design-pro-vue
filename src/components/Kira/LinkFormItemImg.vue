@@ -35,7 +35,7 @@
             重新上传
           </div>
         </div>
-        <div class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
+        <div v-if="illustrativeGraphsUrl" class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
           <el-image class="w-28 h-auto" :src="illustrativeGraphsUrl" :preview-src-list="[illustrativeGraphsUrl]" />
           <div class="text-gray-400 text-sm">示例图</div>
         </div>
@@ -105,7 +105,7 @@ export default {
         }
         return file
       })
-      this.$emit('change', fileList)
+      this.$emit('update:fileList', fileList)
     },
     handleFileCtrlClick() {
       this.$refs[`formCtrl`].click()

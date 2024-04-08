@@ -10,16 +10,17 @@
         <div
           v-for="tab in tabList"
           :key="tab.key"
-          class="w-[calc(50%-8px)] flex flex-row justify-center gap-2 p-3 rounded-full sm:w-full cursor-pointer"
+          class="w-[calc(50%-8px)] flex flex-row justify-center gap-2 p-3 rounded-lg sm:w-full cursor-pointer"
           :class="
             tab.key === curTabKey
               ? 'bg-blue-500 text-white'
-              : 'bg-slate-100 text-gray-950 hover:bg-blue-400 hover:text-white'
+              : 'bg-gray-400 text-white hover:bg-blue-400 hover:text-white'
           "
           @click="handleToTab(tab)"
         >
           <div>
-            <a-icon :type="tab.icon" theme="filled" class="text-inherit" />
+            <!-- <a-icon :type="tab.icon" theme="filled" class="text-inherit" /> -->
+            <i :class="tab.icon" class="text-inherit"></i>
           </div>
           <div>
             {{ tab.title }}
@@ -57,7 +58,7 @@
             </div>
             <div class="text-base text-gray-950 font-bold pb-2">基本信息：</div>
             <a-form-model-item prop="nickName" label="昵称">
-              <a-input v-model="formData[curTabKey].nickName" placeholder="请输入姓名" size="large" />
+              <a-input v-model="formData[curTabKey].nickName" placeholder="请输入昵称" size="large" />
             </a-form-model-item>
             <a-form-model-item prop="highEduLevel" label="最高学历">
               <a-select
@@ -82,16 +83,14 @@
             <LinkFormItemImg
               formItemKey="diploma"
               formItemLabel="毕业证/学生证"
-              :fileList="formData[curTabKey]['diploma']"
+              :fileList.sync="formData[curTabKey]['diploma']"
               :illustrativeGraphsUrl="illustrativeGraphs['diploma']"
-              @change="(fileList) => (formData[curTabKey]['diploma'] = fileList)"
             />
             <LinkFormItemImg
               formItemKey="transcript"
               formItemLabel="成绩单"
-              :fileList="formData[curTabKey]['transcript']"
+              :fileList.sync="formData[curTabKey]['transcript']"
               :illustrativeGraphsUrl="illustrativeGraphs['transcript']"
-              @change="(fileList) => (formData[curTabKey]['transcript'] = fileList)"
             />
             <div class="text-base text-gray-950 font-bold pb-2">擅长做什么：</div>
             <a-form-model-item prop="advantage" :wrapper-col="{ offset: 3 }">
@@ -124,15 +123,14 @@
                   <div class="pt-4 text-slate-950 text-lg font-bold">
                     请上传留学文书sample，支持上传多个，<span class="text-red-400">至多五個</span>
                   </div>
-                  <div class="pt-2 text-sm text-gray-400">可导入pdf / docx / doc 格式简历，最大10MB</div>
+                  <div class="pt-2 text-sm text-gray-400">可导入pdf / docx / doc 格式，最大10MB</div>
                 </div>
               </a-upload-dragger>
             </a-form-model-item>
           </template>
           <template v-if="curTabKey === '2'">
-            <div class="text-base text-gray-500 pb-3">简历：</div>
-            <div class="h-0 overflow-hidden">
-              <a-form-model-item prop="cv">
+            <div :class="formData[curTabKey].cv[0]?.downloadUrl ? 'h-0 overflow-hidden' : ''">
+              <a-form-model-item prop="cv" :wrapper-col="{ span: 24 }">
                 <a-upload-dragger
                   class="dragUploader"
                   :multiple="true"
@@ -145,237 +143,153 @@
                   <div
                     :ref="`formCtrl_${curTabKey}_cv`"
                     class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10"
-                  ></div>
+                  >
+                    <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
+                    <div class="pt-4 text-slate-950 text-lg font-bold">请上传简历</div>
+                    <div class="pt-2 text-sm text-gray-400">可导入pdf / docx / doc 格式，最大10MB</div>
+                  </div>
                 </a-upload-dragger>
               </a-form-model-item>
             </div>
-            <div class="" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
-              <a-spin
-                v-if="pdfBoxParams.loading"
-                class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-gray-300 flex flex-col gap-5 justify-center items-center"
-                tip="加载中......"
-              >
-                <a-icon slot="indicator" type="loading" class="text-4xl" spin />
-              </a-spin>
-              <div class="pdf-box p-3 bg-gray-500 min-h-full">
-                <vue-pdf-embed
-                  v-if="formData[curTabKey].cv[0]?.downloadUrl"
-                  ref="pdf"
-                  :source="formData[curTabKey].cv[0].downloadUrl"
-                  @progress="handlePdfProgress"
-                />
+            <template v-if="formData[curTabKey].cv[0]?.downloadUrl">
+              <div class="flex justify-end gap-4 pb-3">
+                <div class="text-sm cursor-pointer text-red-400" @click="handleDelCv">删除</div>
+                <div class="text-sm cursor-pointer text-blue-400" @click="handleFileCtrlClick(curTabKey, 'cv')">
+                  重新上传
+                </div>
               </div>
-            </div>
+              <div :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
+                <a-spin
+                  v-if="pdfBoxParams.loading"
+                  class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-gray-300 flex flex-col gap-5 justify-center items-center"
+                  tip="加载中......"
+                >
+                  <a-icon slot="indicator" type="loading" class="text-4xl" spin />
+                </a-spin>
+                <div class="pdf-box p-3 bg-gray-500 min-h-full">
+                  <vue-pdf-embed
+                    ref="pdf"
+                    :source="formData[curTabKey].cv[0].downloadUrl"
+                    @progress="handlePdfProgress"
+                  />
+                </div>
+              </div>
+            </template>
           </template>
           <template v-if="curTabKey === '3'">
-            <div
-              class="text-sm text-gray-500 flex flex-row gap-3 items-center justify-between pt-3 pb-4 border-t border-solid border-gray-200"
-            >
-              上传毕业证/学生证：
-              <component :is="getTeacherCertifiStatusText('diploma')" />
+            <div>
+              <a-result
+                v-if="formData[curTabKey].certificationStatus === '1'"
+                status="warning"
+                title="待认证"
+                sub-title="为保障您的权益，请尽快完成实名认证"
+              />
+              <a-result
+                v-else-if="formData[curTabKey].certificationStatus === '2'"
+                status="info"
+                title="审核中"
+                sub-title="认证信息审核中，请耐心等待"
+              />
+              <a-result
+                v-else-if="formData[curTabKey].certificationStatus === '3'"
+                status="error"
+                title="认证失败"
+                sub-title="这是审核失败内容"
+              />
+              <a-result
+                v-else-if="formData[curTabKey].certificationStatus === '4'"
+                status="success"
+                title="认证成功"
+                sub-title="你已完成实名认证"
+              />
             </div>
-            <div class="h-0 overflow-hidden">
-              <a-form-model-item prop="diploma">
-                <a-upload-dragger
-                  class="dragUploader"
-                  :multiple="true"
-                  name="fileList"
-                  :action="lingkeApi.uploadUrl"
-                  :fileList="formData[curTabKey].diploma"
-                  @change="(info) => handleFileChange(info, curTabKey, 'diploma', true)"
-                  @preview="handleFileDownload"
-                >
-                  <div
-                    :ref="`formCtrl_${curTabKey}_diploma`"
-                    class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10"
-                  ></div>
-                </a-upload-dragger>
-              </a-form-model-item>
-            </div>
-            <div class="pb-10 flex flex-row items-start gap-8">
-              <div
-                v-if="!formData[curTabKey].diploma[0]"
-                class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md hover:border-indigo-400 hover:text-indigo-400"
-                @click="handleFileCtrlClick(curTabKey, 'diploma')"
-              >
-                点击上传
-              </div>
-              <div v-else class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
-                <el-image
-                  v-if="formData[curTabKey].diploma[0].downloadUrl"
-                  class="w-28 h-auto"
-                  :src="formData[curTabKey].diploma[0].downloadUrl"
-                  :preview-src-list="[formData[curTabKey].diploma[0].downloadUrl]"
-                >
-                  <a-spin slot="placeholder" class="w-28 pt-4" />
-                </el-image>
-                <a-spin v-else class="w-28 pt-4" />
-                <div
-                  class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400"
-                  @click="handleFileCtrlClick(curTabKey, 'diploma')"
-                >
-                  重新上传
-                </div>
-              </div>
-              <div class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
-                <el-image
-                  class="w-28 h-auto"
-                  :src="illustrativeGraphs['diploma']"
-                  :preview-src-list="[illustrativeGraphs['diploma']]"
+            <a-form-model-item prop="certificationName" label="姓名">
+              <a-input v-model="formData[curTabKey].certificationName" placeholder="请输入真实姓名" size="large" />
+            </a-form-model-item>
+            <a-form-model-item prop="certificationPhone" label="手机号">
+              <a-input v-model="formData[curTabKey].certificationPhone" placeholder="请输入手机号" size="large" />
+            </a-form-model-item>
+            <a-form-model-item prop="certificationSmsCode" label="验证码" ref="certificationSmsCode">
+              <div class="flex flex-row gap-3">
+                <a-input
+                  v-model="formData[curTabKey].certificationSmsCode"
+                  placeholder="请输入验证码"
+                  size="large"
+                  @blur="
+                    () => {
+                      $refs.certificationSmsCode.onFieldChange()
+                    }
+                  "
+                  @change="
+                    () => {
+                      $refs.certificationSmsCode.onFieldChange()
+                    }
+                  "
                 />
-                <div class="text-gray-400 text-sm">示例图</div>
-              </div>
-            </div>
-            <div
-              class="text-sm text-gray-500 flex flex-row gap-3 items-center justify-between pt-3 pb-4 border-t border-solid border-gray-200"
-            >
-              上传成绩单：
-              <component :is="getTeacherCertifiStatusText('transcript')" />
-            </div>
-            <div class="h-0 overflow-hidden">
-              <a-form-model-item prop="transcript">
-                <a-upload-dragger
-                  class="dragUploader"
-                  :multiple="true"
-                  name="fileList"
-                  :action="lingkeApi.uploadUrl"
-                  :fileList="formData[curTabKey].transcript"
-                  @change="(info) => handleFileChange(info, curTabKey, 'transcript', true)"
-                  @preview="handleFileDownload"
+                <a-button
+                  class="send-code-btn"
+                  type="primary"
+                  :disabled="sendBtnData.disabled"
+                  :loading="sendBtnData.loading"
+                  @click="handleSendSmsCode"
                 >
-                  <div
-                    :ref="`formCtrl_${curTabKey}_transcript`"
-                    class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10"
-                  ></div>
-                </a-upload-dragger>
-              </a-form-model-item>
-            </div>
-            <div class="pb-10 flex flex-row items-start gap-8">
-              <div
-                v-if="!formData[curTabKey].transcript[0]"
-                class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md hover:border-indigo-400 hover:text-indigo-400"
-                @click="handleFileCtrlClick(curTabKey, 'transcript')"
-              >
-                点击上传
+                  {{
+                    sendBtnData.loading
+                      ? '发送中'
+                      : sendBtnData.disabled
+                        ? `${sendBtnData.countdown}s 后重新发送`
+                        : '发送验证码'
+                  }}
+                </a-button>
               </div>
-              <div v-else class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
-                <el-image
-                  v-if="formData[curTabKey].transcript[0].downloadUrl"
-                  class="w-28 h-auto"
-                  :src="formData[curTabKey].transcript[0].downloadUrl"
-                  :preview-src-list="[formData[curTabKey].transcript[0].downloadUrl]"
-                >
-                  <a-spin slot="placeholder" class="w-28 pt-4" />
-                </el-image>
-                <a-spin v-else class="w-28 pt-4" />
-                <div
-                  class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400"
-                  @click="handleFileCtrlClick(curTabKey, 'transcript')"
-                >
-                  重新上传
-                </div>
-              </div>
-              <div class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
-                <el-image
-                  class="w-28 h-auto"
-                  :src="illustrativeGraphs['transcript']"
-                  :preview-src-list="[illustrativeGraphs['transcript']]"
-                />
-                <div class="text-gray-400 text-sm">示例图</div>
-              </div>
-            </div>
-            <div
-              class="text-sm text-gray-500 flex flex-row gap-3 items-center justify-between pt-3 pb-4 border-t border-solid border-gray-200"
-            >
-              上传签证：
-              <component :is="getTeacherCertifiStatusText('visa')" />
-            </div>
-            <div class="h-0 overflow-hidden">
-              <a-form-model-item prop="visa">
-                <a-upload-dragger
-                  class="dragUploader"
-                  :multiple="true"
-                  name="fileList"
-                  :action="lingkeApi.uploadUrl"
-                  :fileList="formData[curTabKey].visa"
-                  @change="(info) => handleFileChange(info, curTabKey, 'visa', true)"
-                  @preview="handleFileDownload"
-                >
-                  <div
-                    :ref="`formCtrl_${curTabKey}_visa`"
-                    class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10"
-                  ></div>
-                </a-upload-dragger>
-              </a-form-model-item>
-            </div>
-            <div class="pb-10 flex flex-row items-start gap-8">
-              <div
-                v-if="!formData[curTabKey].visa[0]"
-                class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md hover:border-indigo-400 hover:text-indigo-400"
-                @click="handleFileCtrlClick(curTabKey, 'visa')"
-              >
-                点击上传
-              </div>
-              <div v-else class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
-                <el-image
-                  v-if="formData[curTabKey].visa[0].downloadUrl"
-                  class="w-28 h-auto"
-                  :src="formData[curTabKey].visa[0].downloadUrl"
-                  :preview-src-list="[formData[curTabKey].visa[0].downloadUrl]"
-                >
-                  <a-spin slot="placeholder" class="w-28 pt-4" />
-                </el-image>
-                <a-spin v-else class="w-28 pt-4" />
-                <div
-                  class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400"
-                  @click="handleFileCtrlClick(curTabKey, 'visa')"
-                >
-                  重新上传
-                </div>
-              </div>
-              <div class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
-                <el-image
-                  class="w-28 h-auto"
-                  :src="illustrativeGraphs['visa']"
-                  :preview-src-list="[illustrativeGraphs['visa']]"
-                />
-                <div class="text-gray-400 text-sm">示例图</div>
-              </div>
-            </div>
+            </a-form-model-item>
+            <a-form-model-item prop="certificationIdNo" label="身份证号">
+              <a-input v-model="formData[curTabKey].certificationIdNo" placeholder="请输入身份证号" size="large" />
+            </a-form-model-item>
+            <LinkFormItemImg
+              formItemKey="certificationFront"
+              formItemLabel="身份证正面"
+              :fileList.sync="formData[curTabKey]['certificationFront']"
+            />
+            <LinkFormItemImg
+              formItemKey="certificationBack"
+              formItemLabel="身份证反面"
+              :fileList.sync="formData[curTabKey]['certificationBack']"
+            />
           </template>
           <template v-if="curTabKey === '4'">
-            <div class="text-sm text-gray-500 pb-3">收款人姓名：</div>
-            <a-form-model-item prop="name">
-              <a-input v-model="formData[curTabKey].name" placeholder="请输入收款人姓名" disabled />
+            <div class="text-base text-gray-950 font-bold pb-2">
+              持卡人（请在 <span class="cursor-pointer text-blue-400" @click="handleToTab({ key: '3' })">实名认证</span> 中完善）：
+            </div>
+            <a-form-model-item label="持卡人姓名">
+              <a-input v-model="formData['4'].certificationName" placeholder="无" size="large" disabled />
             </a-form-model-item>
-            <div class="text-sm text-gray-500 pb-3">收款人账号：</div>
-            <a-form-model-item prop="bankNum">
-              <a-input v-model="formData[curTabKey].bankNum" placeholder="请输入收款人账号" />
+            <a-form-model-item label="身份证号码">
+              <a-input v-model="formData['4'].certificationIdNo" placeholder="无" size="large" disabled />
             </a-form-model-item>
-            <div class="text-sm text-gray-500 pb-3">开户行支行：</div>
-            <a-form-model-item prop="bankBranch">
-              <a-input v-model="formData[curTabKey].bankBranch" placeholder="请输入开户行支行" />
+            <div class="text-base text-gray-950 font-bold pb-2">银行卡：</div>
+            <a-form-model-item prop="bankBranch" label="开户行支行">
+              <a-input v-model="formData['4'].bankBranch" placeholder="请输入开户行支行" size="large" />
+            </a-form-model-item>
+            <a-form-model-item prop="bankNum" label="银行卡号码">
+              <a-input v-model="formData['4'].bankNum" placeholder="请输入银行卡号码" size="large" />
             </a-form-model-item>
           </template>
         </a-form-model>
       </div>
       <div class="pt-4 flex flex-row justify-center gap-5">
         <a-button
-          v-if="curTabKey === '2'"
-          type="danger"
-          class="step-btn w-40"
-          @click="handleFileCtrlClick(curTabKey, 'cv')"
-        >
-          重新上传
-        </a-button>
-        <a-button
-          v-if="curTabKey === '1' || curTabKey === '2' || curTabKey === '3' || curTabKey === '4'"
+          v-if="curTabKey === '1' || curTabKey === '2'"
           type="primary"
           class="step-btn w-40"
           @click="handleSave"
         >
           保存
         </a-button>
+        <a-button v-if="curTabKey === '3'" type="primary" class="step-btn w-40" @click="handleSave">
+          提交审核
+        </a-button>
+        <a-button v-if="curTabKey === '4'" type="primary" class="step-btn w-40" @click="handleSave"> 绑定 </a-button>
       </div>
     </div>
   </div>
@@ -399,21 +313,27 @@ export default {
     return {
       lingkeApi,
       loading: false,
+      sendBtnData: {
+        disabled: false,
+        loading: false,
+        countdown: 60,
+        timer: null
+      },
       tabList: [
         {
           title: '个人信息',
           key: '1',
-          icon: 'skin'
+          icon: 'el-icon-user-solid'
         },
         {
           title: '附件简历',
           key: '2',
-          icon: 'profile'
+          icon: 'el-icon-date'
         },
         {
-          title: '认证',
+          title: '实名认证',
           key: '3',
-          icon: 'safety-certificate'
+          icon: 'el-icon-c-scale-to-original'
         },
         {
           title: '收款信息',
@@ -437,12 +357,20 @@ export default {
           cv: []
         },
         3: {
-          visa: []
+          certificationStatus: '1',
+          certificationRemark: '',
+          certificationName: '',
+          certificationPhone: '',
+          certificationSmsCode: '',
+          certificationIdNo: '',
+          certificationFront: [],
+          certificationBack: []
         },
         4: {
-          bankNum: '',
+          certificationName: '',
+          certificationIdNo: '',
           bankBranch: '',
-          idNo: ''
+          bankNum: ''
         }
       },
       formRules: {
@@ -508,13 +436,120 @@ export default {
             }
           ]
         },
-        2: {
-          cv: [
+        3: {
+          certificationName: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入真实姓名'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          certificationPhone: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入手机号'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          certificationSmsCode: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入验证码'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          certificationIdNo: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入身份证号'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          certificationFront: [
             {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.length) {
-                    callback(new Error('请上传简历'))
+                    callback(new Error('请上传身份证正面照片'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          certificationBack: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.length) {
+                    callback(new Error('请上传身份证反面照片'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ]
+        },
+        4: {
+          bankBranch: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入开户行支行'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          bankNum: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入银行卡号码'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -601,14 +636,20 @@ export default {
               cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
             },
             3: {
-              ...teacherInfo,
-              visa: this.parseFileNamesToObjs(teacherInfo.visaList || [])
+              certificationStatus: '1',
+              certificationRemark: '',
+              certificationName: '',
+              certificationPhone: '',
+              certificationSmsCode: '',
+              certificationIdNo: '',
+              certificationFront: [],
+              certificationBack: []
             },
             4: {
-              name: teacherInfo.name,
-              bankNum: teacherInfo.bankNum,
+              certificationName: '',
+              certificationIdNo: '',
               bankBranch: teacherInfo.bankBranch,
-              idNo: teacherInfo.idNo
+              bankNum: teacherInfo.bankNum
             }
           }
           this.formData = formData
@@ -661,7 +702,7 @@ export default {
                 break
               case '2':
                 Object.assign(params, {
-                  cv: formData.cv[0]?.response && formData.cv[0].downloadUrl
+                  cv: (formData.cv[0]?.response && formData.cv[0].downloadUrl) || ''
                 })
                 break
               case '3':
@@ -671,9 +712,8 @@ export default {
                 break
               case '4':
                 Object.assign(params, {
-                  bankNum: formData.bankNum,
                   bankBranch: formData.bankBranch,
-                  idNo: formData.idNo
+                  bankNum: formData.bankNum
                 })
                 break
               default:
@@ -694,8 +734,56 @@ export default {
         }
       })
     },
+    handleDelCv() {
+      this.$confirm({
+        title: '提示',
+        content: `确定删除吗?`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          this.formData[this.curTabKey].cv = []
+        }
+      })
+    },
+    async handleSendSmsCode() {
+      const isFormValid = await new Promise((resolve) => {
+        this.$refs['form_' + this.curTabKey].validateField('certificationPhone', (err) => {
+          resolve(!err)
+        })
+      })
+      if (!isFormValid) return
+      this.sendBtnData.disabled = true
+      this.sendBtnData.loading = true
+      try {
+        const res = await lingkeApi.sendSmsCode({
+          account: this.formData['3']['certificationPhone'],
+          type: '1'
+        })
+        if (res && res.code === 200) {
+          this.$message.success('发送成功')
+          this.sendBtnData.timer = setInterval(() => {
+            this.sendBtnData.countdown--
+            if (this.sendBtnData.countdown <= 0) {
+              clearInterval(this.sendBtnData.timer)
+              this.sendBtnData.timer = null
+              this.sendBtnData.countdown = 60
+              this.sendBtnData.disabled = false
+            }
+          }, 1000)
+        } else {
+          throw new Error(res.message || '发送失败')
+        }
+      } catch (error) {
+        this.sendBtnData.disabled = false
+        this.$message.error(error.message)
+        console.log(error)
+      }
+      this.sendBtnData.loading = false
+    },
     handleToTab(tab) {
       this.$router.push({ name: 'PersonalCenter', query: { tab: tab.key } })
+      this.$refs['form_' + this.curTabKey].clearValidate()
     },
     handleFileChange(info, formKey, itemKey, single) {
       let fileList = [...info.fileList]

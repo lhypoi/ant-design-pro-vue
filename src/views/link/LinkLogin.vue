@@ -68,8 +68,9 @@
                           :disabled="sendBtnData.disabled"
                           :loading="sendBtnData.loading"
                           @click="handleSendSmsCode(item.key)"
-                        >{{ sendBtnData.loading ? '发送中' : sendBtnData.disabled ? `${sendBtnData.countdown}s 后重新发送` : '发送验证码' }}</a-button
                         >
+                          {{ sendBtnData.loading ? '发送中' : sendBtnData.disabled ? `${sendBtnData.countdown}s 后重新发送` : '发送验证码' }}
+                        </a-button>
                       </div>
                     </a-form-model-item>
                   </a-form-model>
