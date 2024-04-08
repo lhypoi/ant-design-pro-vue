@@ -434,14 +434,14 @@
           v-if="curTabKey === '1' || curTabKey === '2'"
           type="primary"
           class="step-btn w-40 success-btn"
-          @click="handleSave"
+          @click="handleSave()"
         >
           保存
         </a-button>
-        <a-button v-if="curTabKey === '3'" type="primary" class="step-btn w-40 success-btn" @click="handleSave">
+        <a-button v-if="curTabKey === '3'" type="primary" class="step-btn w-40 success-btn" @click="handleSave()">
           提交审核
         </a-button>
-        <a-button v-if="curTabKey === '4'" type="primary" class="step-btn w-40 success-btn" @click="handleSave"> 绑定 </a-button>
+        <a-button v-if="curTabKey === '4'" type="primary" class="step-btn w-40 success-btn" @click="handleSave()"> 绑定 </a-button>
       </div>
     </div>
   </div>
@@ -627,6 +627,7 @@ export default {
             }
           ]
         },
+        2: {},
         3: {
           certificationName: [
             {
@@ -891,6 +892,7 @@ export default {
         })
         if (res && res.code === 200) {
           const teacherInfo = res.data
+          console.log(teacherInfo)
           const formData = {
             1: {
               nickName: teacherInfo.nickName,
@@ -898,7 +900,7 @@ export default {
               major: teacherInfo.major,
               college: teacherInfo.college,
               advantage: teacherInfo.advantage,
-              want: teacherInfo.want.split(','),
+              want: (teacherInfo.want || '').split(','),
               sample: this.parseFileNamesToObjs(teacherInfo.sampleList || []),
               diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
               transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || [])
@@ -923,7 +925,7 @@ export default {
               bankNum: teacherInfo.bankNum
             },
             51: {
-              oldEmail: teacherInfo.email || '11',
+              oldEmail: teacherInfo.email || '',
               email: '',
               emailCode: ''
             },
@@ -1078,7 +1080,7 @@ export default {
       try {
         const res = await lingkeApi.sendSmsCode({
           account: this.formData[subFormKey || this.curTabKey][itemKey],
-          type: '1'
+          type: '2'
         })
         if (res && res.code === 200) {
           this.$message.success('发送成功')

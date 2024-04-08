@@ -166,7 +166,7 @@ export function orderOrganizationOrderList (parameter) {
 
 export function orderTeacherOrderTotal (parameter) {
   return request({
-    url: url + '/order/teacher/orderTotal',
+    url: url + '/order/teacher/getTotal',
     method: 'post',
     data: parameter
   })
@@ -174,7 +174,7 @@ export function orderTeacherOrderTotal (parameter) {
 
 export function orderTeacherOrderList (parameter) {
   return request({
-    url: url + '/order/teacher/orderList',
+    url: url + '/order/teacher/getList',
     method: 'post',
     data: parameter
   })

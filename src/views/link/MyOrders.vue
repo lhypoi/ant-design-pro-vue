@@ -1,20 +1,10 @@
 <template>
-  <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
-    <div class="flex flex-row flex-wrap gap-y-4" v-loading="teacherAccountParams.loading">
-      <div>
-        <div class="w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-full">
-          <el-image
-            class="w-full h-full"
-            :src="require('@/assets/link/avatar.png')"
-          />
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x px-3 py-6">
+    <div class="flex flex-row flex-wrap gap-y-4 gap-x-5 px-4 py-6 bg-white rounded-lg shadow-sm" v-loading="teacherAccountParams.loading">
+      <div class="flex gap-2 sm:flex-col items-center">
+        <div class="w-20 h-20 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
+          {{ userInfo.avatarFirstLetter }}
         </div>
-      </div>
-      <div class="pl-5 pt-1 flex flex-col gap-y-3">
-        <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">累计订单金额：{{ teacherAccountParams.accountInfo.totalAmount || 0 }}</div>
-        <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">可提现金额：{{ teacherAccountParams.accountInfo.balance || 0 }}</div>
-        <div class="text-sm bg-gray-100 px-4 py-2 rounded-lg text-black whitespace-nowrap">已提现金额：{{ teacherAccountParams.accountInfo.withdrawalAmount || 0 }}</div>
-      </div>
-      <div class="w-full sm:w-auto sm:pl-8 sm:pt-3">
         <a-popover title="说明" trigger="click">
           <template slot="content">
             <p>累计金额：历史所有累计已经完成订单的金额总和，订单需要是已完成的才会纳入统计。</p>
@@ -23,7 +13,21 @@
           <div class="text-blue-400 underline underline-offset-4 cursor-pointer">接单规则及提现说明</div>
         </a-popover>
       </div>
-      <div class="flex-auto flex flex-row sm:justify-end gap-4 sm:pt-1">
+      <div class="flex-auto flex justify-around bg-[#F9FBFE] rounded-lg py-2">
+        <div class="flex flex-col gap-1 items-center justify-center">
+          <div class="text-sm text-[#6D6D6D]">累计订单金额</div>
+          <div class="text-2xl text-[#FDA643]">￥{{ teacherAccountParams.accountInfo.totalAmount || 0 }}</div>
+        </div>
+        <div class="flex flex-col gap-1 items-center justify-center">
+          <div class="text-sm text-[#6D6D6D]">可提现金额</div>
+          <div class="text-2xl text-[#FDA643]">￥{{ teacherAccountParams.accountInfo.balance || 0 }}</div>
+        </div>
+        <div class="flex flex-col gap-1 items-center justify-center">
+          <div class="text-sm text-[#6D6D6D]">已提现金额</div>
+          <div class="text-2xl text-[#FDA643]">￥{{ teacherAccountParams.accountInfo.withdrawalAmount || 0 }}</div>
+        </div>
+      </div>
+      <div class="flex sm:flex-col gap-4">
         <a-button
           type="primary"
           class="rounded-md"
@@ -42,13 +46,13 @@
         </a-button>
       </div>
     </div>
-    <div class="flex flex-wrap items-end gap-3 min-h-[72px] mt-6 pt-5 pb-4 border-t border-solid border-gray-300" v-loading="tabParams.loading">
+    <div class="flex flex-wrap items-end gap-3 min-h-[60px] mt-6 mb-4 px-4 py-3 bg-white rounded-lg shadow-sm" v-loading="tabParams.loading">
       <div
         v-for="tab in tabParams.tabList"
         :key="tab.key"
         class="flex whitespace-nowrap items-center justify-center text-sm rounded-lg px-4 py-2 cursor-pointer transition duration-300 ease-in-out"
         :class="[
-          searchParams.status === tab.key ? 'bg-blue-600 text-white' : 'bg-slate-100 hover:bg-blue-400 hover:text-white text-slate-400'
+          searchParams.status === tab.key ? 'bg-[#2192EF] text-white' : 'bg-[#cecece] hover:bg-blue-400 text-white'
         ]"
         @click="handleTabClick(tab)"
       >
@@ -150,6 +154,7 @@
             class="h-full"
             :hidePage="true"
             highlight-selection-row
+            size="mini"
             @selection-change="handleCanWithdrawModalSelectionChange"
           >
             <el-table-column
@@ -171,14 +176,14 @@
         </div>
         <div class="pt-3 flex flex-row justify-end gap-8">
           <a-button
-            class="h-11 w-24 rounded-md text-base"
+            class="rounded-md"
             size="large"
             @click="canWithdrawModalParams.show = false"
           >
             取消
           </a-button>
           <a-button
-            class="h-11 w-24 rounded-md text-base"
+            class="rounded-md"
             type="primary"
             size="large"
             @click="handleCanWithdrawModalSubmit"
@@ -217,7 +222,7 @@
                 </a-range-picker>
               </a-form-model-item>
               <a-button
-                class="h-11 rounded-md text-base"
+                class="rounded-md"
                 type="primary"
                 icon="search"
                 size="large"
@@ -463,9 +468,9 @@ export default {
             },
             ...res.data.tabList.map(tab => {
               return {
-                key: tab.Status,
-                value: tab.Name,
-                num: tab.Num
+                key: tab.status,
+                value: tab.name,
+                num: tab.num
               }
             })
           ]
