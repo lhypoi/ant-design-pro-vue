@@ -236,6 +236,14 @@ export function adminAuditOrganization (parameter) {
   })
 }
 
+export function teacherChangeEmail (parameter) {
+  return request({
+    url: url + '/teacher/changeEmail',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -268,5 +276,6 @@ export default {
   teacherChangePasswd,
   adminLogin,
   organizationGetList,
-  adminAuditOrganization
+  adminAuditOrganization,
+  teacherChangeEmail
 }

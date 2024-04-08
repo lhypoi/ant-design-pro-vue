@@ -161,12 +161,6 @@ const asyncRouterMapAll = {
           meta: { title: '我的订单', icon: 'database', permission: [1] }
         },
         {
-          path: '/t-account-setting',
-          name: 'TAccountSetting',
-          component: () => import('@/views/link/TAccountSetting'),
-          meta: { title: '账号设置', icon: 'container', permission: [1] }
-        },
-        {
           path: '/o-home',
           name: 'OHome',
           component: () => import('@/views/link/OHome'),

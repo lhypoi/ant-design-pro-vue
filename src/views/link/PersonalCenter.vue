@@ -231,7 +231,7 @@
                   type="primary"
                   :disabled="sendBtnData.disabled"
                   :loading="sendBtnData.loading"
-                  @click="handleSendSmsCode"
+                  @click="handleSendSmsCode(undefined, 'certificationPhone')"
                 >
                   {{
                     sendBtnData.loading
@@ -259,7 +259,8 @@
           </template>
           <template v-if="curTabKey === '4'">
             <div class="text-base text-gray-950 font-bold pb-2">
-              持卡人（请在 <span class="cursor-pointer text-blue-400" @click="handleToTab({ key: '3' })">实名认证</span> 中完善）：
+              持卡人（请在
+              <span class="cursor-pointer text-blue-400" @click="handleToTab({ key: '3' })">实名认证</span> 中完善）：
             </div>
             <a-form-model-item label="持卡人姓名">
               <a-input v-model="formData['4'].certificationName" placeholder="无" size="large" disabled />
@@ -275,21 +276,172 @@
               <a-input v-model="formData['4'].bankNum" placeholder="请输入银行卡号码" size="large" />
             </a-form-model-item>
           </template>
+          <template v-if="curTabKey === '5'">
+            <el-collapse
+              accordion
+            >
+              <el-collapse-item
+                v-for="subForm in tabList.find((tab) => tab.key === curTabKey).subFormList"
+                :key="subForm.key"
+                :name="subForm.key"
+              >
+                <div slot="title" class="text-base text-gray-950 font-bold">{{ subForm.title }}</div>
+                <a-form-model
+                  :ref="'form_' + subForm.key"
+                  :model="formData[subForm.key]"
+                  :rules="formRules[subForm.key]"
+                  :label-col="{ span: 3 }"
+                  :wrapper-col="{ span: 21 }"
+                  labelAlign="right"
+                >
+                  <template v-if="subForm.key === '51'">
+                    <a-form-model-item v-if="formData[subForm.key].oldEmail" prop="oldEmail" label="当前邮箱">
+                      <a-input v-model="formData[subForm.key].oldEmail" placeholder="无" size="large" disabled />
+                    </a-form-model-item>
+                    <a-form-model-item prop="email" :label="formData[subForm.key].oldEmail ? '新邮箱' : '邮箱'">
+                      <a-input
+                        v-model="formData[subForm.key].email"
+                        :placeholder="formData[subForm.key].oldEmail ? '请输入新邮箱' : '请输入邮箱'"
+                        size="large"
+                      />
+                    </a-form-model-item>
+                    <a-form-model-item prop="emailCode" label="验证码" ref="emailCode">
+                      <div class="flex flex-row gap-3">
+                        <a-input
+                          v-model="formData[subForm.key].emailCode"
+                          placeholder="请输入验证码"
+                          size="large"
+                          @blur="
+                            () => {
+                              $refs.emailCode[0].onFieldChange()
+                            }
+                          "
+                          @change="
+                            () => {
+                              $refs.emailCode[0].onFieldChange()
+                            }
+                          "
+                        />
+                        <a-button
+                          class="send-code-btn"
+                          type="primary"
+                          :disabled="sendBtnData.disabled"
+                          :loading="sendBtnData.loading"
+                          @click="handleSendSmsCode(subForm.key, 'email')"
+                        >
+                          {{
+                            sendBtnData.loading
+                              ? '发送中'
+                              : sendBtnData.disabled
+                                ? `${sendBtnData.countdown}s 后重新发送`
+                                : '发送验证码'
+                          }}
+                        </a-button>
+                      </div>
+                    </a-form-model-item>
+                    <a-row>
+                      <a-col :sm="{ offset: 3 }">
+                        <a-button type="primary" class="send-code-btn success-btn" @click="handleSave(subForm.key)">
+                          {{ formData[subForm.key].oldEmail ? '更换邮箱' : '绑定邮箱' }}
+                        </a-button>
+                      </a-col>
+                    </a-row>
+                  </template>
+                  <template v-if="subForm.key === '52'">
+                    <a-form-model-item prop="wechatName" label="微信号">
+                      <a-input v-model="formData[subForm.key]['wechatName']" placeholder="无" size="large" disabled />
+                    </a-form-model-item>
+                    <a-row>
+                      <a-col :sm="{ offset: 3 }">
+                        <a-button type="primary" class="send-code-btn success-btn">
+                          {{ formData[subForm.key]['openId'] ? '更换微信' : '绑定微信' }}
+                        </a-button>
+                      </a-col>
+                    </a-row>
+                  </template>
+                  <template v-if="subForm.key === '53'">
+                    <a-form-model-item prop="email" label="邮箱">
+                      <a-input v-model="formData[subForm.key].email" placeholder="无" size="large" disabled />
+                    </a-form-model-item>
+                    <a-form-model-item prop="emailCodeForPassWord" label="验证码" ref="emailCodeForPassWord">
+                      <div class="flex flex-row gap-3">
+                        <a-input
+                          v-model="formData[subForm.key].emailCodeForPassWord"
+                          placeholder="请输入验证码"
+                          size="large"
+                          @blur="
+                            () => {
+                              $refs.emailCodeForPassWord[0].onFieldChange()
+                            }
+                          "
+                          @change="
+                            () => {
+                              $refs.emailCodeForPassWord[0].onFieldChange()
+                            }
+                          "
+                        />
+                        <a-button
+                          class="send-code-btn"
+                          type="primary"
+                          :disabled="!formData[subForm.key].email || sendBtnData.disabled"
+                          :loading="sendBtnData.loading"
+                          @click="handleSendSmsCode(subForm.key, 'email')"
+                        >
+                          {{
+                            sendBtnData.loading
+                              ? '发送中'
+                              : sendBtnData.disabled
+                                ? `${sendBtnData.countdown}s 后重新发送`
+                                : '发送验证码'
+                          }}
+                        </a-button>
+                      </div>
+                    </a-form-model-item>
+                    <a-form-model-item prop="newPassWord" label="新密码">
+                      <a-input-password autocomplete="new-passWord" v-model="formData[subForm.key].newPassWord" placeholder="请输入新密码" size="large" />
+                    </a-form-model-item>
+                    <a-form-model-item prop="confirmPassWord" label="确认密码">
+                      <a-input-password v-model="formData[subForm.key].confirmPassWord" placeholder="请再次输入新密码" size="large" />
+                    </a-form-model-item>
+                    <a-row>
+                      <a-col :sm="{ offset: 3 }">
+                        <a-button type="primary success-btn" class="send-code-btn" @click="handleSave(subForm.key)">
+                          确定
+                        </a-button>
+                      </a-col>
+                    </a-row>
+                  </template>
+                </a-form-model>
+              </el-collapse-item>
+            </el-collapse>
+          </template>
+          <template v-if="curTabKey === '6'">
+            <div class="flex flex-col items-center pt-5">
+              <div class="relative w-56 h-56" >
+                <el-image
+                  class="absolute w-full h-full"
+                  :src="require('@/assets/link/avatar.png')"
+                />
+              </div>
+              <div class="text-lg font-bold pt-6">微信扫码关注公众号</div>
+              <div class="text-sm text-gray-400 pt-1">及时获取最新订单通知</div>
+            </div>
+          </template>
         </a-form-model>
       </div>
       <div class="pt-4 flex flex-row justify-center gap-5">
         <a-button
           v-if="curTabKey === '1' || curTabKey === '2'"
           type="primary"
-          class="step-btn w-40"
+          class="step-btn w-40 success-btn"
           @click="handleSave"
         >
           保存
         </a-button>
-        <a-button v-if="curTabKey === '3'" type="primary" class="step-btn w-40" @click="handleSave">
+        <a-button v-if="curTabKey === '3'" type="primary" class="step-btn w-40 success-btn" @click="handleSave">
           提交审核
         </a-button>
-        <a-button v-if="curTabKey === '4'" type="primary" class="step-btn w-40" @click="handleSave"> 绑定 </a-button>
+        <a-button v-if="curTabKey === '4'" type="primary" class="step-btn w-40 success-btn" @click="handleSave"> 绑定 </a-button>
       </div>
     </div>
   </div>
@@ -338,7 +490,31 @@ export default {
         {
           title: '收款信息',
           key: '4',
-          icon: 'hdd'
+          icon: 'el-icon-money'
+        },
+        {
+          title: '账号设置',
+          key: '5',
+          icon: 'el-icon-s-tools',
+          subFormList: [
+            {
+              title: '邮箱',
+              key: '51'
+            },
+            {
+              title: '微信',
+              key: '52'
+            },
+            {
+              title: '密码',
+              key: '53'
+            }
+          ]
+        },
+        {
+          title: '消息提醒',
+          key: '6',
+          icon: 'el-icon-bell'
         }
       ],
       formData: {
@@ -371,6 +547,21 @@ export default {
           certificationIdNo: '',
           bankBranch: '',
           bankNum: ''
+        },
+        51: {
+          oldEmail: '',
+          email: '',
+          emailCode: ''
+        },
+        52: {
+          openId: '',
+          wechatName: ''
+        },
+        53: {
+          email: '',
+          emailCodeForPassWord: '',
+          newPassWord: '',
+          confirmPassWord: ''
         }
       },
       formRules: {
@@ -559,6 +750,86 @@ export default {
               }
             }
           ]
+        },
+        51: {
+          email: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error(this.formData[51]['oldEmail'] ? '请输入新邮箱' : '请输入邮箱'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          emailCode: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入验证码'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ]
+        },
+        52: {},
+        53: {
+          emailCodeForPassWord: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入验证码'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          newPassWord: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入新密码'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          confirmPassWord: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value.trim()) {
+                    callback(new Error('请输入确认密码'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ]
         }
       },
       pdfBoxParams: {
@@ -650,6 +921,21 @@ export default {
               certificationIdNo: '',
               bankBranch: teacherInfo.bankBranch,
               bankNum: teacherInfo.bankNum
+            },
+            51: {
+              oldEmail: teacherInfo.email || '11',
+              email: '',
+              emailCode: ''
+            },
+            52: {
+              openId: '',
+              wechatName: ''
+            },
+            53: {
+              email: teacherInfo.email || '',
+              emailCodeForPassWord: '',
+              newPassWord: '',
+              confirmPassWord: ''
             }
           }
           this.formData = formData
@@ -662,9 +948,13 @@ export default {
       }
       this.loading = false
     },
-    async handleSave() {
+    getFormRef(subFormKey) {
+      const formKey = subFormKey || this.curTabKey
+      return Array.isArray(this.$refs['form_' + formKey]) ? this.$refs['form_' + formKey][0] : this.$refs['form_' + formKey]
+    },
+    async handleSave(subFormKey) {
       try {
-        await this.$refs['form_' + this.curTabKey].validate()
+        await this.getFormRef(subFormKey).validate()
       } catch {
         this.$message.error('填写信息不符合要求，请检查')
         return
@@ -680,52 +970,82 @@ export default {
             const params = {
               userId: this.userInfo.userId
             }
-            const formData = this.formData[this.curTabKey]
-            switch (this.curTabKey) {
-              case '1':
-                Object.assign(params, {
-                  nickName: formData.nickName,
-                  highEduLevel: formData.highEduLevel,
-                  major: formData.major,
-                  college: formData.college,
-                  advantage: formData.advantage,
-                  want: formData.want.join(','),
-                  sample: formData.want.includes('3')
-                    ? formData.sample
-                        .filter((file) => file.downloadUrl)
-                        .map((file) => file.downloadUrl)
-                        .join(',')
-                    : '',
-                  diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
-                  transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
-                })
-                break
-              case '2':
-                Object.assign(params, {
-                  cv: (formData.cv[0]?.response && formData.cv[0].downloadUrl) || ''
-                })
-                break
-              case '3':
-                Object.assign(params, {
-                  visa: formData.visa[0]?.response && formData.visa[0].downloadUrl
-                })
-                break
-              case '4':
-                Object.assign(params, {
-                  bankBranch: formData.bankBranch,
-                  bankNum: formData.bankNum
-                })
-                break
-              default:
-                break
+            let res = null
+            let defaultMessageAction = '保存'
+            if (!subFormKey) {
+              const formData = this.formData[this.curTabKey]
+              switch (this.curTabKey) {
+                case '1':
+                  Object.assign(params, {
+                    nickName: formData.nickName,
+                    highEduLevel: formData.highEduLevel,
+                    major: formData.major,
+                    college: formData.college,
+                    advantage: formData.advantage,
+                    want: formData.want.join(','),
+                    sample: formData.want.includes('3')
+                      ? formData.sample
+                          .filter((file) => file.downloadUrl)
+                          .map((file) => file.downloadUrl)
+                          .join(',')
+                      : '',
+                    diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
+                    transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
+                  })
+                  break
+                case '2':
+                  Object.assign(params, {
+                    cv: (formData.cv[0]?.response && formData.cv[0].downloadUrl) || ''
+                  })
+                  break
+                case '3':
+                  Object.assign(params, {
+                    visa: formData.visa[0]?.response && formData.visa[0].downloadUrl
+                  })
+                  break
+                case '4':
+                  Object.assign(params, {
+                    bankBranch: formData.bankBranch,
+                    bankNum: formData.bankNum
+                  })
+                  break
+                default:
+                  break
+              }
+              res = await lingkeApi.teacherUpdate(params)
+            } else {
+              const formData = this.formData[subFormKey]
+              switch (subFormKey) {
+                case '51':
+                  Object.assign(params, {
+                    email: formData.email,
+                    smsCode: formData.emailCode
+                  })
+                  defaultMessageAction = '绑定'
+                  res = await lingkeApi.teacherChangeEmail(params)
+                  break
+                case '52':
+                  break
+                case '53':
+                  Object.assign(params, {
+                    email: formData.email,
+                    smsCode: formData.emailCodeForPassWord,
+                    passWord: formData.newPassWord,
+                    rePassWord: formData.confirmPassWord
+                  })
+                  defaultMessageAction = '修改'
+                  res = await lingkeApi.teacherChangePasswd(params)
+                  break
+                default:
+                  break
+              }
             }
-            const res = await lingkeApi.teacherUpdate(params)
             if (res && res.data === 1) {
               await this.$store.dispatch('GetInfo')
-              this.$message.success('保存成功')
+              this.$message.success(defaultMessageAction + '成功')
               this.initFormData()
             } else {
-              throw new Error(res.message || '保存失败')
+              throw new Error(res.message || defaultMessageAction + '失败')
             }
           } catch (error) {
             this.$message.error(error.message)
@@ -746,9 +1066,9 @@ export default {
         }
       })
     },
-    async handleSendSmsCode() {
+    async handleSendSmsCode(subFormKey, itemKey) {
       const isFormValid = await new Promise((resolve) => {
-        this.$refs['form_' + this.curTabKey].validateField('certificationPhone', (err) => {
+        this.getFormRef(subFormKey).validateField(itemKey, (err) => {
           resolve(!err)
         })
       })
@@ -757,7 +1077,7 @@ export default {
       this.sendBtnData.loading = true
       try {
         const res = await lingkeApi.sendSmsCode({
-          account: this.formData['3']['certificationPhone'],
+          account: this.formData[subFormKey || this.curTabKey][itemKey],
           type: '1'
         })
         if (res && res.code === 200) {
@@ -783,7 +1103,7 @@ export default {
     },
     handleToTab(tab) {
       this.$router.push({ name: 'PersonalCenter', query: { tab: tab.key } })
-      this.$refs['form_' + this.curTabKey].clearValidate()
+      this.getFormRef().clearValidate()
     },
     handleFileChange(info, formKey, itemKey, single) {
       let fileList = [...info.fileList]

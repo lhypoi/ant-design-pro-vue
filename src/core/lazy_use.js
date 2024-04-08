@@ -67,7 +67,9 @@ import {
   TableColumn as ETableColumn,
   Pagination as EPagination,
   Carousel,
-  CarouselItem
+  CarouselItem,
+  Collapse,
+  CollapseItem
 } from 'element-ui'
 
 Vue.use(ConfigProvider)
@@ -140,5 +142,7 @@ Vue.use(ETableColumn)
 Vue.use(EPagination)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
+Vue.use(Collapse)
+Vue.use(CollapseItem)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')
