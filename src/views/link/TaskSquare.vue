@@ -100,7 +100,6 @@
     </div>
     <div class="flex flex-row justify-center py-2 bg-white rounded-lg mt-5">
       <el-pagination
-        class="-mr-3"
         :disabled="dataListLoading"
         :current-page.sync="searchParams.pageIndex"
         :page-size.sync="searchParams.pageSize"

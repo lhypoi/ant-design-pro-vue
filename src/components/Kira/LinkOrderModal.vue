@@ -6,26 +6,19 @@
       :visible="true"
       :footer="null"
       :maskClosable="false"
-      :width="isMobile ? '90vw' : '640px'"
+      :width="isMobile ? '90vw' : '1000px'"
       @cancel="linkOrderModalParams.show = false"
     >
       <div class="pt-4">
-        <div class="link-style-form" v-loading="linkOrderModalParams.loading">
+        <div class="link-style-form link-style-form-sm" v-loading="linkOrderModalParams.loading">
           <a-form-model
             ref="linkOrderModalForm"
             :model="linkOrderModalParams.formData"
             :rules="linkOrderModalParams.formRules"
-            :label-col="{ span: 5 }"
-            :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
+            :label-col="{ span: 4 }"
+            :wrapper-col="{ span: 18 }"
           >
-            <a-form-model-item key="type" prop="type" label="任务类型">
-              <a-select v-model="linkOrderModalParams.formData.type" size="large" placeholder="请选择" allowClear>
-                <a-select-option v-for="item in linkOrderModalParams.options['type']" :key="item.key" :value="item.key">
-                  {{ item.value }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-            <a-form-model-item key="task" prop="task" label="委托任务">
+            <a-form-model-item key="task" prop="task" label="委托名称">
               <a-input
                 v-model="linkOrderModalParams.formData.task"
                 placeholder="如SPSS回归分析辅导 - 提供数据"
@@ -33,7 +26,14 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item key="detail" prop="detail" label="任务详细说明">
+            <a-form-model-item key="type" prop="type" label="任务类型">
+              <a-select v-model="linkOrderModalParams.formData.type" size="large" placeholder="请选择" allowClear>
+                <a-select-option v-for="item in linkOrderModalParams.options['type']" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item key="detail" prop="detail" label="委托明细">
               <a-textarea
                 v-model="linkOrderModalParams.formData.detail"
                 placeholder="请输入"
@@ -42,32 +42,14 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item key="unitPrice" prop="unitPrice" label="一小时单价">
-              <a-input-number
-                v-model="linkOrderModalParams.formData.unitPrice"
-                placeholder="请输入"
-                size="large"
-                class="w-full"
-                allowClear
-              />
-            </a-form-model-item>
-            <a-form-model-item key="duration" prop="duration" label="辅导时间(小时)">
-              <a-input-number
-                v-model="linkOrderModalParams.formData.duration"
-                placeholder="请输入"
-                size="large"
-                class="w-full"
-                allowClear
-              />
-            </a-form-model-item>
-            <a-form-model-item key="files" prop="files" label="相关文件">
+            <a-form-model-item key="files" prop="files" label="相关资料">
               <a-upload-dragger
                 class="dragUploader"
                 :multiple="true"
                 name="files"
                 :action="lingkeApi.uploadUrl"
                 :fileList="linkOrderModalParams.formData.files"
-                @change="info => handleFormFileChange(info, linkOrderModalParams.formData, 'files', false)"
+                @change="info => handleFormFileChange(info, linkOrderModalParams.formData, 'files', true)"
                 @preview="handleFileDownload"
               >
                 <div class="rounded-md bg-sky-50 flex flex-col items-center py-4">
@@ -91,20 +73,69 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
-              <div class="pt-4">
-                <a-button
-                  class="h-11 w-52 rounded-md text-base"
-                  type="primary"
-                  size="large"
-                  :loading="linkOrderModalParams.submitting"
-                  @click="handleLinkOrderModalFormUpdate"
-                >
-                  发布委托
-                </a-button>
-              </div>
+            <a-form-model-item key="courseMode" prop="courseMode" label="课程模式">
+              <a-radio-group v-model="linkOrderModalParams.formData.courseMode" size="large">
+                <a-radio v-for="item in linkOrderModalParams.options['courseMode']" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-radio>
+              </a-radio-group>
+            </a-form-model-item>
+            <a-form-model-item v-if="linkOrderModalParams.formData.courseMode === '2'" key="courseUnitSection" prop="courseUnitSection" label="课程节数">
+              <a-select v-model="linkOrderModalParams.formData.courseUnitSection" size="large" placeholder="请选择" allowClear>
+                <span slot="suffixIcon">节</span>
+                <a-select-option v-for="item in linkOrderModalParams.options['courseUnitSection']" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item key="courseUnitTime" prop="courseUnitTime" label="课程时长">
+              <a-select v-model="linkOrderModalParams.formData.courseUnitTime" size="large" placeholder="请选择" allowClear>
+                <span slot="suffixIcon">小时</span>
+                <a-select-option v-for="item in linkOrderModalParams.options['courseUnitTime']" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item key="courseUnitPrice" prop="courseUnitPrice" label="委托价格">
+              <a-input-number
+                v-model="linkOrderModalParams.formData.courseUnitPrice"
+                placeholder="请输入"
+                size="large"
+                class="w-full"
+                :formatter="value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\￥\s?|(,*)/g, '')"
+                allowClear
+              />
             </a-form-model-item>
           </a-form-model>
+          <div class="flex flex-col items-center gap-y-3 pt-5">
+            <div v-if="courseTotalPriceTxt" class="mb-4 border border-solid border-gray-300 rounded-lg flex items-center justify-center py-6 px-8 text-gray-600">
+              {{ courseTotalPriceTxt }}
+            </div>
+            <div v-if="!linkOrderModalParams.orderId" class="flex justify-center items-center flex-wrap gap-y-1 whitespace-nowrap text-sm leading-none">
+              <a-icon
+                type="check-circle"
+                theme="filled"
+                class="cursor-pointer text-lg"
+                :class="linkOrderModalParams.isAgree ? 'text-blue-600' : 'text-gray-400'"
+                @click="linkOrderModalParams.isAgree = !linkOrderModalParams.isAgree"
+              />
+              <div class="text-gray-400 ml-2">已阅读并同意</div>
+              <div class="text-blue-400 cursor-pointer">《服务协议》</div>
+              <div class="text-blue-400 cursor-pointer">《隐私协议》</div>
+            </div>
+            <div class="">
+              <a-button
+                class="h-11 w-52 rounded-md text-base"
+                type="primary"
+                size="large"
+                :loading="linkOrderModalParams.submitting"
+                @click="handleLinkOrderModalFormUpdate"
+              >
+                发布委托
+              </a-button>
+            </div>
+          </div>
         </div>
       </div>
     </a-modal>
@@ -130,6 +161,7 @@ export default {
         loading: false,
         submitting: false,
         orderId: '',
+        isAgree: false,
         formData: {
           type: undefined,
           task: '',
@@ -137,11 +169,93 @@ export default {
           unitPrice: undefined,
           duration: undefined,
           files: [],
-          teacherId: undefined
+          teacherId: undefined,
+          courseMode: undefined,
+          courseUnitTime: undefined,
+          courseUnitSection: undefined,
+          courseUnitPrice: undefined
         },
         options: {
           type: [],
-          teacherId: []
+          teacherId: [],
+          courseMode: [
+            {
+              key: '1',
+              value: '单课程模式'
+            },
+            {
+              key: '2',
+              value: '多课程模式'
+            }
+          ],
+          courseUnitTime: [
+            {
+              key: 0.5,
+              value: 0.5
+            },
+            {
+              key: 1,
+              value: 1
+            },
+            {
+              key: 1.5,
+              value: 1.5
+            },
+            {
+              key: 2,
+              value: 2
+            },
+            {
+              key: 2.5,
+              value: 2.5
+            },
+            {
+              key: 3,
+              value: 3
+            }
+          ],
+          courseUnitSection: [
+            {
+              key: 1,
+              value: 1
+            },
+            {
+              key: 2,
+              value: 2
+            },
+            {
+              key: 3,
+              value: 3
+            },
+            {
+              key: 4,
+              value: 4
+            },
+            {
+              key: 5,
+              value: 5
+            },
+            {
+              key: 6,
+              value: 6
+            },
+            {
+              key: 7,
+              value: 7
+            },
+            {
+              key: 8,
+              value: 8
+            },
+            {
+              key: 9,
+              value: 9
+            },
+            {
+              key: 10,
+              value: 10
+            }
+          ]
         },
         formRules: {
           type: [
@@ -164,7 +278,7 @@ export default {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.trim()) {
-                    callback(new Error('请填写委托任务'))
+                    callback(new Error('请填写委托名称'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -179,7 +293,7 @@ export default {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.trim()) {
-                    callback(new Error('请填写任务详细说明'))
+                    callback(new Error('请填写委托明细'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -218,6 +332,51 @@ export default {
                 callback()
               }
             }
+          ],
+          courseUnitTime: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value) {
+                    callback(new Error('请选择课程时长'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          courseUnitSection: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value) {
+                    callback(new Error('请选择课程节数'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
+          ],
+          courseUnitPrice: [
+            {
+              validator: (rule, value, callback) => {
+                try {
+                  if (!value) {
+                    callback(new Error('请填写委托价格'))
+                  }
+                } catch (error) {
+                  console.log(error)
+                  callback(error)
+                }
+                callback()
+              }
+            }
           ]
         }
       }
@@ -236,6 +395,16 @@ export default {
           }
         ))
       ]
+    },
+    courseTotalPriceTxt() {
+      let txt = ''
+      const formData = this.linkOrderModalParams.formData
+      if (formData.courseMode === '1' && formData.courseUnitTime && formData.courseUnitPrice) {
+        txt = `合计：${formData.courseUnitPrice}元, 共${formData.courseUnitTime}小时`
+      } else if (formData.courseMode === '2' && formData.courseUnitSection && formData.courseUnitPrice && formData.courseUnitTime) {
+        txt = `合计：共${formData.courseUnitSection}节课, 每节课${formData.courseUnitPrice}元`
+      }
+      return txt
     }
   },
   methods: {
@@ -246,6 +415,7 @@ export default {
         loading: true,
         submitting: false,
         orderId: orderId,
+        isAgree: false,
         formData: {
           type: undefined,
           task: '',
@@ -253,9 +423,11 @@ export default {
           unitPrice: undefined,
           duration: undefined,
           files: [],
-          teacherId: teacherId
+          teacherId: teacherId,
+          courseMode: undefined
         },
         options: {
+          ...this.linkOrderModalParams.options,
           type: this.orderTypeOptions,
           teacherId: []
         }
@@ -268,14 +440,16 @@ export default {
             value: row.name
           }
         ))
+        let formData = { ...this.linkOrderModalParams.formData }
         if (orderId) {
           const formDataRes = await lingkeApi.orderGetOne({
             id: parseInt(orderId)
           })
-          const formData = formDataRes.data
-          formData.files = formData.files ? this.parseFileNamesToObjs(formData.files.split(',')) : []
-          this.linkOrderModalParams.formData = formData
+          formData = { ...formData, ...formDataRes.data }
+          formData.files = formDataRes.data.files ? this.parseFileNamesToObjs(formDataRes.data.files.split(',')) : []
         }
+        formData.courseMode = formData.courseMode || '1'
+        this.linkOrderModalParams.formData = formData
       } catch (error) {
         this.$message.error(error.message)
         console.log(error)
@@ -314,6 +488,10 @@ export default {
       } catch {
         this.$message.error('提交信息不符合要求，请检查')
         return
+      }
+      if (!this.linkOrderModalParams.orderId && !this.linkOrderModalParams.isAgree) {
+        this.$message.error('请先阅读并同意《服务协议》和《隐私协议》')
+        return false
       }
       this.linkOrderModalParams.submitting = true
       try {

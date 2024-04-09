@@ -114,7 +114,6 @@
     </div>
     <div class="flex flex-row justify-end pt-3">
       <el-pagination
-        class="-mr-3"
         :disabled="localLoading || sizeChangeFlag"
         :current-page.sync="pageNum"
         :page-size.sync="pageSize"

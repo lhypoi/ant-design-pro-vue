@@ -2,7 +2,7 @@
   <div class="w-0 h-0 overflow-hidden absolute">
     <a-modal
       v-if="linkTeacherModalParams.show"
-      :title="'教师详情'"
+      :title="'老师详情'"
       :visible="true"
       :footer="null"
       :maskClosable="false"
@@ -12,56 +12,36 @@
       <div>
         <div v-loading="linkTeacherModalParams.loading" class="min-h-[400px]">
           <div v-if="linkTeacherModalParams.teacherData">
-            <div class="flex flex-row">
-              <div class="w-24 rounded-md overflow-hidden">
-                <div class="relative pr-[100%] pb-[100%] cursor-pointer">
-                  <el-image
-                    class="absolute w-full h-full"
-                    :src="require('@/assets/link/task-type-1.png')"
-                  />
+            <div class="flex flex-row items-start">
+              <div class="w-24 h-24 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
+                {{ teacher.nickName[0].toUpperCase() }}
+              </div>
+              <div class="flex-auto pl-4 flex flex-col gap-y-3 text-base">
+                <div class="flex gap-x-4 justify-between">
+                  <div class="font-bold">{{ teacher.nickName }}</div>
+                </div>
+                <div class="flex flex-col gap-1 leading-none">
+                  <div class="text-ellipsis whitespace-nowrap overflow-hidden"><i class="el-icon-school text-blue-400"></i> {{ teacher.college }} {{ teacher.highEduLevelName }}</div>
+                  <div class="text-ellipsis whitespace-nowrap overflow-hidden"><i class="el-icon-s-custom text-blue-400"></i> {{ teacher.major }}</div>
                 </div>
               </div>
-              <div class="flex-auto pl-4 flex flex-col gap-y-1 text-base">
-                <div class="flex gap-x-4 justify-between">
-                  <div class="font-bold">{{ teacher.name }}</div>
-                  <!-- <div class="font-bold">{{ `ID: ${ teacher.userId }` }}</div> -->
+              <div class="flex items-center gap-x-4">
+                <div class="cursor-pointer text-blue-400 leading-none">
+                  <a-icon type="message" class="text-2xl" />
                 </div>
-                <div class="flex gap-x-4">
-                  <div>{{ teacher.college }}</div>
-                  <div>{{ `${ teacher.highEduLevelName }` }}</div>
-                </div>
-                <div class="flex gap-x-4">
-                  <div>{{ `专业: ${ teacher.major }` }}</div>
-                  <div>{{ `擅长使用的工具: ${ teacher.tools }` }}</div>
-                </div>
+                <a-button
+                  class="h-10 rounded-md"
+                  type="primary"
+                  @click="$emit('handleOpenLinkOrderModal', linkTeacherModalParams.userId)"
+                >
+                  发布委托
+                </a-button>
               </div>
             </div>
             <div class="pt-5">
               <div class="text-base">
-                {{ teacher.advantage }}
+                <i class="el-icon-s-opportunity text-blue-400"></i> {{ teacher.advantage }}
               </div>
-            </div>
-            <div class="pt-5 flex flex-row gap-x-4 flex-wrap gap-y-2">
-              <a-button
-                class="h-10 rounded-md"
-                type="primary"
-                @click="handleShowContact"
-              >
-                查看联系方式
-              </a-button>
-              <a-button
-                class="h-10 rounded-md"
-                type="primary"
-                @click="$emit('handleOpenLinkOrderModal', linkTeacherModalParams.userId)"
-              >
-                发起委托
-              </a-button>
-              <a-button
-                class="h-10 rounded-md"
-                type="primary"
-              >
-                在线沟通
-              </a-button>
             </div>
             <div class="pt-5">
               <a-tabs>

@@ -12,7 +12,6 @@
     </el-table>
     <div v-if="!hidePage" class="flex flex-row justify-end pt-3">
       <el-pagination
-        class="-mr-3"
         :disabled="localLoading"
         :current-page.sync="pageNum"
         :page-size.sync="pageSize"

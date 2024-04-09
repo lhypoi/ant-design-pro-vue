@@ -123,7 +123,6 @@
     </div>
     <div class="flex flex-row justify-center py-2 bg-white rounded-lg mt-5">
       <el-pagination
-        class="-mr-3"
         :disabled="dataListLoading"
         :current-page.sync="searchParams.pageIndex"
         :page-size.sync="searchParams.pageSize"
@@ -314,7 +313,7 @@ export default {
           },
           {
             key: 'task',
-            label: '委托任务',
+            label: '委托名称',
             width: 120
           },
           {
@@ -324,7 +323,7 @@ export default {
           },
           {
             key: 'detail',
-            label: '任务详细说明',
+            label: '委托明细',
             minWidth: 200
           },
           {
