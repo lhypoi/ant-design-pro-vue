@@ -277,7 +277,7 @@ export default {
         this.detailDataLoading = true
         try {
           const res = await lingkeApi.orderGetOne({
-            Id: parseInt(this.detailId)
+            id: parseInt(this.detailId)
           })
           if (res && res.code === 200) {
             const detailData = res.data

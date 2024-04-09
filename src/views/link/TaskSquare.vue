@@ -67,7 +67,7 @@
               {{ item.organizationName[0].toUpperCase() }}
             </div>
             <div class="flex-auto w-0 flex flex-col sm:gap-1 justify-center">
-              <div class="text-sm text-[#171515] break-all line-clamp-1">{{ item.task }}</div>
+              <div class="text-sm text-[#171515] font-bold break-all line-clamp-1">{{ item.task }}</div>
               <div class="text-sm text-[#6D6D6D] break-all line-clamp-1">
                 {{ item.detail }}
               </div>
@@ -82,7 +82,7 @@
             <div class="text-sm text-[#6D6D6D]">{{ item.createTime }}</div>
           </div>
           <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-48">
-            <div class="text-2xl text-[#FDA643]">{{ `￥${item.unitPrice * item.duration}` }}</div>
+            <div class="text-xl text-[#FDA643]">{{ `￥${item.unitPrice * item.duration}` }}</div>
           </div>
           <div
             class="flex justify-start items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28"
@@ -147,8 +147,7 @@ export default {
         pageSize: 10,
         type: ''
       },
-      dataList: [],
-      infiniteId: 1
+      dataList: []
     }
   },
   computed: {

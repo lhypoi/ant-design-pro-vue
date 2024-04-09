@@ -270,7 +270,7 @@ export default {
         ))
         if (orderId) {
           const formDataRes = await lingkeApi.orderGetOne({
-            Id: parseInt(orderId)
+            id: parseInt(orderId)
           })
           const formData = formDataRes.data
           formData.files = formData.files ? this.parseFileNamesToObjs(formData.files.split(',')) : []

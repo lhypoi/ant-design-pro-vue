@@ -27,26 +27,27 @@
           <div class="text-2xl text-[#FDA643]">￥{{ teacherAccountParams.accountInfo.withdrawalAmount || 0 }}</div>
         </div>
       </div>
-      <div class="flex sm:flex-col gap-4">
+      <div class="flex sm:flex-col gap-3">
         <a-button
           type="primary"
           class="rounded-md"
-          size="large"
           @click="handleOpenCanWithdrawModal"
         >
           提现
         </a-button>
-        <a-button
-          type="primary"
-          class="rounded-md"
-          size="large"
-          @click="handleOpenWithdrawalRecordModal"
-        >
-          提现记录
-        </a-button>
+        <div class="bg-[#ecf5ff] rounded-md">
+          <a-button
+            type="primary"
+            ghost
+            class="rounded-md"
+            @click="handleOpenWithdrawalRecordModal"
+          >
+            提现记录
+          </a-button>
+        </div>
       </div>
     </div>
-    <div class="flex flex-wrap items-end gap-3 min-h-[60px] mt-6 mb-4 px-4 py-3 bg-white rounded-lg shadow-sm" v-loading="tabParams.loading">
+    <div class="flex flex-wrap items-end gap-3 min-h-[60px] mt-6 px-4 py-3 bg-white rounded-lg shadow-sm" v-loading="tabParams.loading">
       <div
         v-for="tab in tabParams.tabList"
         :key="tab.key"
@@ -59,50 +60,49 @@
         {{ `${ tab.value }（${ tab.num }）` }}</div>
     </div>
     <div
-      class="flex-auto flex flex-col"
-      :class="detailId ? 'h-0' : 'h-[60vh]'"
+      class="mt-5 min-h-[90px]"
+      v-loading="dataListLoading"
+      element-loading-spinner="el-icon-loading mt-3"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
     >
-      <div
-        class="flex flex-col overflow-y-auto px-2 -mx-2 space-y-3"
-        :class="dataList.length ? 'py-1' : 'py-24'"
-      >
+      <div class="flex flex-col gap-y-3">
         <div
           v-for="item in dataList"
           :key="item.id"
-          class="flex flex-col gap-3 sm:flex-row bg-slate-50 rounded-lg p-3 drop-shadow-md cursor-pointer hover:ring-2"
-          @click="handleToDetail(item)"
+          class="flex flex-col gap-1 sm:gap-3 sm:flex-row bg-white rounded-lg shadow-sm p-3 cursor-pointer hover:ring-2 min-h-[90px]"
+          @click="() => handleToDetail(item)"
         >
-          <div class="flex items-center justify-center sm:items-start">
-            <div class="w-full sm:w-24 h-24 rounded-lg overflow-hidden bg-blue-50">
-              <el-image
-                class="w-full h-full"
-                :src="require('@/assets/link/task-type-1.png')"
-              />
+          <div class="flex-auto flex items-center justify-center gap-3">
+            <div class="w-12 h-12 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
+              {{ item.organizationName?.[0].toUpperCase() }}
+            </div>
+            <div class="flex-auto w-0 flex flex-col sm:gap-1 justify-center">
+              <div class="text-sm text-[#171515] font-bold break-all line-clamp-1">{{ item.task }}</div>
+              <div class="text-sm text-[#6D6D6D] break-all line-clamp-1">
+                {{ item.detail }}
+              </div>
             </div>
           </div>
-          <div class="flex flex-col sm:flex-auto sm:w-0">
-            <div class="text-lg text-slate-900 font-bold break-all line-clamp-1">{{ item.task }}</div>
-            <div class="flex flex-wrap">
-              <div
-                class="text-sm text-blue-600 pr-2"
-              >#{{ item.typeName }}</div>
-              <div class="text-sm text-slate-400 sm:pl-2">{{ item.updateTime }}</div>
+          <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-24">
+            <div class="text-sm text-[#2192EF]">#{{ item.typeName }}</div>
+            <div class="text-sm text-[#FDA643]">{{ `￥${item.unitPrice}/${item.duration}h` }}</div>
+          </div>
+          <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-48">
+            <div class="text-sm text-[#6D6D6D]">发布时间</div>
+            <div class="text-sm text-[#6D6D6D]">{{ item.createTime }}</div>
+          </div>
+          <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-32">
+            <div class="text-xl text-[#FDA643]">{{ `￥${item.unitPrice * item.duration}` }}</div>
+          </div>
+          <div class="flex flex-col sm:gap-1 items-center justify-center sm:w-44">
+            <div class="text-sm text-[#6D6D6D] break-all line-clamp-1">{{ item.statusName }}</div>
+            <div class="text-sm text-[#A29F9F] break-all line-clamp-1">
+              请确认并付款
             </div>
-            <div class="text-sm text-slate-800 break-all line-clamp-2 pt-1">
-              {{ item.detail }}
-            </div>
           </div>
-          <div class="flex flex-row justify-start items-center sm:justify-center sm:w-48">
-            <div
-              class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
-            >价格：￥{{ `${ item.unitPrice }/h x ${ item.duration }h` }}</div>
-          </div>
-          <div class="flex flex-row justify-start items-center sm:justify-center sm:w-44">
-            <div
-              class="text-yellow-500 text-base"
-            >{{ item.statusName }}</div>
-          </div>
-          <div class="flex justify-between items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-3 sm:justify-center sm:items-center sm:w-28">
+          <div
+            class="flex justify-start items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-2 sm:justify-center sm:items-center sm:w-28"
+          >
             <div
               v-if="item.status === '1'"
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
@@ -116,19 +116,25 @@
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
               @click.stop="() => $refs.LinkOrderDetailDrawer.handleFinishTask(item)"
             >交付确认</div>
-            <div
-              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-slate-200 text-blue-600 hover:bg-slate-300"
-              @click.stop="() => {}"
-            >
-              联系委托方
-            </div>
           </div>
         </div>
-        <infinite-loading
-          :identifier="infiniteId"
-          @infinite="infiniteHandler"
-        />
       </div>
+      <div v-if="!dataList.length" class="h-20 flex justify-center items-center text-gray-400 bg-white rounded-lg">空空如也</div>
+    </div>
+    <div class="flex flex-row justify-center py-2 bg-white rounded-lg mt-5">
+      <el-pagination
+        class="-mr-3"
+        :disabled="dataListLoading"
+        :current-page.sync="searchParams.pageIndex"
+        :page-size.sync="searchParams.pageSize"
+        :layout="isMobile ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next'"
+        :page-sizes="pageSizes"
+        :total="total"
+        :pager-count="5"
+        :small="isMobile"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
     </div>
     <LinkOrderDetailDrawer
       ref="LinkOrderDetailDrawer"
@@ -154,7 +160,6 @@
             class="h-full"
             :hidePage="true"
             highlight-selection-row
-            size="mini"
             @selection-change="handleCanWithdrawModalSelectionChange"
           >
             <el-table-column
@@ -281,13 +286,15 @@ export default {
   data() {
     return {
       lingkeApi,
+      pageSizes: [10, 50, 100],
+      total: 0,
+      dataListLoading: false,
       searchParams: {
         pageIndex: 1,
-        pageSize: 8,
+        pageSize: 10,
         status: ''
       },
       dataList: [],
-      infiniteId: 1,
       teacherAccountParams: {
         accountInfo: {},
         loading: false
@@ -432,8 +439,7 @@ export default {
     }
   },
   async mounted() {
-    this.handleGetTeacherAccount()
-    this.handleGetTabData()
+    this.reloadAllData()
   },
   methods: {
     async handleGetTeacherAccount() {
@@ -484,7 +490,8 @@ export default {
       this.tabParams.tabList = tabList
       this.tabParams.loading = false
     },
-    async infiniteHandler($state) {
+    async handleGetDataList() {
+      this.dataListLoading = true
       try {
         const res = await lingkeApi.orderTeacherOrderList({
           pageIndex: this.searchParams.pageIndex,
@@ -492,32 +499,36 @@ export default {
           status: this.searchParams.status
         })
         if (res && res.code === 200) {
-          this.dataList = [...this.dataList, ...res.data.list]
-          if (this.dataList.length) $state.loaded()
-          if (this.searchParams.pageIndex < res.data.totalPage) {
-            this.searchParams.pageIndex++
-          } else {
-            $state.complete()
-          }
+          this.dataList = res.data.list
+          this.total = res.data.totalCount
         } else {
-          throw new Error(res.message || '加载失败')
+          throw new Error(res.message || '加载列表数据失败')
         }
       } catch (error) {
         this.$message.error(error.message)
-        $state.error()
         console.log(error)
+      } finally {
+        this.dataListLoading = false
       }
+    },
+    async handleSearch() {
+      this.searchParams.pageIndex = 1
+      await this.handleGetDataList()
     },
     reloadAllData() {
       this.handleGetTeacherAccount()
       this.handleGetTabData()
-      this.handleTabClick()
+      this.handleSearch()
     },
     handleTabClick(tab) {
       if (tab) this.searchParams.status = tab.key
-      this.searchParams.pageIndex = 1
-      this.dataList = []
-      this.infiniteId++
+      this.handleSearch()
+    },
+    handleSizeChange() {
+      this.handleSearch()
+    },
+    handleCurrentChange() {
+      this.handleGetDataList()
     },
     handleToDetail(row) {
       this.$router.push({ name: this.$route.name, query: { orderId: row.id } })
@@ -531,8 +542,9 @@ export default {
         selectedRows: []
       }
       try {
-        const res = await lingkeApi.orderGetList({
-          teacherId: this.userInfo.userId,
+        const res = await lingkeApi.orderTeacherOrderList({
+          pageIndex: 1,
+          pageSize: 9999,
           status: ''
         })
         if (res && res.code === 200) {

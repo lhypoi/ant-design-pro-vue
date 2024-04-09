@@ -30,13 +30,12 @@
 </template>
 
 <script>
-import T from 'ant-design-vue/es/table/Table'
 import { baseMixin } from '@/store/app-mixin'
 
 export default {
   name: 'KTable',
   mixins: [baseMixin],
-  props: Object.assign({}, T.props, {
+  props: {
     data: {
       type: Function,
       default: () => ({})
@@ -47,9 +46,10 @@ export default {
     },
     dataRows: {
       type: Array,
-      required: false
+      required: false,
+      default: () => null
     }
-  }),
+  },
   data () {
     return {
       shouldUpdate: false,
@@ -108,11 +108,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.KTable {
-  :deep(.el-table) {
-    th.el-table__cell {
-      background: #f5f7fa;
-    }
-  }
-}
+// .KTable {
+//   :deep(.el-table) {
+//     th.el-table__cell {
+//       background: #f5f7fa;
+//     }
+//   }
+// }
 </style>
