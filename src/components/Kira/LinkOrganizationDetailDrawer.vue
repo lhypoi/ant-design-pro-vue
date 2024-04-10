@@ -316,22 +316,10 @@ export default {
           if (res && res.code === 200) {
             const detailData = res.data
             this.detailData = {
-              userId: parseInt(detailId),
-              name: detailData.name,
-              legalPerson: detailData.legalPerson,
-              legalPhoneNumber: detailData.legalPhoneNumber,
-              legalSmsCode: '',
-              idNo: detailData.idNo,
+              ...detailData,
               cardFront: detailData.cardFront ? this.parseFileNamesToObjs([detailData.cardFront]) : [],
               cardBack: detailData.cardBack ? this.parseFileNamesToObjs([detailData.cardBack]) : [],
-              businessLicense: this.parseFileNamesToObjs(detailData.businessLicenseList || []),
-              status: detailData.status,
-              remark: detailData.remark,
-              nickName: detailData.nickName,
-              email: detailData.email,
-              openId: detailData.openId,
-              wechatName: detailData.wechatName,
-              createTime: detailData.createTime
+              businessLicense: this.parseFileNamesToObjs(detailData.businessLicenseList || [])
             }
           } else {
             throw new Error(res.message || '加载失败')

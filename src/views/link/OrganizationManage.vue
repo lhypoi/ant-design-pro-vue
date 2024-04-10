@@ -69,7 +69,7 @@
           <template v-slot="scope">
             <div class="flex items-center justify-center gap-x-3">
               <div class="text-blue-400 cursor-pointer" @click="() => handleToDetail(scope.row)">详情</div>
-              <div class="text-blue-400 cursor-pointer" @click="$refs.LinkOrganizationDetailDrawer.handleShowAdminAuditOrganizationModal(scope.row)">审核</div>
+              <div v-if="scope.row['status'] === '1'" class="text-blue-400 cursor-pointer" @click="$refs.LinkOrganizationDetailDrawer.handleShowAdminAuditOrganizationModal(scope.row)">审核</div>
             </div>
           </template>
         </el-table-column>
