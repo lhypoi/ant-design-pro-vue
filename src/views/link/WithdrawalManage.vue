@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col bg-white rounded-lg shadow-sm p-6 my-6">
     <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
       <a-form-model
         :model="formData"
@@ -19,7 +19,7 @@
             </a-range-picker>
           </a-form-model-item>
           <a-button
-            class="h-11 rounded-md text-base"
+            class="rounded-md"
             type="primary"
             icon="search"
             size="large"
@@ -28,7 +28,7 @@
             查询
           </a-button>
           <a-button
-            class="h-11 rounded-md text-base"
+            class="rounded-md"
             type="primary"
             icon="search"
             size="large"

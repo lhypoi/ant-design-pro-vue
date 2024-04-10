@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col bg-white rounded-lg shadow-sm p-6 my-6">
     <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
       <a-form-model
         :model="formData"
@@ -41,7 +41,7 @@
             </a-select>
           </a-form-model-item>
           <a-button
-            class="h-11 rounded-md text-base"
+            class="rounded-md"
             type="primary"
             icon="search"
             size="large"
@@ -50,7 +50,7 @@
             查询
           </a-button>
           <a-button
-            class="h-11 rounded-md text-base"
+            class="rounded-md"
             type="primary"
             icon="search"
             size="large"
@@ -89,14 +89,8 @@
         </el-table-column>
         <el-table-column label="操作" :align="'center'" width="120" fixed="right">
           <template v-slot="scope">
-            <div class="flex flex-col items-center justify-center gap-y-3">
-              <a-button
-                class="h-7 rounded-md"
-                type="primary"
-                @click="handleToDetail(scope.row)"
-              >
-                查看详情
-              </a-button>
+            <div class="flex items-center justify-center gap-x-3">
+              <div class="text-blue-400 cursor-pointer" @click="() => handleToDetail(scope.row)">详情</div>
             </div>
           </template>
         </el-table-column>
