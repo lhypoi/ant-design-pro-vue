@@ -83,26 +83,28 @@
               登录
             </a-button>
           </div>
-          <div class="flex justify-center text-sm pt-7">
-            <div class="text-gray-400">没有账号？</div>
-            <div class="text-blue-400 cursor-pointer" @click="handleToRegister">前往注册</div>
-          </div>
-          <div class="pt-6 flex flex-col items-center">
-            <div class="text-sm text-gray-500 pb-4">—————— 其他登录方式 ——————</div>
-            <a-icon type="wechat" class="text-2xl text-green-400 bg-gray-200 rounded-full cursor-pointer p-2" @click="handleWxLogin" />
-          </div>
-          <div class="flex justify-center items-center flex-wrap gap-y-1 whitespace-nowrap text-sm leading-none pt-8">
-            <a-icon
-              type="check-circle"
-              theme="filled"
-              class="cursor-pointer text-lg"
-              :class="isAgree ? 'text-blue-600' : 'text-gray-400'"
-              @click="isAgree = !isAgree"
-            />
-            <div class="text-gray-400 ml-2">已阅读并同意</div>
-            <div class="text-blue-400 cursor-pointer">《服务协议》</div>
-            <div class="text-blue-400 cursor-pointer">《隐私协议》</div>
-          </div>
+          <template v-if="userType !== USER_TYPE.ADMIN" >
+            <div class="flex justify-center text-sm pt-7">
+              <div class="text-gray-400">没有账号？</div>
+              <div class="text-blue-400 cursor-pointer" @click="handleToRegister">前往注册</div>
+            </div>
+            <div class="pt-6 flex flex-col items-center">
+              <div class="text-sm text-gray-500 pb-4">—————— 其他登录方式 ——————</div>
+              <a-icon type="wechat" class="text-2xl text-green-400 bg-gray-200 rounded-full cursor-pointer p-2" @click="handleWxLogin" />
+            </div>
+            <div class="flex justify-center items-center flex-wrap gap-y-1 whitespace-nowrap text-sm leading-none pt-8">
+              <a-icon
+                type="check-circle"
+                theme="filled"
+                class="cursor-pointer text-lg"
+                :class="isAgree ? 'text-blue-600' : 'text-gray-400'"
+                @click="isAgree = !isAgree"
+              />
+              <div class="text-gray-400 ml-2">已阅读并同意</div>
+              <div class="text-blue-400 cursor-pointer">《服务协议》</div>
+              <div class="text-blue-400 cursor-pointer">《隐私协议》</div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -118,14 +120,16 @@ import lingkeApi from '@/api/lingke'
 
 const FORM_RULES = {
   email: [
-    { pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/, message: '请输入有效的邮箱地址', required: true }
+    {
+      required: true,
+      message: '请输入邮箱地址'
+    }
   ],
   phone: [{ pattern: /^1[3456789]\d{9}$/, message: '请输入有效的手机号码', required: true }],
   emailOrPhone: [
     {
-      pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$|^1[3456789]\d{9}$/,
-      message: '请输入有效的邮箱地址或手机号码',
-      required: true
+      required: true,
+      message: '请输入邮箱地址或手机号码'
     }
   ],
   passWord: [
@@ -228,7 +232,8 @@ export default {
     formTitle() {
       return {
         [USER_TYPE.TEACHER]: '登录领克数云教师账户',
-        [USER_TYPE.ORGANIZATION]: '登录领克数云机构账户'
+        [USER_TYPE.ORGANIZATION]: '登录领克数云企业账户',
+        [USER_TYPE.ADMIN]: '登录领克数云管理员账户'
       }[this.userType]
     }
   },
@@ -241,7 +246,8 @@ export default {
     initTabList() {
       this.loginFormTabList = {
         [USER_TYPE.TEACHER]: [LOGIN_FORM_TYPE.emailPwd, LOGIN_FORM_TYPE.emailSms],
-        [USER_TYPE.ORGANIZATION]: [LOGIN_FORM_TYPE.emailOrPhonePwd, LOGIN_FORM_TYPE.phoneSms]
+        [USER_TYPE.ORGANIZATION]: [LOGIN_FORM_TYPE.emailOrPhonePwd, LOGIN_FORM_TYPE.phoneSms],
+        [USER_TYPE.ADMIN]: [LOGIN_FORM_TYPE.emailOrPhonePwd]
       }[this.userType]
       this.curLoginType = this.loginFormTabList[0].key
       const [formData, formRules] = this.loginFormTabList.reduce(
@@ -319,7 +325,7 @@ export default {
       this.submitting = false
     },
     checkIsAgree() {
-      if (!this.isAgree) {
+      if (this.userType !== USER_TYPE.ADMIN && !this.isAgree) {
         this.$message.error('请先阅读并同意《服务协议》和《隐私协议》')
         return false
       }

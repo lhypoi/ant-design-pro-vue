@@ -12,8 +12,8 @@
               <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'tLogin' })">教师登录</a-button>
             </template>
             <template v-if="userType === USER_TYPE.ORGANIZATION">
-              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oRegister' })">机构注册</a-button>
-              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oLogin' })">机构登录</a-button>
+              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oRegister' })">企业注册</a-button>
+              <a-button size="large" class="rounded-md w-36 h-12 text-xl" @click="$router.push({ name: 'oLogin' })">企业登录</a-button>
             </template>
           </div>
         </div>

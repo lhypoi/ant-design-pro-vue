@@ -1,6 +1,7 @@
 export const USER_TYPE = {
   TEACHER: 'teacher',
-  ORGANIZATION: 'organization'
+  ORGANIZATION: 'organization',
+  ADMIN: 'admin'
 }
 
 export const WX_LOGIN_STATE = {

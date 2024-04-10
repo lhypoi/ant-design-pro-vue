@@ -19,7 +19,6 @@
           @click="handleToTab(tab)"
         >
           <div>
-            <!-- <a-icon :type="tab.icon" theme="filled" class="text-inherit" /> -->
             <i :class="tab.icon" class="text-inherit"></i>
           </div>
           <div>
@@ -200,14 +199,14 @@
                 v-else-if="formData[curTabKey].certificationStatus === '4'"
                 status="success"
                 title="认证成功"
-                sub-title="你已完成实名认证"
+                sub-title="已完成实名认证"
               />
             </div>
             <a-form-model-item prop="certificationName" label="姓名">
               <a-input v-model="formData[curTabKey].certificationName" placeholder="请输入真实姓名" size="large" />
             </a-form-model-item>
-            <a-form-model-item prop="certificationPhone" label="手机号">
-              <a-input v-model="formData[curTabKey].certificationPhone" placeholder="请输入手机号" size="large" />
+            <a-form-model-item prop="certificationPhone" label="手机号码">
+              <a-input v-model="formData[curTabKey].certificationPhone" placeholder="请输入手机号码" size="large" />
             </a-form-model-item>
             <a-form-model-item prop="certificationSmsCode" label="验证码" ref="certificationSmsCode">
               <div class="flex flex-row gap-3">
@@ -263,17 +262,17 @@
               <span class="cursor-pointer text-blue-400" @click="handleToTab({ key: '3' })">实名认证</span> 中完善）：
             </div>
             <a-form-model-item label="持卡人姓名">
-              <a-input v-model="formData['4'].certificationName" placeholder="无" size="large" disabled />
+              <a-input v-model="formData[curTabKey].certificationName" placeholder="无" size="large" disabled />
             </a-form-model-item>
             <a-form-model-item label="身份证号码">
-              <a-input v-model="formData['4'].certificationIdNo" placeholder="无" size="large" disabled />
+              <a-input v-model="formData[curTabKey].certificationIdNo" placeholder="无" size="large" disabled />
             </a-form-model-item>
             <div class="text-base text-gray-950 font-bold pb-2">银行卡：</div>
             <a-form-model-item prop="bankBranch" label="开户行支行">
-              <a-input v-model="formData['4'].bankBranch" placeholder="请输入开户行支行" size="large" />
+              <a-input v-model="formData[curTabKey].bankBranch" placeholder="请输入开户行支行" size="large" />
             </a-form-model-item>
             <a-form-model-item prop="bankNum" label="银行卡号码">
-              <a-input v-model="formData['4'].bankNum" placeholder="请输入银行卡号码" size="large" />
+              <a-input v-model="formData[curTabKey].bankNum" placeholder="请输入银行卡号码" size="large" />
             </a-form-model-item>
           </template>
           <template v-if="curTabKey === '5'">
@@ -490,12 +489,12 @@ export default {
         {
           title: '收款信息',
           key: '4',
-          icon: 'el-icon-money'
+          icon: 'el-icon-bank-card'
         },
         {
           title: '账号设置',
           key: '5',
-          icon: 'el-icon-s-tools',
+          icon: 'el-icon-setting',
           subFormList: [
             {
               title: '邮箱',
@@ -514,7 +513,7 @@ export default {
         {
           title: '消息提醒',
           key: '6',
-          icon: 'el-icon-bell'
+          icon: 'el-icon-message'
         }
       ],
       formData: {
@@ -649,7 +648,7 @@ export default {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.trim()) {
-                    callback(new Error('请输入手机号'))
+                    callback(new Error('请输入手机号码'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -961,9 +960,29 @@ export default {
         this.$message.error('填写信息不符合要求，请检查')
         return
       }
+      let defaultMessageAction = '保存'
+      if (!subFormKey) {
+        switch (this.curTabKey) {
+          case '3':
+            defaultMessageAction = '提交'
+            break
+          case '4':
+            defaultMessageAction = '绑定'
+            break
+        }
+      } else {
+        switch (subFormKey) {
+          case '51':
+            defaultMessageAction = '绑定'
+            break
+          case '53':
+            defaultMessageAction = '修改'
+            break
+        }
+      }
       this.$confirm({
         title: '提示',
-        content: `确定保存吗?`,
+        content: `确定${defaultMessageAction}吗?`,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
@@ -973,7 +992,6 @@ export default {
               userId: this.userInfo.userId
             }
             let res = null
-            let defaultMessageAction = '保存'
             if (!subFormKey) {
               const formData = this.formData[this.curTabKey]
               switch (this.curTabKey) {
@@ -1023,7 +1041,6 @@ export default {
                     email: formData.email,
                     smsCode: formData.emailCode
                   })
-                  defaultMessageAction = '绑定'
                   res = await lingkeApi.teacherChangeEmail(params)
                   break
                 case '52':
@@ -1035,7 +1052,6 @@ export default {
                     passWord: formData.newPassWord,
                     rePassWord: formData.confirmPassWord
                   })
-                  defaultMessageAction = '修改'
                   res = await lingkeApi.teacherChangePasswd(params)
                   break
                 default:

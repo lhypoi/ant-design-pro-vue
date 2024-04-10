@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x px-3 py-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x py-6">
     <div v-loading="dataTopLoading" class="bg-white shadow-sm rounded-lg p-5">
       <el-carousel :interval="4000" type="card" height="200px">
         <el-carousel-item v-for="(item, index) in dataTopList" :key="index">

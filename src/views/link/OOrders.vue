@@ -1,14 +1,14 @@
 <template>
-  <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col bg-white rounded-lg shadow-sm p-6 my-6">
     <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
       <a-form-model
         :model="formData"
       >
         <div class="flex flex-row items-start gap-4 overflow-x-auto">
-          <a-form-model-item key="id" prop="id" class="flex-auto min-w-[170px]">
+          <a-form-model-item key="id" prop="id" class="flex-auto min-w-[140px]">
             <a-input
               v-model="formData.id"
-              placeholder="请输入订单号"
+              placeholder="请输入委托ID"
               size="large"
               allowClear
             />
@@ -18,23 +18,23 @@
               <a-icon slot="suffixIcon" type="calendar" />
             </a-range-picker>
           </a-form-model-item>
-          <a-form-model-item key="type" prop="type" class="min-w-[240px]">
-            <a-select v-model="formData.type" size="large" placeholder="请选择订单类型" allowClear>
+          <a-form-model-item key="type" prop="type" class="min-w-[180px]">
+            <a-select v-model="formData.type" size="large" placeholder="请选择委托类型" allowClear>
               <a-select-option v-for="item in options['type']" :key="item.key" :value="item.key">
                 {{ item.value }}
               </a-select-option>
             </a-select>
           </a-form-model-item>
-          <a-form-model-item key="teacher" prop="teacher" class="flex-auto min-w-[170px]">
+          <a-form-model-item key="teacher" prop="teacher" class="flex-auto min-w-[200px]">
             <a-input
               v-model="formData.teacher"
-              placeholder="请输入接单人名称/ID"
+              placeholder="请输入委托人名称/ID"
               size="large"
               allowClear
             />
           </a-form-model-item>
           <a-button
-            class="h-11 rounded-md text-base"
+            class="rounded-md"
             type="primary"
             icon="search"
             size="large"
@@ -42,16 +42,25 @@
           >
             查询
           </a-button>
+          <a-button
+            class="rounded-md"
+            type="primary"
+            icon="edit"
+            size="large"
+            @click="$refs.LinkOrderModal.handleOpenLinkOrderModal()"
+          >
+            发布委托
+          </a-button>
         </div>
       </a-form-model>
     </div>
-    <div class="flex flex-wrap items-end gap-3 min-h-[56px] pt-2 pb-3" v-loading="tabParams.loading">
+    <div class="flex flex-wrap items-end gap-3 min-h-[60px] py-3" v-loading="tabParams.loading">
       <div
         v-for="tab in tabParams.tabList"
         :key="tab.key"
         class="flex whitespace-nowrap items-center justify-center text-sm rounded-lg px-4 py-2 cursor-pointer transition duration-300 ease-in-out"
         :class="[
-          formData.status === tab.key ? 'bg-blue-600 text-white' : 'bg-slate-100 hover:bg-blue-400 hover:text-white text-slate-400'
+          formData.status === tab.key ? 'bg-[#2192EF] text-white' : 'bg-[#cecece] hover:bg-blue-400 text-white'
         ]"
         @click="handleTabClick(tab)"
       >
@@ -83,37 +92,11 @@
             <div>{{ scope.row[col.key] }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" :align="'center'" width="120" fixed="right">
+        <el-table-column label="操作" :align="'center'" width="160" fixed="right">
           <template v-slot="scope">
-            <div class="flex flex-col items-center justify-center gap-y-3">
-              <a-button
-                class="h-7 rounded-md"
-                type="primary"
-                @click="$refs.LinkOrderModal.handleOpenLinkOrderModal(scope.row['id'])"
-              >
-                编辑
-              </a-button>
-              <a-button
-                class="h-7 rounded-md"
-                type="primary"
-                @click="handleToDetail(scope.row)"
-              >
-                查看详情
-              </a-button>
-              <a-button
-                class="h-7 rounded-md"
-                type="danger"
-                @click="$refs.LinkOrderDetailDrawer.handleCancelTask(scope.row)"
-              >
-                撤销委托
-              </a-button>
-              <a-button
-                class="success-btn h-7 rounded-md"
-                type="primary"
-                @click="$refs.LinkOrderDetailDrawer.handlePayTask(scope.row)"
-              >
-                支付
-              </a-button>
+            <div class="flex items-center justify-center gap-x-3">
+              <div class="text-blue-400 cursor-pointer" @click="$refs.LinkOrderModal.handleOpenLinkOrderModal()">编辑</div>
+              <div class="text-blue-400 cursor-pointer" @click="() => handleToDetail(scope.row)">详情</div>
             </div>
           </template>
         </el-table-column>
@@ -167,68 +150,53 @@ export default {
       tableCols: [
         {
           key: 'id',
-          label: '订单号',
+          label: '委托ID',
           width: 160
         },
         {
-          key: 'organizationName',
-          label: '下单人',
-          width: 160
-        },
-        {
-          key: 'organizationId',
-          label: '下单人ID',
-          width: 160
-        },
-        {
-          key: 'createTime',
-          label: '下单时间',
+          key: 'task',
+          label: '委托名称',
           width: 160
         },
         {
           key: 'typeName',
-          label: '订单类型',
+          label: '委托类型',
           width: 120
         },
         {
-          key: 'task',
-          label: '需求描述',
+          key: 'courseMode',
+          label: '课程模式',
           width: 120
         },
         {
-          key: 'updateTime',
-          label: '交付时间/辅导时间',
-          width: 160
-        },
-        {
-          key: 'unitPrice',
-          label: '委托单价',
-          width: 120
-        },
-        {
-          key: 'duration',
-          label: '辅导时间(小时)',
+          key: 'courseUnitTime',
+          label: '课程时长',
           width: 120
         },
         {
           key: 'price',
-          label: '委托价格',
+          label: '价格',
           width: 120
         },
         {
           key: 'teacherId',
-          label: '接单人ID',
+          label: '委托对象ID',
           width: 120
         },
         {
           key: 'teacherName',
-          label: '接单人',
+          label: '委托对象',
           width: 120
         },
         {
           key: 'statusName',
-          label: '委托状态',
+          label: '状态',
           width: 120
+        },
+        {
+          key: 'createTime',
+          label: '创建时间',
+          width: 160
         }
       ]
     }
@@ -280,9 +248,9 @@ export default {
             },
             ...(res.data.tabList || []).map(tab => {
               return {
-                key: tab.Status,
-                value: tab.Name,
-                num: tab.Num
+                key: tab.status,
+                value: tab.name,
+                num: tab.num
               }
             })
           ]

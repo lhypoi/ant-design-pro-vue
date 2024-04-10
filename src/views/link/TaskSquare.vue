@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x px-3 py-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x py-6">
     <div class="relative h-[340px] z-0 rounded-2xl overflow-hidden">
       <img src="@/assets/link/t3.webp" alt="" srcset="" class="absolute w-full h-full -z-10" />
       <div class="h-full flex flex-col px-8 pt-16 pb-4">

@@ -45,8 +45,8 @@
             <a-form-model-item key="files" prop="files" label="相关资料">
               <a-upload-dragger
                 class="dragUploader"
-                :multiple="true"
-                name="files"
+                :multiple="false"
+                name="fileList"
                 :action="lingkeApi.uploadUrl"
                 :fileList="linkOrderModalParams.formData.files"
                 @change="info => handleFormFileChange(info, linkOrderModalParams.formData, 'files', true)"
@@ -499,8 +499,8 @@ export default {
           type: this.linkOrderModalParams.formData.type,
           task: this.linkOrderModalParams.formData.task,
           detail: this.linkOrderModalParams.formData.detail,
-          unitPrice: this.linkOrderModalParams.formData.unitPrice,
-          duration: this.linkOrderModalParams.formData.duration,
+          unitPrice: this.linkOrderModalParams.formData.courseUnitPrice,
+          duration: this.linkOrderModalParams.formData.courseUnitTime,
           files: this.linkOrderModalParams.formData.files.filter(file => file.downloadUrl).map(file => file.downloadUrl).join(',') || undefined,
           teacherId: this.linkOrderModalParams.formData.teacherId || undefined
         }

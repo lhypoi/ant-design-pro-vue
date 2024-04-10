@@ -158,7 +158,7 @@ export function orderCreate (parameter) {
 
 export function orderOrganizationOrderList (parameter) {
   return request({
-    url: url + '/order/organization/orderList',
+    url: url + '/order/organization/getList',
     method: 'post',
     data: parameter
   })
@@ -182,7 +182,7 @@ export function orderTeacherOrderList (parameter) {
 
 export function orderOrganizationOrderTotal (parameter) {
   return request({
-    url: url + '/order/organization/orderTotal',
+    url: url + '/order/organization/getTotal',
     method: 'post',
     data: parameter
   })

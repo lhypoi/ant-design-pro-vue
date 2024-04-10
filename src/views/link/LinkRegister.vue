@@ -217,7 +217,7 @@ export default {
     formTitle() {
       return {
         [USER_TYPE.TEACHER]: '注册领克数云教师账户',
-        [USER_TYPE.ORGANIZATION]: '注册领克数云机构账户'
+        [USER_TYPE.ORGANIZATION]: '注册领克数云企业账户'
       }[this.userType]
     }
   },

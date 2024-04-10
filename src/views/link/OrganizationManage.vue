@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex-auto flex flex-col bg-white rounded-3xl p-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col bg-white rounded-lg shadow-sm p-6 my-6">
     <div class="link-style-form w-full link-style-form-sm pb-5 sm:pb-0">
       <a-form-model
         :model="formData"
@@ -8,7 +8,7 @@
           <a-form-model-item key="userId" prop="userId" class="flex-auto min-w-[170px]">
             <a-input
               v-model="formData.userId"
-              placeholder="请输入用户ID"
+              placeholder="请输入企业ID"
               size="large"
               allowClear
             />
@@ -16,13 +16,13 @@
           <a-form-model-item key="name" prop="name" class="flex-auto min-w-[170px]">
             <a-input
               v-model="formData.name"
-              placeholder="请输入机构名称"
+              placeholder="请输入企业名称"
               size="large"
               allowClear
             />
           </a-form-model-item>
           <a-button
-            class="h-11 rounded-md text-base"
+            class="rounded-md"
             type="primary"
             icon="search"
             size="large"
@@ -56,27 +56,20 @@
           :min-width="col.minWidth"
         >
           <template v-if="!col.type" v-slot="scope">
-            <div v-if="col.key === 'status'">{{ `${ scope.row['statusName'] }${ scope.row['status'] === '3' ? '，' + scope.row['remark'] : '' }` }}</div>
+            <div v-if="col.key === 'status'">
+              <a-tag v-if="scope.row[col.key] === '1'" color="blue" class="m-0">待审核</a-tag>
+              <a-tag v-else-if="scope.row[col.key] === '2'" color="green" class="m-0">已认证</a-tag>
+              <a-tag v-else-if="scope.row[col.key] === '3'" color="red" class="m-0">认证不通过</a-tag>
+              <a-tag v-else-if="!scope.row[col.key]" class="m-0">未认证</a-tag>
+            </div>
             <div v-else>{{ scope.row[col.key] }}</div>
           </template>
         </el-table-column>
         <el-table-column label="操作" :align="'center'" width="120" fixed="right">
           <template v-slot="scope">
-            <div class="flex flex-col items-center justify-center gap-y-3">
-              <a-button
-                class="h-7 rounded-md"
-                type="primary"
-                @click="handleToDetail(scope.row)"
-              >
-                查看详情
-              </a-button>
-              <a-button
-                class="success-btn h-7 rounded-md"
-                type="primary"
-                @click="$refs.LinkOrganizationDetailDrawer.handleShowAdminAuditOrganizationModal(scope.row)"
-              >
-                审核
-              </a-button>
+            <div class="flex items-center justify-center gap-x-3">
+              <div class="text-blue-400 cursor-pointer" @click="() => handleToDetail(scope.row)">详情</div>
+              <div class="text-blue-400 cursor-pointer" @click="$refs.LinkOrganizationDetailDrawer.handleShowAdminAuditOrganizationModal(scope.row)">审核</div>
             </div>
           </template>
         </el-table-column>
@@ -114,33 +107,28 @@ export default {
       tableCols: [
         {
           key: 'userId',
-          label: '用户ID',
-          width: 160
-        },
-        {
-          key: 'phoneNumber',
-          label: '手机号码',
-          width: 160
-        },
-        {
-          key: 'typeName',
-          label: '机构类型',
+          label: '企业ID',
           width: 160
         },
         {
           key: 'name',
-          label: '机构名称',
+          label: '企业名称',
           minWidth: 160
         },
         {
-          key: 'legalPerson',
-          label: '法人',
-          width: 120
+          key: 'nickName',
+          label: '简称',
+          minWidth: 160
         },
         {
           key: 'status',
-          label: '认证状态',
-          width: 200
+          label: '状态',
+          width: 120
+        },
+        {
+          key: 'createTime',
+          label: '注册时间',
+          width: 160
         }
       ]
     }

@@ -182,7 +182,7 @@ const asyncRouterMapAll = {
           path: '/organization-manage',
           name: 'OrganizationManage',
           component: () => import('@/views/link/OrganizationManage'),
-          meta: { title: '机构管理', icon: 'appstore', permission: [3] }
+          meta: { title: '企业管理', icon: 'appstore', permission: [3] }
         },
         {
           path: '/teacher-manage',
@@ -223,10 +223,24 @@ const asyncRouterMapAll = {
           publiclyAccessible: true,
           component: () => import('@/views/link/LinkLogin'),
           meta: {
-            title: '机构登录',
+            title: '企业登录',
             userType: USER_TYPE.ORGANIZATION,
             routerBeforeEachFun: () => {
               storage.set('defaultLoginRoute', 'oLogin')
+            }
+          },
+          hidden: true
+        },
+        {
+          path: '/admin-login',
+          name: 'adminLogin',
+          publiclyAccessible: true,
+          component: () => import('@/views/link/LinkLogin'),
+          meta: {
+            title: '管理员登录',
+            userType: USER_TYPE.ADMIN,
+            routerBeforeEachFun: () => {
+              storage.set('defaultLoginRoute', 'adminLogin')
             }
           },
           hidden: true
@@ -251,7 +265,7 @@ const asyncRouterMapAll = {
           publiclyAccessible: true,
           component: () => import('@/views/link/LinkRegister'),
           meta: {
-            title: '机构注册',
+            title: '企业注册',
             userType: USER_TYPE.ORGANIZATION,
             routerBeforeEachFun: () => {
               storage.set('defaultLoginRoute', 'oLogin')
@@ -274,20 +288,7 @@ const asyncRouterMapAll = {
       name: 'registerPreOrganization',
       publiclyAccessible: true,
       component: () => import('@/views/link/RegisterPre'),
-      meta: { title: '机构介绍', userType: USER_TYPE.ORGANIZATION },
-      hidden: true
-    },
-    {
-      path: '/admin-login',
-      name: 'adminLogin',
-      publiclyAccessible: true,
-      component: () => import('@/views/link/TLogin'),
-      meta: {
-        title: '管理员登录',
-        routerBeforeEachFun: () => {
-          storage.set('defaultLoginRoute', 'adminLogin')
-        }
-      },
+      meta: { title: '企业介绍', userType: USER_TYPE.ORGANIZATION },
       hidden: true
     },
     {

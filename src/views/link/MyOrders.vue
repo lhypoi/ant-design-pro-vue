@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x px-3 py-6">
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col rounded-3x py-6">
     <div class="flex flex-row flex-wrap gap-y-4 gap-x-5 px-4 py-6 bg-white rounded-lg shadow-sm" v-loading="teacherAccountParams.loading">
       <div class="flex gap-2 sm:flex-col items-center">
         <div class="w-20 h-20 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">

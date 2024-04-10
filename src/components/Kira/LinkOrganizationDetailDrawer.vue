@@ -1,233 +1,243 @@
 <template>
   <div class="w-0 h-0 overflow-hidden absolute">
     <a-drawer
+      v-if="!!detailId"
       placement="right"
       :closable="false"
-      :visible="!!detailId"
+      :visible="true"
       :get-container="() => $parent.$el"
       :wrap-style="{ position: 'absolute' }"
       width="100%"
     >
       <div>
-        <div class="pb-6">
+        <div class="pb-2">
           <a-icon
             type="left-circle"
             theme="filled"
-            class="cursor-pointer text-blue-600 hover:text-blue-400 text-4xl"
+            class="cursor-pointer text-blue-600 hover:text-blue-400 text-3xl"
             @click="handleBack"
           />
         </div>
-        <div class="text-2xl font-bold text-slate-900">机构详情</div>
+        <div class="text-xl font-bold text-slate-900">企业详情</div>
         <div class="text-sm text-slate-400">Organization details</div>
         <div v-if="!detailData" class="pt-8">
           <a-skeleton avatar active :paragraph="{ rows: 4 }" />
         </div>
         <div
           v-else
-          class="pt-8"
+          class="pt-6"
           v-loading="detailDataLoading"
         >
-          <div class="link-style-form">
-            <a-form-model
-              :model="detailData"
-              :label-col="{ span: 5 }"
-              :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
-            >
-              <a-form-model-item prop="type" label="机构类型">
-                <a-select
-                  allowClear
-                  showArrow
-                  size="large"
-                  placeholder="请选择机构类型"
-                  v-model="detailData.type"
-                  :disabled="true"
-                >
-                  <a-select-option v-for="(label, key) in organizationTypeDict" :key="key" :value="key" class="pl-5">
-                    {{ label }}
-                  </a-select-option>
-                </a-select>
-              </a-form-model-item>
-              <a-form-model-item prop="name" label="机构名称">
-                <a-input
-                  v-model="detailData.name"
-                  placeholder="请输入机构名称"
-                  :disabled="true"
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3">基础信息</div>
+          <div class="flex flex-wrap gap-y-2">
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">企业ID</div>
+              <div class="text-gray-950">{{ detailData.userId }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">简称</div>
+              <div class="text-gray-950">{{ detailData.nickName }}</div>
+            </div>
+          </div>
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3 mt-6">企业认证</div>
+          <div class="flex flex-wrap gap-y-2">
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">认证状态</div>
+              <div>
+                <a-tag v-if="detailData.status === '1'" color="blue" class="m-0">待审核</a-tag>
+                <a-tag v-else-if="detailData.status === '2'" color="green" class="m-0">已认证</a-tag>
+                <a-tag v-else-if="detailData.status === '3'" color="red" class="m-0">认证不通过</a-tag>
+                <a-tag v-else-if="!detailData.status" class="m-0">未认证</a-tag>
+              </div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">企业全称</div>
+              <div class="text-gray-950">{{ detailData.name }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">法人姓名</div>
+              <div class="text-gray-950">{{ detailData.legalPerson }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-24">法人手机号码</div>
+              <div class="text-gray-950">{{ detailData.legalPhoneNumber }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-28">法人身份证号码</div>
+              <div class="text-gray-950">{{ detailData.idNo }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-28">法人身份证正面</div>
+              <div>
+                <el-image
+                  v-if="detailData.cardFront[0]"
+                  class="w-28 h-auto"
+                  :src="detailData.cardFront[0].downloadUrl"
+                  :preview-src-list="[
+                    detailData.cardFront[0].downloadUrl
+                  ]"
                 />
-              </a-form-model-item>
-              <a-form-model-item prop="legalPerson" label="法人">
-                <a-input
-                  v-model="detailData.legalPerson"
-                  placeholder="请输入法人"
-                  :disabled="true"
+                <div v-else>-</div>
+              </div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-28">法人身份证反面</div>
+              <div>
+                <el-image
+                  v-if="detailData.cardBack[0]"
+                  class="w-28 h-auto"
+                  :src="detailData.cardBack[0].downloadUrl"
+                  :preview-src-list="[
+                    detailData.cardBack[0].downloadUrl
+                  ]"
                 />
-              </a-form-model-item>
-              <a-form-model-item prop="idCard" label="法人身份证">
-                <div class="h-0 overflow-hidden">
-                  <a-upload-dragger
-                    class="dragUploader"
-                    :multiple="true"
-                    name="fileList"
-                    :action="lingkeApi.uploadUrl"
-                    :fileList="detailData.idCard"
-                    @preview="handleFileDownload"
-                  >
-                    <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
-                    </div>
-                  </a-upload-dragger>
-                </div>
-                <div class="flex flex-row items-start gap-8">
-                  <div
-                    v-if="detailData.idCard[0]"
-                    class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2"
-                  >
-                    <el-image
-                      v-if="detailData.idCard[0].downloadUrl"
-                      class="w-28 h-auto"
-                      :src="detailData.idCard[0].downloadUrl"
-                      :preview-src-list="[
-                        detailData.idCard[0].downloadUrl
-                      ]"
-                    >
-                      <a-spin slot="placeholder" class="w-28 pt-4" />
-                    </el-image>
-                    <a-spin v-else class="w-28 pt-4" />
-                  </div>
-                  <div
-                    v-else
-                    class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md"
-                  >
-                    无
-                  </div>
-                </div>
-              </a-form-model-item>
-              <a-form-model-item prop="businessLicense" label="营业执照">
-                <div class="h-0 overflow-hidden">
-                  <a-upload-dragger
-                    class="dragUploader"
-                    :multiple="true"
-                    name="fileList"
-                    :action="lingkeApi.uploadUrl"
-                    :fileList="detailData.businessLicense"
-                    @preview="handleFileDownload"
-                  >
-                    <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
-                    </div>
-                  </a-upload-dragger>
-                </div>
-                <div class="flex flex-row items-start gap-8">
-                  <div
-                    v-if="detailData.businessLicense[0]"
-                    class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2"
-                  >
-                    <el-image
-                      v-if="detailData.businessLicense[0].downloadUrl"
-                      class="w-28 h-auto"
-                      :src="detailData.businessLicense[0].downloadUrl"
-                      :preview-src-list="[
-                        detailData.businessLicense[0].downloadUrl
-                      ]"
-                    >
-                      <a-spin slot="placeholder" class="w-28 pt-4" />
-                    </el-image>
-                    <a-spin v-else class="w-28 pt-4" />
-                  </div>
-                  <div
-                    v-else
-                    class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md"
-                  >
-                    无
-                  </div>
-                </div>
-              </a-form-model-item>
-              <a-form-model-item prop="name" label="审核状态">
-                <a-select
-                  allowClear
-                  showArrow
-                  size="large"
-                  placeholder="请选择审核状态"
-                  v-model="detailData.status"
-                >
-                  <a-select-option v-for="(label, key) in organizationStatusDict" :key="key" :value="key" class="pl-5">
-                    {{ label }}
-                  </a-select-option>
-                </a-select>
-                <div v-if="detailData.status === '3'" class="pt-2">
-                  <a-textarea
-                    v-model="detailData.remark"
-                    :rows="5"
-                    placeholder="请描述不通过原因"
-                  />
-                </div>
-              </a-form-model-item>
-              <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
-                <div class="pt-2 flex flex-row gap-20">
-                  <a-button
-                    class="h-11 w-40 rounded-md text-base"
-                    type="primary"
-                    size="large"
-                    @click="handleAdminAuditOrganization"
-                  >
-                    提交
-                  </a-button>
-                </div>
-              </a-form-model-item>
-            </a-form-model>
+                <div v-else>-</div>
+              </div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">营业执照</div>
+              <div>
+                <el-image
+                  v-if="detailData.businessLicense[0]"
+                  class="w-28 h-auto"
+                  :src="detailData.businessLicense[0].downloadUrl"
+                  :preview-src-list="[
+                    detailData.businessLicense[0].downloadUrl
+                  ]"
+                />
+                <div v-else>-</div>
+              </div>
+            </div>
+          </div>
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3 mt-6">账号信息</div>
+          <div class="flex flex-wrap gap-y-2">
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">邮箱</div>
+              <div class="text-gray-950">{{ detailData.email }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">手机号码</div>
+              <div class="text-gray-950">{{ detailData.legalPhoneNumber }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">微信</div>
+              <div class="text-gray-950">{{ detailData.wechatName }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">注册时间</div>
+              <div class="text-gray-950">{{ detailData.createTime }}</div>
+            </div>
           </div>
         </div>
       </div>
     </a-drawer>
     <a-modal
       v-if="adminAuditOrganizationModalParams.show"
-      :title="'机构认证审核'"
+      :title="'企业认证审核'"
       :visible="true"
       :footer="null"
       :maskClosable="false"
-      :width="isMobile ? '90vw' : '640px'"
+      :width="isMobile ? '90vw' : '1000px'"
       @cancel="adminAuditOrganizationModalParams.show = false"
     >
       <div class="" v-loading="detailDataLoading">
         <div v-if="!detailData" class="pb-4">
           <a-skeleton avatar active :paragraph="{ rows: 4 }" />
         </div>
-        <div v-else class="link-style-form">
+        <div v-else class="link-style-form link-style-form-sm">
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3">认证信息</div>
+          <div class="flex flex-wrap gap-y-2">
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">企业全称</div>
+              <div class="text-gray-950">{{ detailData.name }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">法人姓名</div>
+              <div class="text-gray-950">{{ detailData.legalPerson }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-24">法人手机号码</div>
+              <div class="text-gray-950">{{ detailData.legalPhoneNumber }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-28">法人身份证号码</div>
+              <div class="text-gray-950">{{ detailData.idNo }}</div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-28">法人身份证正面</div>
+              <div>
+                <el-image
+                  v-if="detailData.cardFront[0]"
+                  class="w-28 h-auto"
+                  :src="detailData.cardFront[0].downloadUrl"
+                  :preview-src-list="[
+                    detailData.cardFront[0].downloadUrl
+                  ]"
+                />
+                <div v-else>-</div>
+              </div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-28">法人身份证反面</div>
+              <div>
+                <el-image
+                  v-if="detailData.cardBack[0]"
+                  class="w-28 h-auto"
+                  :src="detailData.cardBack[0].downloadUrl"
+                  :preview-src-list="[
+                    detailData.cardBack[0].downloadUrl
+                  ]"
+                />
+                <div v-else>-</div>
+              </div>
+            </div>
+            <div class="w-full sm:w-1/3 flex text-sm">
+              <div class="text-gray-400 w-20">营业执照</div>
+              <div>
+                <el-image
+                  v-if="detailData.businessLicense[0]"
+                  class="w-28 h-auto"
+                  :src="detailData.businessLicense[0].downloadUrl"
+                  :preview-src-list="[
+                    detailData.businessLicense[0].downloadUrl
+                  ]"
+                />
+                <div v-else>-</div>
+              </div>
+            </div>
+          </div>
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-1 mt-6">审核操作</div>
           <a-form-model
             :model="detailData"
-            :label-col="{ span: 5 }"
-            :wrapper-col="{ offset: isMobile ? 0 : 1, span: 16 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            labelAlign="left"
           >
-            <a-form-model-item prop="name" label="审核状态">
-              <a-select
-                allowClear
-                showArrow
-                size="large"
-                placeholder="请选择审核状态"
-                v-model="detailData.status"
-              >
-                <a-select-option v-for="(label, key) in organizationStatusDict" :key="key" :value="key" class="pl-5">
-                  {{ label }}
-                </a-select-option>
-              </a-select>
+            <a-form-model-item prop="name" label="审核结果">
+              <a-radio-group v-model="detailData.status" size="large">
+                <a-radio v-for="item in options['statusOpt']" :key="item.key" :value="item.key">
+                  {{ item.value }}
+                </a-radio>
+              </a-radio-group>
               <div v-if="detailData.status === '3'" class="pt-2">
                 <a-textarea
                   v-model="detailData.remark"
                   :rows="5"
-                  placeholder="请描述不通过原因"
+                  placeholder="请输入不通过原因"
                 />
               </div>
             </a-form-model-item>
-            <a-form-model-item :wrapper-col="{ offset: isMobile ? 0 : 6, span: 16 }">
-              <div class="pt-2 flex flex-row gap-20">
-                <a-button
-                  class="h-11 w-40 rounded-md text-base"
-                  type="primary"
-                  size="large"
-                  @click="handleAdminAuditOrganization"
-                >
-                  提交
-                </a-button>
-              </div>
-            </a-form-model-item>
           </a-form-model>
+          <div class="pt-4 flex justify-center">
+            <a-button
+              class="rounded-md"
+              type="primary"
+              size="large"
+              @click="handleAdminAuditOrganization"
+            >
+              提交
+            </a-button>
+          </div>
         </div>
       </div>
     </a-modal>
@@ -240,9 +250,13 @@ import { mapState, mapGetters } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
+import LinkFormItemImg from '@/components/Kira/LinkFormItemImg'
 
 export default {
   name: 'LinkOrganizationDetailDrawer',
+  components: {
+    LinkFormItemImg
+  },
   mixins: [baseMixin],
   props: {
   },
@@ -253,6 +267,18 @@ export default {
       detailDataLoading: false,
       adminAuditOrganizationModalParams: {
         show: false
+      },
+      options: {
+        statusOpt: [
+          {
+            key: '2',
+            value: '审核通过'
+          },
+          {
+            key: '3',
+            value: '审核不通过'
+          }
+        ]
       }
     }
   },
@@ -263,12 +289,6 @@ export default {
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
     }),
-    organizationTypeDict() {
-      return this.codeDict.organization && this.codeDict.organization.type || {}
-    },
-    organizationStatusDict() {
-      return this.codeDict.organization && this.codeDict.organization.status || {}
-    },
     detailId() {
       return this.$route.query.userId
     }
@@ -276,7 +296,7 @@ export default {
   watch: {
     detailId: {
       handler() {
-        this.handleDetailIdChange()
+        this.handleDetailIdChange(this.detailId)
       },
       immediate: true
     }
@@ -285,24 +305,33 @@ export default {
     handleBack() {
       this.$router.push({ name: this.$route.name })
     },
-    async handleDetailIdChange() {
-      if (this.detailId) {
+    async handleDetailIdChange(detailId) {
+      if (detailId) {
         this.detailDataLoading = true
+        this.detailData = null
         try {
           const res = await lingkeApi.organizationGetOne({
-            userId: parseInt(this.detailId)
+            userId: parseInt(detailId)
           })
           if (res && res.code === 200) {
             const detailData = res.data
             this.detailData = {
-              userId: parseInt(this.detailId),
-              type: detailData.type,
+              userId: parseInt(detailId),
               name: detailData.name,
               legalPerson: detailData.legalPerson,
-              idCard: this.parseFileNamesToObjs(detailData.idCardList || []),
+              legalPhoneNumber: detailData.legalPhoneNumber,
+              legalSmsCode: '',
+              idNo: detailData.idNo,
+              cardFront: detailData.cardFront ? this.parseFileNamesToObjs([detailData.cardFront]) : [],
+              cardBack: detailData.cardBack ? this.parseFileNamesToObjs([detailData.cardBack]) : [],
               businessLicense: this.parseFileNamesToObjs(detailData.businessLicenseList || []),
               status: detailData.status,
-              remark: detailData.remark
+              remark: detailData.remark,
+              nickName: detailData.nickName,
+              email: detailData.email,
+              openId: detailData.openId,
+              wechatName: detailData.wechatName,
+              createTime: detailData.createTime
             }
           } else {
             throw new Error(res.message || '加载失败')
@@ -312,8 +341,6 @@ export default {
           console.log(error)
         }
         this.detailDataLoading = false
-      } else {
-        this.detailData = null
       }
     },
     parseFileNamesToObjs(names) {
@@ -358,43 +385,13 @@ export default {
       })
     },
     async handleShowAdminAuditOrganizationModal(item) {
-      if (item.userId) {
-        this.detailData = null
-        this.detailDataLoading = true
-        this.adminAuditOrganizationModalParams.show = true
-        try {
-          const res = await lingkeApi.organizationGetOne({
-            userId: item.userId
-          })
-          if (res && res.code === 200) {
-            const detailData = res.data
-            this.detailData = {
-              userId: item.userId,
-              type: detailData.type,
-              name: detailData.name,
-              legalPerson: detailData.legalPerson,
-              idCard: this.parseFileNamesToObjs(detailData.idCardList || []),
-              businessLicense: this.parseFileNamesToObjs(detailData.businessLicenseList || []),
-              status: detailData.status,
-              remark: detailData.remark
-            }
-          } else {
-            throw new Error(res.message || '加载失败')
-          }
-        } catch (error) {
-          this.$message.error(error.message)
-          console.log(error)
-        }
-        this.detailDataLoading = false
-      } else {
-        this.detailData = null
-      }
+      this.handleDetailIdChange(item.userId)
+      this.adminAuditOrganizationModalParams.show = true
     },
     handleReload() {
-      if (this.detailId) this.handleDetailIdChange()
+      if (this.detailId) this.handleDetailIdChange(this.detailId)
       if (this.adminAuditOrganizationModalParams.show) {
         this.adminAuditOrganizationModalParams.show = false
-        this.detailData = null
       }
       this.$emit('reload')
     }

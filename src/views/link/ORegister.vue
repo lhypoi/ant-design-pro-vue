@@ -79,13 +79,13 @@
                       </a-form-model-item>
                     </template>
                     <template v-if="item.key === 2">
-                      <div class="text-sm font-bold text-black pb-3">机构类型：</div>
+                      <div class="text-sm font-bold text-black pb-3">企业类型：</div>
                       <a-form-model-item prop="type">
                         <a-select
                           allowClear
                           showArrow
                           size="large"
-                          placeholder="请选择机构类型"
+                          placeholder="请选择企业类型"
                           v-model="formData[item.key].type"
                         >
                           <a-select-option v-for="(label, key) in organizationTypeDict" :key="key" :value="key" class="pl-5">
@@ -93,11 +93,11 @@
                           </a-select-option>
                         </a-select>
                       </a-form-model-item>
-                      <div class="text-sm font-bold text-black pb-3">机构名称：</div>
+                      <div class="text-sm font-bold text-black pb-3">企业名称：</div>
                       <a-form-model-item prop="name">
                         <a-input
                           v-model="formData[item.key].name"
-                          placeholder="请输入机构名称"
+                          placeholder="请输入企业名称"
                         />
                       </a-form-model-item>
                       <div class="text-sm font-bold text-black pb-3">法人：</div>
@@ -274,7 +274,7 @@ export default {
               validator: (rule, value, callback) => {
                 try {
                   if (!value) {
-                    callback(new Error('请选择机构类型'))
+                    callback(new Error('请选择企业类型'))
                   }
                 } catch (error) {
                   console.log(error)
@@ -289,7 +289,7 @@ export default {
               validator: (rule, value, callback) => {
                 try {
                   if (!value.trim()) {
-                    callback(new Error('请输入机构名称'))
+                    callback(new Error('请输入企业名称'))
                   }
                 } catch (error) {
                   console.log(error)
