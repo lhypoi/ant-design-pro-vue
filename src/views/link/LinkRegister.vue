@@ -113,7 +113,7 @@ import lingkeApi from '@/api/lingke'
 
 const FORM_RULES = {
   email: [
-    { pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/, message: '请输入有效的邮箱地址', required: true }
+    { pattern: /^([a-zA-Z0-9_-]|\+)+@[a-zA-Z0-9_-]+\+?(\.[a-zA-Z0-9_-]+)+$/, message: '请输入有效的邮箱地址', required: true }
   ],
   phone: [{ pattern: /^1[3456789]\d{9}$/, message: '请输入有效的手机号码', required: true }],
   passWord: [

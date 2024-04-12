@@ -73,32 +73,32 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item key="courseMode" prop="courseMode" label="课程模式">
-              <a-radio-group v-model="linkOrderModalParams.formData.courseMode" size="large">
-                <a-radio v-for="item in linkOrderModalParams.options['courseMode']" :key="item.key" :value="item.key">
+            <a-form-model-item key="lessonType" prop="lessonType" label="课程模式">
+              <a-radio-group v-model="linkOrderModalParams.formData.lessonType" size="large">
+                <a-radio v-for="item in linkOrderModalParams.options['lessonType']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-radio>
               </a-radio-group>
             </a-form-model-item>
-            <a-form-model-item v-if="linkOrderModalParams.formData.courseMode === '2'" key="courseUnitSection" prop="courseUnitSection" label="课程节数">
-              <a-select v-model="linkOrderModalParams.formData.courseUnitSection" size="large" placeholder="请选择" allowClear>
+            <a-form-model-item v-if="linkOrderModalParams.formData.lessonType === '2'" key="lessonNum" prop="lessonNum" label="课程节数">
+              <a-select v-model="linkOrderModalParams.formData.lessonNum" size="large" placeholder="请选择" allowClear>
                 <span slot="suffixIcon">节</span>
-                <a-select-option v-for="item in linkOrderModalParams.options['courseUnitSection']" :key="item.key" :value="item.key">
+                <a-select-option v-for="item in linkOrderModalParams.options['lessonNum']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item key="courseUnitTime" prop="courseUnitTime" label="课程时长">
-              <a-select v-model="linkOrderModalParams.formData.courseUnitTime" size="large" placeholder="请选择" allowClear>
+            <a-form-model-item key="unitDuration" prop="unitDuration" label="课程时长">
+              <a-select v-model="linkOrderModalParams.formData.unitDuration" size="large" placeholder="请选择" allowClear>
                 <span slot="suffixIcon">小时</span>
-                <a-select-option v-for="item in linkOrderModalParams.options['courseUnitTime']" :key="item.key" :value="item.key">
+                <a-select-option v-for="item in linkOrderModalParams.options['unitDuration']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item key="courseUnitPrice" prop="courseUnitPrice" label="委托价格">
+            <a-form-model-item key="unitPrice" prop="unitPrice" label="委托价格">
               <a-input-number
-                v-model="linkOrderModalParams.formData.courseUnitPrice"
+                v-model="linkOrderModalParams.formData.unitPrice"
                 placeholder="请输入"
                 size="large"
                 class="w-full"
@@ -166,19 +166,18 @@ export default {
           type: undefined,
           task: '',
           detail: '',
-          unitPrice: undefined,
           duration: undefined,
           files: [],
           teacherId: undefined,
-          courseMode: undefined,
-          courseUnitTime: undefined,
-          courseUnitSection: undefined,
-          courseUnitPrice: undefined
+          lessonType: undefined,
+          unitDuration: undefined,
+          lessonNum: undefined,
+          unitPrice: undefined
         },
         options: {
           type: [],
           teacherId: [],
-          courseMode: [
+          lessonType: [
             {
               key: '1',
               value: '单课程模式'
@@ -188,7 +187,7 @@ export default {
               value: '多课程模式'
             }
           ],
-          courseUnitTime: [
+          unitDuration: [
             {
               key: 0.5,
               value: 0.5
@@ -214,7 +213,7 @@ export default {
               value: 3
             }
           ],
-          courseUnitSection: [
+          lessonNum: [
             {
               key: 1,
               value: 1
@@ -303,21 +302,6 @@ export default {
               }
             }
           ],
-          unitPrice: [
-            {
-              validator: (rule, value, callback) => {
-                try {
-                  if (!value) {
-                    callback(new Error('请填写一小时单价'))
-                  }
-                } catch (error) {
-                  console.log(error)
-                  callback(error)
-                }
-                callback()
-              }
-            }
-          ],
           duration: [
             {
               validator: (rule, value, callback) => {
@@ -333,7 +317,7 @@ export default {
               }
             }
           ],
-          courseUnitTime: [
+          unitDuration: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -348,7 +332,7 @@ export default {
               }
             }
           ],
-          courseUnitSection: [
+          lessonNum: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -363,7 +347,7 @@ export default {
               }
             }
           ],
-          courseUnitPrice: [
+          unitPrice: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -399,10 +383,10 @@ export default {
     courseTotalPriceTxt() {
       let txt = ''
       const formData = this.linkOrderModalParams.formData
-      if (formData.courseMode === '1' && formData.courseUnitTime && formData.courseUnitPrice) {
-        txt = `合计：${formData.courseUnitPrice}元, 共${formData.courseUnitTime}小时`
-      } else if (formData.courseMode === '2' && formData.courseUnitSection && formData.courseUnitPrice && formData.courseUnitTime) {
-        txt = `合计：共${formData.courseUnitSection}节课, 每节课${formData.courseUnitPrice}元`
+      if (formData.lessonType === '1' && formData.unitDuration && formData.unitPrice) {
+        txt = `合计：${formData.unitPrice}元, 共${formData.unitDuration}小时`
+      } else if (formData.lessonType === '2' && formData.lessonNum && formData.unitPrice && formData.unitDuration) {
+        txt = `合计：共${formData.lessonNum}节课, 每节课${formData.unitPrice}元`
       }
       return txt
     }
@@ -424,7 +408,7 @@ export default {
           duration: undefined,
           files: [],
           teacherId: teacherId,
-          courseMode: undefined
+          lessonType: undefined
         },
         options: {
           ...this.linkOrderModalParams.options,
@@ -448,7 +432,7 @@ export default {
           formData = { ...formData, ...formDataRes.data }
           formData.files = formDataRes.data.files ? this.parseFileNamesToObjs(formDataRes.data.files.split(',')) : []
         }
-        formData.courseMode = formData.courseMode || '1'
+        formData.lessonType = formData.lessonType || '1'
         this.linkOrderModalParams.formData = formData
       } catch (error) {
         this.$message.error(error.message)
@@ -496,13 +480,15 @@ export default {
       this.linkOrderModalParams.submitting = true
       try {
         const params = {
-          type: this.linkOrderModalParams.formData.type,
           task: this.linkOrderModalParams.formData.task,
+          type: this.linkOrderModalParams.formData.type,
           detail: this.linkOrderModalParams.formData.detail,
-          unitPrice: this.linkOrderModalParams.formData.courseUnitPrice,
-          duration: this.linkOrderModalParams.formData.courseUnitTime,
           files: this.linkOrderModalParams.formData.files.filter(file => file.downloadUrl).map(file => file.downloadUrl).join(',') || undefined,
-          teacherId: this.linkOrderModalParams.formData.teacherId || undefined
+          teacherId: this.linkOrderModalParams.formData.teacherId || undefined,
+          lessonType: this.linkOrderModalParams.formData.lessonType,
+          lessonNum: this.linkOrderModalParams.formData.lessonNum,
+          unitDuration: this.linkOrderModalParams.formData.unitDuration,
+          unitPrice: this.linkOrderModalParams.formData.unitPrice
         }
         const res = this.linkOrderModalParams.orderId ? await lingkeApi.orderUpdate({
           id: this.linkOrderModalParams.orderId,

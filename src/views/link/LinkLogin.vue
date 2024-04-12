@@ -331,6 +331,9 @@ export default {
       }
     },
     handleWxLogin() {
+      this.$message.info('敬请期待')
+      return
+      // eslint-disable-next-line no-unreachable
       if (this.checkIsAgree() === false) return
       this.$refs.WxLoginModal.handleShowWxLoginModalParams({
         state: WX_LOGIN_STATE[this.$route.name]

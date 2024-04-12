@@ -152,6 +152,12 @@ const user = {
                   avatarFirstLetter
                 }
                 commit('SET_INFO', userInfo)
+                if (userInfo.roleId === 1) {
+                  const teacherInfoRes = await lingkeApi.teacherGetOne({
+                    userId: userInfo.userId
+                  })
+                  userInfo.teacherInfo = teacherInfoRes.data
+                }
                 commit(CUR_APP + '/SET_USER_INFO', userInfo)
               } else {
                 throw new Error(userInfoRes.message || '获取用户信息失败')

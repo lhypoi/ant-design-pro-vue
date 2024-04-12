@@ -178,35 +178,35 @@
           <template v-if="curTabKey === '3'">
             <div>
               <a-result
-                v-if="formData[curTabKey].certificationStatus === '1'"
+                v-if="formData[curTabKey].status === '0'"
                 status="warning"
                 title="待认证"
                 sub-title="为保障您的权益，请尽快完成实名认证"
               />
               <a-result
-                v-else-if="formData[curTabKey].certificationStatus === '2'"
+                v-else-if="formData[curTabKey].status === '1'"
                 status="info"
                 title="审核中"
                 sub-title="认证信息审核中，请耐心等待"
               />
               <a-result
-                v-else-if="formData[curTabKey].certificationStatus === '3'"
-                status="error"
-                title="认证失败"
-                sub-title="这是审核失败内容"
-              />
-              <a-result
-                v-else-if="formData[curTabKey].certificationStatus === '4'"
+                v-else-if="formData[curTabKey].status === '2'"
                 status="success"
                 title="认证成功"
                 sub-title="已完成实名认证"
               />
+              <a-result
+                v-else-if="formData[curTabKey].status === '3'"
+                status="error"
+                title="认证失败"
+                :sub-title="formData[curTabKey].remark || '认证失败，请重新提交'"
+              />
             </div>
-            <a-form-model-item prop="certificationName" label="姓名">
-              <a-input v-model="formData[curTabKey].certificationName" placeholder="请输入真实姓名" size="large" />
+            <a-form-model-item prop="realName" label="姓名">
+              <a-input v-model="formData[curTabKey].realName" placeholder="请输入真实姓名" size="large" />
             </a-form-model-item>
-            <a-form-model-item prop="certificationPhone" label="手机号码">
-              <a-input v-model="formData[curTabKey].certificationPhone" placeholder="请输入手机号码" size="large" />
+            <a-form-model-item prop="phoneNumber" label="手机号码">
+              <a-input v-model="formData[curTabKey].phoneNumber" placeholder="请输入手机号码" size="large" />
             </a-form-model-item>
             <a-form-model-item prop="certificationSmsCode" label="验证码" ref="certificationSmsCode">
               <div class="flex flex-row gap-3">
@@ -230,7 +230,7 @@
                   type="primary"
                   :disabled="sendBtnData.disabled"
                   :loading="sendBtnData.loading"
-                  @click="handleSendSmsCode(undefined, 'certificationPhone')"
+                  @click="handleSendSmsCode(undefined, 'phoneNumber')"
                 >
                   {{
                     sendBtnData.loading
@@ -242,18 +242,18 @@
                 </a-button>
               </div>
             </a-form-model-item>
-            <a-form-model-item prop="certificationIdNo" label="身份证号">
-              <a-input v-model="formData[curTabKey].certificationIdNo" placeholder="请输入身份证号" size="large" />
+            <a-form-model-item prop="idNo" label="身份证号">
+              <a-input v-model="formData[curTabKey].idNo" placeholder="请输入身份证号" size="large" />
             </a-form-model-item>
             <LinkFormItemImg
-              formItemKey="certificationFront"
+              formItemKey="cardFront"
               formItemLabel="身份证正面"
-              :fileList.sync="formData[curTabKey]['certificationFront']"
+              :fileList.sync="formData[curTabKey]['cardFront']"
             />
             <LinkFormItemImg
-              formItemKey="certificationBack"
+              formItemKey="cardBack"
               formItemLabel="身份证反面"
-              :fileList.sync="formData[curTabKey]['certificationBack']"
+              :fileList.sync="formData[curTabKey]['cardBack']"
             />
           </template>
           <template v-if="curTabKey === '4'">
@@ -262,10 +262,10 @@
               <span class="cursor-pointer text-blue-400" @click="handleToTab({ key: '3' })">实名认证</span> 中完善）：
             </div>
             <a-form-model-item label="持卡人姓名">
-              <a-input v-model="formData[curTabKey].certificationName" placeholder="无" size="large" disabled />
+              <a-input v-model="formData[curTabKey].realName" placeholder="无" size="large" disabled />
             </a-form-model-item>
             <a-form-model-item label="身份证号码">
-              <a-input v-model="formData[curTabKey].certificationIdNo" placeholder="无" size="large" disabled />
+              <a-input v-model="formData[curTabKey].idNo" placeholder="无" size="large" disabled />
             </a-form-model-item>
             <div class="text-base text-gray-950 font-bold pb-2">银行卡：</div>
             <a-form-model-item prop="bankBranch" label="开户行支行">
@@ -532,18 +532,18 @@ export default {
           cv: []
         },
         3: {
-          certificationStatus: '1',
-          certificationRemark: '',
-          certificationName: '',
-          certificationPhone: '',
+          status: '1',
+          remark: '',
+          realName: '',
+          phoneNumber: '',
           certificationSmsCode: '',
-          certificationIdNo: '',
-          certificationFront: [],
-          certificationBack: []
+          idNo: '',
+          cardFront: [],
+          cardBack: []
         },
         4: {
-          certificationName: '',
-          certificationIdNo: '',
+          realName: '',
+          idNo: '',
           bankBranch: '',
           bankNum: ''
         },
@@ -628,7 +628,7 @@ export default {
         },
         2: {},
         3: {
-          certificationName: [
+          realName: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -643,7 +643,7 @@ export default {
               }
             }
           ],
-          certificationPhone: [
+          phoneNumber: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -673,7 +673,7 @@ export default {
               }
             }
           ],
-          certificationIdNo: [
+          idNo: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -688,7 +688,7 @@ export default {
               }
             }
           ],
-          certificationFront: [
+          cardFront: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -703,7 +703,7 @@ export default {
               }
             }
           ],
-          certificationBack: [
+          cardBack: [
             {
               validator: (rule, value, callback) => {
                 try {
@@ -908,18 +908,18 @@ export default {
               cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
             },
             3: {
-              certificationStatus: '1',
-              certificationRemark: '',
-              certificationName: '',
-              certificationPhone: '',
+              status: '1',
+              remark: '',
+              realName: '',
+              phoneNumber: '',
               certificationSmsCode: '',
-              certificationIdNo: '',
-              certificationFront: [],
-              certificationBack: []
+              idNo: '',
+              cardFront: [],
+              cardBack: []
             },
             4: {
-              certificationName: '',
-              certificationIdNo: '',
+              realName: '',
+              idNo: '',
               bankBranch: teacherInfo.bankBranch,
               bankNum: teacherInfo.bankNum
             },

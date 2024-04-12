@@ -127,7 +127,7 @@
             <a-button
               class="rounded-md"
               type="primary"
-              @click="handleCatchTask(detailData)"
+              v-link-click:teacher1="() => handleCatchTask(detailData)"
             >
               接受委托
             </a-button>

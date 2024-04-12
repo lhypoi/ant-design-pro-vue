@@ -164,12 +164,12 @@ export default {
           width: 120
         },
         {
-          key: 'courseMode',
+          key: 'lessonType',
           label: '课程模式',
           width: 120
         },
         {
-          key: 'courseUnitTime',
+          key: 'unitDuration',
           label: '课程时长',
           width: 120
         },
