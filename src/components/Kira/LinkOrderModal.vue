@@ -177,16 +177,7 @@ export default {
         options: {
           type: [],
           teacherId: [],
-          lessonType: [
-            {
-              key: '1',
-              value: '单课程模式'
-            },
-            {
-              key: '2',
-              value: '多课程模式'
-            }
-          ],
+          lessonType: [],
           unitDuration: [
             {
               key: 0.5,
@@ -380,6 +371,16 @@ export default {
         ))
       ]
     },
+    lessonTypeOptions() {
+      return [
+        ...Object.entries(this.codeDict.order?.lessonType || {}).map(([key, value]) => (
+          {
+            key,
+            value
+          }
+        ))
+      ]
+    },
     courseTotalPriceTxt() {
       let txt = ''
       const formData = this.linkOrderModalParams.formData
@@ -413,6 +414,7 @@ export default {
         options: {
           ...this.linkOrderModalParams.options,
           type: this.orderTypeOptions,
+          lessonType: this.lessonTypeOptions,
           teacherId: []
         }
       }

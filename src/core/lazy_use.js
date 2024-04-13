@@ -60,6 +60,7 @@ import PageLoading from '@/components/PageLoading'
 import PermissionHelper from '@/core/permission/permission'
 import './directives/action'
 import './directives/linkClick'
+import VueClipboard from 'vue-clipboard2'
 
 import {
   Image,
@@ -72,6 +73,8 @@ import {
   Collapse,
   CollapseItem
 } from 'element-ui'
+
+VueClipboard.config.autoSetContainer = true
 
 Vue.use(ConfigProvider)
 Vue.use(Layout)
@@ -145,5 +148,7 @@ Vue.use(Carousel)
 Vue.use(CarouselItem)
 Vue.use(Collapse)
 Vue.use(CollapseItem)
+
+Vue.use(VueClipboard)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')

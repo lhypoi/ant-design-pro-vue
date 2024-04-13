@@ -1,5 +1,5 @@
 <template>
-  <a-form-model-item :prop="formItemKey" :label="formItemLabel" :label-col="labelCol" :wrapper-col="wrapperCol">
+  <a-form-model-item :prop="formItemKey" :ref="formItemKey" :label="formItemLabel" :label-col="labelCol" :wrapper-col="wrapperCol">
     <div>
       <div class="h-0 overflow-hidden">
         <a-upload-dragger
@@ -15,7 +15,7 @@
       </div>
       <div class="flex flex-row items-start gap-8">
         <div
-          v-if="!fileList[0]"
+          v-if="!fileList[0] && !disabled"
           class="w-32 h-32 flex justify-center items-center border border-solid border-gray-300 cursor-pointer text-gray-400 text-base rounded-md hover:border-indigo-400 hover:text-indigo-400"
           @click="handleFileCtrlClick"
         >
@@ -23,7 +23,7 @@
         </div>
         <div v-else class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
           <el-image
-            v-if="fileList[0].downloadUrl"
+            v-if="fileList[0]?.downloadUrl"
             class="w-28 h-auto"
             :src="fileList[0].downloadUrl"
             :preview-src-list="[fileList[0].downloadUrl]"
@@ -31,11 +31,11 @@
             <a-spin slot="placeholder" class="w-28 pt-4" />
           </el-image>
           <a-spin v-else class="w-28 pt-4" />
-          <div class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400" @click="handleFileCtrlClick">
+          <div v-if="!disabled" class="text-gray-400 text-sm cursor-pointer hover:text-indigo-400" @click="handleFileCtrlClick">
             重新上传
           </div>
         </div>
-        <div v-if="illustrativeGraphsUrl" class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
+        <div v-if="illustrativeGraphsUrl && !disabled" class="flex flex-col items-center gap-2 border border-solid border-gray-300 rounded-md p-2">
           <el-image class="w-28 h-auto" :src="illustrativeGraphsUrl" :preview-src-list="[illustrativeGraphsUrl]" />
           <div class="text-gray-400 text-sm">示例图</div>
         </div>
@@ -79,6 +79,10 @@ export default {
     illustrativeGraphsUrl: {
       type: String,
       default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -106,6 +110,7 @@ export default {
         return file
       })
       this.$emit('update:fileList', fileList)
+      this.$refs[this.formItemKey].onFieldChange()
     },
     handleFileCtrlClick() {
       this.$refs[`formCtrl`].click()

@@ -29,7 +29,7 @@
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">委托 ID</div>
               <div class="text-gray-950">{{ detailData.id }}</div>
-              <div class="ml-2"><a-icon type="copy" class="cursor-pointer text-blue-400" /></div>
+              <div class="ml-2"><a-icon type="copy" class="cursor-pointer text-blue-400" @click="handleCopy(detailData.id + '')"/></div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">状态</div>
@@ -37,7 +37,7 @@
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">价格</div>
-              <div class="text-[#FDA643]">￥{{ `${detailData.unitPrice * detailData.duration}` }}</div>
+              <div class="text-[#FDA643]">￥{{ `${detailData.unitPrice * detailData.lessonNum}` }}</div>
             </div>
             <div class="w-full flex text-sm">
               <div class="text-gray-400 w-20">相关资料</div>
@@ -46,6 +46,8 @@
                   v-if="detailData.fileList && detailData.fileList.length"
                   :fileList="detailData.fileList"
                   disabled
+                  class="-mt-2 block"
+                  @preview="handleFileDownload"
                 >
                 </a-upload>
                 <div v-else>-</div>
@@ -61,70 +63,47 @@
             <div class="flex flex-wrap gap-y-2">
               <div class="w-full sm:w-1/3 flex text-sm">
                 <div class="text-gray-400 w-20">模式</div>
-                <div class="text-gray-950">多课时</div>
+                <div class="text-gray-950">{{ codeDict.order?.lessonType?.[detailData.lessonType] }}</div>
               </div>
               <div class="w-full sm:w-2/3 flex text-sm">
                 <div class="text-gray-400 w-20">时长</div>
-                <div class="text-gray-950">2.5小时 * 5节课</div>
+                <div class="text-gray-950">{{ `${detailData.unitDuration}小时 ${ detailData.lessonType === '2' && `* ${ detailData.lessonNum }节课` }` }}</div>
               </div>
-              <div class="w-full sm:w-1/3 flex text-sm">
+              <div v-if="detailData.status !== '1'" class="w-full sm:w-1/3 flex text-sm">
                 <div class="text-gray-400 w-20">老师</div>
-                <div v-if="detailData.teacherId" class="text-blue-400">{{ detailData.teacherName }}</div>
+                <div v-if="detailData.teacherId" class="text-blue-400 cursor-pointer" @click="$refs.LinkTeacherModal.handleOpenLinkTeacherModal(detailData.userId)">{{ detailData.teacherName }}</div>
                 <div v-else class="text-gray-600">-</div>
               </div>
-              <div class="w-full sm:w-2/3 flex text-sm">
-                <div class="text-gray-400 w-20">进度</div>
+              <div v-if="detailData.status !== '1' && detailData.status !== '2'" class="w-full sm:w-2/3 flex text-sm">
+                <div class="text-gray-400 w-20">交付进度</div>
                 <div class="text-blue-400 min-w-[200px]">
-                  <a-progress :percent="2/5 * 100" :format="() => '2/5'" size="small" status="active" />
+                  <a-progress :percent="detailData.lessonProgress / detailData.lessonNum * 100" :format="() => `${ detailData.lessonProgress }/${ detailData.lessonNum }`" size="small" status="active" />
                 </div>
               </div>
             </div>
           </div>
-          <div class="mt-4">
+          <div v-if="detailData.status !== '1' && detailData.status !== '2'" class="mt-4">
             <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3">交付记录</div>
             <a-table
               :pagination="false"
-              :columns="[
-                {
-                  title: 'Name',
-                  dataIndex: 'name',
-                },
-                {
-                  title: 'Age',
-                  dataIndex: 'age',
-                },
-                {
-                  title: 'Address',
-                  dataIndex: 'address',
-                },
-              ]"
-              :data-source="[
-                {
-                  key: '1',
-                  name: 'John Brown',
-                  age: 32,
-                  address: 'New York No. 1 Lake Park',
-                },
-                {
-                  key: '2',
-                  name: 'Jim Green',
-                  age: 42,
-                  address: 'London No. 1 Lake Park',
-                },
-                {
-                  key: '3',
-                  name: 'Joe Black',
-                  age: 32,
-                  address: 'Sidney No. 1 Lake Park',
-                },
-              ]"
-              size="small" />
+              :columns="deliverColumns"
+              :data-source="detailData.deliverList"
+              size="small"
+            >
+              <template slot="operator" slot-scope="text, record">
+                <div>{{ record.status === '1' ? detailData.teacherName : detailData.organizationName }}</div>
+              </template>
+              <template slot="remark" slot-scope="text, record">
+                <div>{{ record.status === '1' ? '发起交付' : record.status === '2' ? `第${record.lessonNo}节课已交付` : (text || '-') }}</div>
+              </template>
+            </a-table>
           </div>
           <div class="mt-4 flex justify-end gap-4 items-center">
             <div class="cursor-pointer text-blue-400 leading-none">
               <a-icon type="message" class="text-2xl" />
             </div>
             <a-button
+              v-if="detailData.status === '1' && userInfo.roleId === 1"
               class="rounded-md"
               type="primary"
               v-link-click:teacher1="() => handleCatchTask(detailData)"
@@ -224,6 +203,9 @@
         </div> -->
       </div>
     </a-modal>
+    <LinkTeacherModal
+      ref="LinkTeacherModal"
+    />
   </div>
 </template>
 
@@ -233,9 +215,13 @@ import { mapState, mapGetters } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
+import LinkTeacherModal from '@/components/Kira/LinkTeacherModal'
 
 export default {
   name: 'LinkOrderDetailDrawer',
+  components: {
+    LinkTeacherModal
+  },
   mixins: [baseMixin],
   props: {
   },
@@ -243,7 +229,29 @@ export default {
     return {
       lingkeApi,
       detailData: null,
-      detailDataLoading: false
+      detailDataLoading: false,
+      deliverColumns: [
+        {
+          title: '操作方',
+          dataIndex: 'operator'
+        },
+        {
+          title: '交付课程',
+          dataIndex: 'lessonNo'
+        },
+        {
+          title: '时间',
+          dataIndex: 'createTime'
+        },
+        {
+          title: '交付状态',
+          dataIndex: 'statusName'
+        },
+        {
+          title: '备注',
+          dataIndex: 'remark'
+        }
+      ]
     }
   },
   computed: {
@@ -311,20 +319,20 @@ export default {
     },
     handleCatchTask(item) {
       this.$confirm({
-        title: '提示',
-        content: `待委托方确认并完成支付`,
+        title: '接受委托',
+        icon: () => null,
+        content: `确认接受委托吗`,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
         onOk: async () => {
           try {
-            const res = await lingkeApi.orderUpdate({
-              teacherId: this.userInfo.userId,
+            const res = await lingkeApi.orderTeacherUpdate({
               id: item.id,
               status: '2'
             })
             if (res && res.code === 200 && res.data === 1) {
-              this.$message.success('提交成功')
+              this.$message.success('已抢委托，等待委托方确认')
               this.handleReload()
             } else {
               throw new Error(res.message || '失败')
@@ -445,6 +453,13 @@ export default {
     handleReload() {
       if (this.detailId) this.handleDetailIdChange()
       this.$emit('reload')
+    },
+    handleCopy(text) {
+      this.$copyText(text).then(() => {
+        this.$message.success('复制成功')
+      }).catch(() => {
+        this.$message.error('复制失败')
+      })
     }
   }
 }

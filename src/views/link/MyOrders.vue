@@ -85,14 +85,13 @@
           </div>
           <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-24">
             <div class="text-sm text-[#2192EF]">#{{ item.typeName }}</div>
-            <div class="text-sm text-[#FDA643]">{{ `￥${item.unitPrice}/${item.duration}h` }}</div>
           </div>
           <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-48">
             <div class="text-sm text-[#6D6D6D]">发布时间</div>
             <div class="text-sm text-[#6D6D6D]">{{ item.createTime }}</div>
           </div>
           <div class="flex sm:flex-col gap-1 sm:justify-center sm:w-32">
-            <div class="text-xl text-[#FDA643]">{{ `￥${item.unitPrice * item.duration}` }}</div>
+            <div class="text-xl text-[#FDA643]">{{ `￥${item.unitPrice * item.lessonNum}` }}</div>
           </div>
           <div class="flex flex-col sm:gap-1 items-center justify-center sm:w-44">
             <div class="text-sm text-[#6D6D6D] break-all line-clamp-1">{{ item.statusName }}</div>

@@ -199,16 +199,16 @@
                 v-else-if="formData[curTabKey].status === '3'"
                 status="error"
                 title="认证失败"
-                :sub-title="formData[curTabKey].remark || '认证失败，请重新提交'"
+                :sub-title="formData[curTabKey].remark"
               />
             </div>
             <a-form-model-item prop="realName" label="姓名">
-              <a-input v-model="formData[curTabKey].realName" placeholder="请输入真实姓名" size="large" />
+              <a-input v-model="formData[curTabKey].realName" placeholder="请输入真实姓名" size="large" :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'" />
             </a-form-model-item>
             <a-form-model-item prop="phoneNumber" label="手机号码">
-              <a-input v-model="formData[curTabKey].phoneNumber" placeholder="请输入手机号码" size="large" />
+              <a-input v-model="formData[curTabKey].phoneNumber" placeholder="请输入手机号码" size="large" :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'" />
             </a-form-model-item>
-            <a-form-model-item prop="certificationSmsCode" label="验证码" ref="certificationSmsCode">
+            <a-form-model-item v-if="!(formData[curTabKey].status === '1' || formData[curTabKey].status === '2')" prop="certificationSmsCode" label="验证码" ref="certificationSmsCode">
               <div class="flex flex-row gap-3">
                 <a-input
                   v-model="formData[curTabKey].certificationSmsCode"
@@ -230,7 +230,7 @@
                   type="primary"
                   :disabled="sendBtnData.disabled"
                   :loading="sendBtnData.loading"
-                  @click="handleSendSmsCode(undefined, 'phoneNumber')"
+                  @click="handleSendSmsCode(undefined, 'phoneNumber', '1')"
                 >
                   {{
                     sendBtnData.loading
@@ -243,17 +243,19 @@
               </div>
             </a-form-model-item>
             <a-form-model-item prop="idNo" label="身份证号">
-              <a-input v-model="formData[curTabKey].idNo" placeholder="请输入身份证号" size="large" />
+              <a-input v-model="formData[curTabKey].idNo" placeholder="请输入身份证号" size="large" :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'" />
             </a-form-model-item>
             <LinkFormItemImg
               formItemKey="cardFront"
               formItemLabel="身份证正面"
               :fileList.sync="formData[curTabKey]['cardFront']"
+              :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
             />
             <LinkFormItemImg
               formItemKey="cardBack"
               formItemLabel="身份证反面"
               :fileList.sync="formData[curTabKey]['cardBack']"
+              :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
             />
           </template>
           <template v-if="curTabKey === '4'">
@@ -437,7 +439,7 @@
         >
           保存
         </a-button>
-        <a-button v-if="curTabKey === '3'" type="primary" class="step-btn w-40 success-btn" @click="handleSave()">
+        <a-button v-if="curTabKey === '3' && !(formData[curTabKey].status === '1' || formData[curTabKey].status === '2')" type="primary" class="step-btn w-40 success-btn" @click="handleSave()">
           提交审核
         </a-button>
         <a-button v-if="curTabKey === '4'" type="primary" class="step-btn w-40 success-btn" @click="handleSave()"> 绑定 </a-button>
@@ -453,6 +455,7 @@ import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import LinkFormItemImg from '@/components/Kira/LinkFormItemImg'
+import storage from 'store'
 
 export default {
   name: 'PersonalCenter',
@@ -700,7 +703,8 @@ export default {
                   callback(error)
                 }
                 callback()
-              }
+              },
+              trigger: 'blur'
             }
           ],
           cardBack: [
@@ -715,7 +719,8 @@ export default {
                   callback(error)
                 }
                 callback()
-              }
+              },
+              trigger: 'blur'
             }
           ]
         },
@@ -821,6 +826,8 @@ export default {
                 try {
                   if (!value.trim()) {
                     callback(new Error('请输入确认密码'))
+                  } else if (value !== this.formData[53].newPassWord) {
+                    throw new Error('两次输入的密码不一致')
                   }
                 } catch (error) {
                   console.log(error)
@@ -895,10 +902,10 @@ export default {
           const formData = {
             1: {
               nickName: teacherInfo.nickName,
-              highEduLevel: teacherInfo.highEduLevel,
-              major: teacherInfo.major,
-              college: teacherInfo.college,
-              advantage: teacherInfo.advantage,
+              highEduLevel: teacherInfo.highEduLevel || undefined,
+              major: teacherInfo.major || '',
+              college: teacherInfo.college || '',
+              advantage: teacherInfo.advantage || '',
               want: (teacherInfo.want || '').split(','),
               sample: this.parseFileNamesToObjs(teacherInfo.sampleList || []),
               diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
@@ -908,14 +915,14 @@ export default {
               cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
             },
             3: {
-              status: '1',
-              remark: '',
-              realName: '',
-              phoneNumber: '',
+              status: teacherInfo.status,
+              remark: teacherInfo.remark || '',
+              realName: teacherInfo.realName || '',
+              phoneNumber: teacherInfo.phoneNumber || '',
               certificationSmsCode: '',
-              idNo: '',
-              cardFront: [],
-              cardBack: []
+              idNo: teacherInfo.idNo || '',
+              cardFront: teacherInfo.cardFront ? this.parseFileNamesToObjs([teacherInfo.cardFront]) : [],
+              cardBack: teacherInfo.cardBack ? this.parseFileNamesToObjs([teacherInfo.cardBack]) : []
             },
             4: {
               realName: '',
@@ -960,7 +967,9 @@ export default {
         this.$message.error('填写信息不符合要求，请检查')
         return
       }
+      let defaultTitle = '提示'
       let defaultMessageAction = '保存'
+      let defaultContent = () => `确定${defaultMessageAction}吗?`
       if (!subFormKey) {
         switch (this.curTabKey) {
           case '3':
@@ -973,16 +982,19 @@ export default {
       } else {
         switch (subFormKey) {
           case '51':
-            defaultMessageAction = '绑定'
+            defaultMessageAction = this.formData[subFormKey].oldEmail ? '更换' : '绑定'
             break
           case '53':
+            defaultTitle = '修改密码'
             defaultMessageAction = '修改'
+            defaultContent = () => `修改密码后将重新登陆`
             break
         }
       }
       this.$confirm({
-        title: '提示',
-        content: `确定${defaultMessageAction}吗?`,
+        title: defaultTitle,
+        content: defaultContent(),
+        icon: () => null,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
@@ -1012,27 +1024,35 @@ export default {
                     diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
                     transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
                   })
+                  res = await lingkeApi.teacherUpdate(params)
                   break
                 case '2':
                   Object.assign(params, {
                     cv: (formData.cv[0]?.response && formData.cv[0].downloadUrl) || ''
                   })
+                  res = await lingkeApi.teacherUpdate(params)
                   break
                 case '3':
                   Object.assign(params, {
-                    visa: formData.visa[0]?.response && formData.visa[0].downloadUrl
+                    realName: formData.realName,
+                    phoneNumber: formData.phoneNumber,
+                    smsCode: formData.certificationSmsCode,
+                    idNo: formData.idNo,
+                    cardFront: formData.cardFront[0]?.response && formData.cardFront[0].downloadUrl,
+                    cardBack: formData.cardBack[0]?.response && formData.cardBack[0].downloadUrl
                   })
+                  res = await lingkeApi.teacherRealNameAuth(params)
                   break
                 case '4':
                   Object.assign(params, {
                     bankBranch: formData.bankBranch,
                     bankNum: formData.bankNum
                   })
+                  res = await lingkeApi.teacherUpdate(params)
                   break
                 default:
                   break
               }
-              res = await lingkeApi.teacherUpdate(params)
             } else {
               const formData = this.formData[subFormKey]
               switch (subFormKey) {
@@ -1059,8 +1079,14 @@ export default {
               }
             }
             if (res && res.data === 1) {
-              await this.$store.dispatch('GetInfo')
               this.$message.success(defaultMessageAction + '成功')
+              if (subFormKey === '53') {
+                this.$store.dispatch('Logout').then(() => {
+                  this.$router.push({ name: storage.get('defaultLoginRoute') })
+                })
+                return
+              }
+              await this.$store.dispatch('GetInfo')
               this.initFormData()
             } else {
               throw new Error(res.message || defaultMessageAction + '失败')
@@ -1084,7 +1110,7 @@ export default {
         }
       })
     },
-    async handleSendSmsCode(subFormKey, itemKey) {
+    async handleSendSmsCode(subFormKey, itemKey, sendType) {
       const isFormValid = await new Promise((resolve) => {
         this.getFormRef(subFormKey).validateField(itemKey, (err) => {
           resolve(!err)
@@ -1096,7 +1122,7 @@ export default {
       try {
         const res = await lingkeApi.sendSmsCode({
           account: this.formData[subFormKey || this.curTabKey][itemKey],
-          type: '2'
+          type: sendType || '2'
         })
         if (res && res.code === 200) {
           this.$message.success('发送成功')

@@ -84,9 +84,25 @@ export function teacherUpdate (parameter) {
   })
 }
 
+export function teacherRealNameAuth (parameter) {
+  return request({
+    url: url + '/teacher/realNameAuth',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export function orderUpdate (parameter) {
   return request({
     url: url + '/order/update',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderTeacherUpdate (parameter) {
+  return request({
+    url: url + '/order/teacher/update',
     method: 'post',
     data: parameter
   })
@@ -257,7 +273,9 @@ export default {
   teacherGetOne,
   orderGetOne,
   teacherUpdate,
+  teacherRealNameAuth,
   orderUpdate,
+  orderTeacherUpdate,
   teacherGetAccount,
   orderTotal,
   withdrawalCreate,
