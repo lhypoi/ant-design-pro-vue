@@ -7,8 +7,8 @@
         </div>
         <a-popover title="说明" trigger="click">
           <template slot="content">
-            <p>累计金额：历史所有累计已经完成订单的金额总和，订单需要是已完成的才会纳入统计。</p>
-            <p>可提现金额：累计金额 - 已提现金额</p>
+            <p><span class="font-bold">累计金额：</span>历史所有累计已经完成订单的金额总和，订单需要是已完成的才会纳入统计。</p>
+            <p><span class="font-bold">可提现金额：</span>累计金额 - 已提现金额</p>
           </template>
           <div class="text-blue-400 underline underline-offset-4 cursor-pointer">接单规则及提现说明</div>
         </a-popover>
@@ -31,7 +31,7 @@
         <a-button
           type="primary"
           class="rounded-md"
-          @click="handleOpenCanWithdrawModal"
+          v-link-click:teacher2="handleOpenCanWithdrawModal"
         >
           提现
         </a-button>
@@ -95,26 +95,22 @@
           </div>
           <div class="flex flex-col sm:gap-1 items-center justify-center sm:w-44">
             <div class="text-sm text-[#6D6D6D] break-all line-clamp-1">{{ item.statusName }}</div>
-            <div class="text-sm text-[#A29F9F] break-all line-clamp-1">
-              请确认并付款
-            </div>
           </div>
           <div
             class="flex justify-start items-center flex-wrap whitespace-nowrap sm:flex-col gap-y-2 sm:justify-center sm:items-center sm:w-28"
           >
             <div
               v-if="item.status === '1'"
-              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="() => $refs.LinkOrderDetailDrawer.handleCatchTask(item)"
+              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-[#409EFF] text-white hover:opacity-80"
             >接受委托</div>
             <div
-              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700"
-              @click.stop="() => $refs.LinkOrderDetailDrawer.handleRefuseTask(item)"
+              v-if="item.status === '1'"
+              class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-[#EF6D21] text-white hover:opacity-80"
             >拒绝委托</div>
             <div
+              v-if="item.status === '3'"
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-green-400 text-white hover:bg-green-300"
-              @click.stop="() => $refs.LinkOrderDetailDrawer.handleFinishTask(item)"
-            >交付确认</div>
+            >发起交付</div>
           </div>
         </div>
       </div>
@@ -150,6 +146,7 @@
     >
       <div v-loading="canWithdrawModalParams.loading">
         <div class="pb-4">请选择要提现的订单：</div>
+        <div v-if="canWithdrawModalParams.selectedRows.length" class="pb-2 text-blue-400">已选: {{ canWithdrawModalParams.selectedRows.length }}个委托, 合计: {{ canWithdrawModalParams.amount }}元</div>
         <div class="h-[60vh] sm:h-[600px]">
           <k-table
             :dataRows="canWithdrawModalParams.rows"
@@ -170,8 +167,9 @@
               :fixed="col.fixed"
               :width="col.width"
               :min-width="col.minWidth"
+              :formatter="col.formatter"
             >
-              <template v-if="!col.type" v-slot="scope">
+              <template v-if="!col.type && !col.formatter" v-slot="scope">
                 <div>{{ scope.row[col.key] }}</div>
               </template>
             </el-table-column>
@@ -254,8 +252,9 @@
               :fixed="col.fixed"
               :width="col.width"
               :min-width="col.minWidth"
+              :formatter="col.formatter"
             >
-              <template v-if="!col.type" v-slot="scope">
+              <template v-if="!col.type && !col.formatter" v-slot="scope">
                 <div>{{ scope.row[col.key] }}</div>
               </template>
             </el-table-column>
@@ -306,44 +305,47 @@ export default {
         loading: false,
         cols: [
           {
-            key: 'organizationName',
-            label: '下单人',
+            key: 'id',
+            label: '委托ID',
             width: 160
           },
           {
             key: 'task',
-            label: '委托名称',
-            width: 120
+            label: '委托名称'
           },
           {
             key: 'typeName',
-            label: '任务类型',
+            label: '委托类型',
             width: 120
           },
           {
-            key: 'detail',
-            label: '委托明细',
-            minWidth: 200
+            key: 'lessonType',
+            label: '课程模式',
+            width: 120,
+            formatter: (row) => {
+              return this.codeDict.order.lessonType[row.lessonType]
+            }
+          },
+          {
+            key: 'unitDuration',
+            label: '课程时长',
+            width: 120,
+            formatter: (row) => {
+              return row.unitDuration + 'h' + (row.lessonNum > 1 ? ' * ' + row.lessonNum : '')
+            }
+          },
+          {
+            key: 'price',
+            label: '价格',
+            width: 120,
+            formatter: (row) => {
+              return '￥' + row.unitPrice * row.lessonNum
+            }
           },
           {
             key: 'createTime',
-            label: '创建时间',
+            label: '发布时间',
             width: 160
-          },
-          {
-            key: 'updateTime',
-            label: '更新时间',
-            width: 160
-          },
-          {
-            key: 'unitPrice',
-            label: '一小时单价',
-            width: 120
-          },
-          {
-            key: 'duration',
-            label: '课程时间(小时)',
-            width: 120
           },
           {
             type: 'selection',
@@ -352,7 +354,8 @@ export default {
           }
         ],
         rows: [],
-        selectedRows: []
+        selectedRows: [],
+        amount: 0
       },
       withdrawalRecordModalParams: {
         show: false,
@@ -363,52 +366,21 @@ export default {
         cols: [
           {
             key: 'orderId',
-            label: '订单号',
+            label: '提现单号',
             width: 160
           },
           {
-            key: 'organizationName',
-            label: '下单人',
+            key: 'realName',
+            label: '收款人',
             width: 160
           },
           {
-            key: 'organizationId',
-            label: '下单人ID',
-            width: 160
-          },
-          {
-            key: 'createTime',
-            label: '下单时间',
-            width: 160
-          },
-          {
-            key: 'typeName',
-            label: '订单类型',
-            width: 160
-          },
-          {
-            key: 'detail',
-            label: '订单详细说明',
-            minWidth: 200
-          },
-          {
-            key: 'unitPrice',
-            label: '一小时单价',
-            width: 120
-          },
-          {
-            key: 'duration',
-            label: '课程时间(小时)',
-            width: 120
+            key: 'bankNum',
+            label: '收款账号'
           },
           {
             key: 'amount',
-            label: '委托价格',
-            width: 120
-          },
-          {
-            key: 'updateTime',
-            label: '提现时间',
+            label: '提现金额',
             width: 120
           },
           {
@@ -417,8 +389,18 @@ export default {
             width: 120
           },
           {
+            key: 'createTime',
+            label: '申请时间',
+            width: 120
+          },
+          {
+            key: 'updateTime',
+            label: '到账时间',
+            width: 120
+          },
+          {
             key: 'statusName',
-            label: '提现状态',
+            label: '状态',
             width: 120
           }
         ]
@@ -537,7 +519,8 @@ export default {
         show: true,
         loading: true,
         rows: [],
-        selectedRows: []
+        selectedRows: [],
+        amount: 0
       }
       try {
         const res = await lingkeApi.orderTeacherOrderList({
@@ -558,46 +541,34 @@ export default {
     },
     handleCanWithdrawModalSelectionChange(rows) {
       this.canWithdrawModalParams.selectedRows = rows
+      this.canWithdrawModalParams.amount = rows.reduce((acc, row) => {
+        return acc + row.unitPrice * row.lessonNum
+      }, 0)
     },
     async handleCanWithdrawModalSubmit() {
+      if (!this.canWithdrawModalParams.selectedRows.length) {
+        this.$message.error('请选择要提现的订单')
+        return
+      }
       this.canWithdrawModalParams.loading = true
-      const resTipList = await Promise.all(this.canWithdrawModalParams.selectedRows.map(async row => {
-        const amount = row.unitPrice * row.duration
-        let resText = ''
-        try {
-          const res = await lingkeApi.withdrawalCreate({
-            userId: this.userInfo.userId,
-            orderId: row.id,
-            amount: amount,
-            fee: 0
-          })
-          if (res && res.data && res.data.code === 200) {
-            resText = `订单【${ row.task }】提现成功`
-          } else {
-            throw new Error(res?.message || '系统繁忙')
-          }
-        } catch (error) {
-          resText = `订单【${ row.task }】提现失败，${ error.message }`
-          console.log(error)
+      try {
+        const res = await lingkeApi.withdrawalCreate({
+          orderIds: this.canWithdrawModalParams.selectedRows.map(row => row.id).join(','),
+          amount: this.canWithdrawModalParams.amount,
+          fee: 0
+        })
+        if (res && res.code === 200 && res.data === 1) {
+            this.$message.success('已发起申请，可在提现记录查看进度')
+        } else {
+          throw new Error(res?.message || '系统繁忙')
         }
-        return resText
-      }))
+      } catch (error) {
+        this.$message.error(error.message)
+        console.log(error)
+      }
       this.canWithdrawModalParams.loading = false
       this.canWithdrawModalParams.show = false
       this.reloadAllData()
-      this.$info({
-        title: '提现结果：',
-        icon: () => null,
-        content: (
-          <div class="flex flex-col gap-y-3 pt-2">
-            {
-              resTipList.map((rowText, index) => (
-                <div class="pb-1 border-b border-solid border-gray-300">{ (index + 1) + '. ' + rowText }</div>
-              ))
-            }
-          </div>
-        )
-      })
     },
     handleOpenWithdrawalRecordModal() {
       this.withdrawalRecordModalParams = {

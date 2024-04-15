@@ -22,6 +22,24 @@ const permissionObj = {
         }
       })
     }
+  },
+  teacher2: () => {
+    const teacherInfo = store.state[CUR_APP].userInfo.teacherInfo
+    if (teacherInfo && teacherInfo.status === '2' && teacherInfo.bankBranch && teacherInfo.bankNum) {
+      return true
+    } else {
+      Modal.confirm({
+        title: '完善信息',
+        icon: () => null,
+        content: '请先完成实名认证和收款信息绑定',
+        okText: '去完善',
+        onOk() {
+          router.push({ name: 'PersonalCenter' })
+        },
+        onCancel() {
+        }
+      })
+    }
   }
 }
 

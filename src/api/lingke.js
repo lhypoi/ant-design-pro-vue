@@ -108,6 +108,38 @@ export function orderTeacherUpdate (parameter) {
   })
 }
 
+export function orderOrganizationUpdate (parameter) {
+  return request({
+    url: url + '/order/organization/update',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderDelete (parameter) {
+  return request({
+    url: url + '/order/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderDeliver (parameter) {
+  return request({
+    url: url + '/order/deliver',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function orderAuditDeliver (parameter) {
+  return request({
+    url: url + '/order/auditDeliver',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export function teacherGetAccount (parameter) {
   return request({
     url: url + '/teacher/getAccount',
@@ -276,6 +308,10 @@ export default {
   teacherRealNameAuth,
   orderUpdate,
   orderTeacherUpdate,
+  orderOrganizationUpdate,
+  orderDelete,
+  orderDeliver,
+  orderAuditDeliver,
   teacherGetAccount,
   orderTotal,
   withdrawalCreate,

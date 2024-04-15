@@ -25,7 +25,7 @@
                   <div class="text-ellipsis whitespace-nowrap overflow-hidden"><i class="el-icon-s-custom text-blue-400"></i> {{ teacher.major }}</div>
                 </div>
               </div>
-              <div class="flex items-center gap-x-4">
+              <div v-if="userInfo.roleId === 2" class="flex items-center gap-x-4">
                 <div class="cursor-pointer text-blue-400 leading-none">
                   <a-icon type="message" class="text-2xl" />
                 </div>
@@ -88,7 +88,8 @@
 
 <script>
 import { baseMixin } from '@/store/app-mixin'
-import { mapGetters } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
+import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
@@ -114,6 +115,9 @@ export default {
     }
   },
   computed: {
+    ...mapState(CUR_APP, [
+      'userInfo'
+    ]),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
     }),

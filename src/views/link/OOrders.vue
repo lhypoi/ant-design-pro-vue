@@ -87,8 +87,9 @@
           :fixed="col.fixed"
           :width="col.width"
           :min-width="col.minWidth"
+          :formatter="col.formatter"
         >
-          <template v-if="!col.type" v-slot="scope">
+          <template v-if="!col.type && !col.formatter" v-slot="scope">
             <div>{{ scope.row[col.key] }}</div>
           </template>
         </el-table-column>
@@ -166,17 +167,26 @@ export default {
         {
           key: 'lessonType',
           label: '课程模式',
-          width: 120
+          width: 120,
+          formatter: (row) => {
+            return this.codeDict.order.lessonType[row.lessonType]
+          }
         },
         {
           key: 'unitDuration',
           label: '课程时长',
-          width: 120
+          width: 120,
+          formatter: (row) => {
+            return row.unitDuration + 'h' + (row.lessonNum > 1 ? ' * ' + row.lessonNum : '')
+          }
         },
         {
           key: 'price',
           label: '价格',
-          width: 120
+          width: 120,
+          formatter: (row) => {
+            return '￥' + row.unitPrice * row.lessonNum
+          }
         },
         {
           key: 'teacherId',

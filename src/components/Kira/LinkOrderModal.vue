@@ -96,7 +96,7 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item key="unitPrice" prop="unitPrice" label="委托价格">
+            <a-form-model-item key="unitPrice" prop="unitPrice" :label="`${linkOrderModalParams.formData.lessonType === '2' ? '每节课' : ''}委托价格`">
               <a-input-number
                 v-model="linkOrderModalParams.formData.unitPrice"
                 placeholder="请输入"
@@ -488,7 +488,7 @@ export default {
           files: this.linkOrderModalParams.formData.files.filter(file => file.downloadUrl).map(file => file.downloadUrl).join(',') || undefined,
           teacherId: this.linkOrderModalParams.formData.teacherId || undefined,
           lessonType: this.linkOrderModalParams.formData.lessonType,
-          lessonNum: this.linkOrderModalParams.formData.lessonNum,
+          lessonNum: this.linkOrderModalParams.formData.lessonNum || 1,
           unitDuration: this.linkOrderModalParams.formData.unitDuration,
           unitPrice: this.linkOrderModalParams.formData.unitPrice
         }
