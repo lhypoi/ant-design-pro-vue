@@ -868,7 +868,9 @@ export default {
         this.$message.error('填写信息不符合要求，请检查')
         return
       }
+      let defaultTitle = '提示'
       let defaultMessageAction = '保存'
+      let defaultContent = () => `确定${defaultMessageAction}吗`
       if (!subFormKey) {
         switch (this.curTabKey) {
           case '2':
@@ -885,13 +887,16 @@ export default {
             defaultMessageAction = '绑定'
             break
           case '44':
+            defaultTitle = '修改密码'
             defaultMessageAction = '修改'
+            defaultContent = () => `修改密码后将重新登陆`
             break
         }
       }
       this.$confirm({
-        title: '提示',
-        content: `确定${defaultMessageAction}吗?`,
+        title: defaultTitle,
+        content: defaultContent(),
+        icon: () => null,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
@@ -906,20 +911,20 @@ export default {
               switch (this.curTabKey) {
                 case '1':
                   Object.assign(params, {
-                    nickName: formData.nickName,
-                    highEduLevel: formData.highEduLevel,
-                    major: formData.major,
-                    college: formData.college,
-                    advantage: formData.advantage,
-                    want: formData.want.join(','),
-                    sample: formData.want.includes('3')
-                      ? formData.sample
-                          .filter((file) => file.downloadUrl)
-                          .map((file) => file.downloadUrl)
-                          .join(',')
-                      : '',
-                    diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
-                    transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
+                    nickName: formData.nickName
+                    // highEduLevel: formData.highEduLevel,
+                    // major: formData.major,
+                    // college: formData.college,
+                    // advantage: formData.advantage,
+                    // want: formData.want.join(','),
+                    // sample: formData.want.includes('3')
+                    //   ? formData.sample
+                    //       .filter((file) => file.downloadUrl)
+                    //       .map((file) => file.downloadUrl)
+                    //       .join(',')
+                    //   : '',
+                    // diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
+                    // transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
                   })
                   break
                 case '2':
@@ -941,7 +946,7 @@ export default {
                 default:
                   break
               }
-              res = await lingkeApi.teacherUpdate(params)
+              res = await lingkeApi.organizationUpdate(params)
             } else {
               const formData = this.formData[subFormKey]
               switch (subFormKey) {

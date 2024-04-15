@@ -242,24 +242,26 @@
           </div>
           <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-1 mt-6">审核操作</div>
           <a-form-model
+            ref="AdminAuditTeacherForm"
+            :rules="adminAuditTeacherModalParams.formRules"
             :model="detailData"
             :label-col="{ span: 2 }"
             :wrapper-col="{ span: 22 }"
             labelAlign="left"
           >
-            <a-form-model-item prop="name" label="审核结果">
+            <a-form-model-item prop="status" label="结果">
               <a-radio-group v-model="detailData.status" size="large">
                 <a-radio v-for="item in options['statusOpt']" :key="item.key" :value="item.key">
                   {{ item.value }}
                 </a-radio>
               </a-radio-group>
-              <div v-if="detailData.status === '3'" class="pt-2">
-                <a-textarea
-                  v-model="detailData.remark"
-                  :rows="5"
-                  placeholder="请输入不通过原因"
-                />
-              </div>
+            </a-form-model-item>
+            <a-form-model-item v-if="detailData.status === '3'" prop="remark" label="原因">
+              <a-textarea
+                v-model="detailData.remark"
+                :rows="5"
+                placeholder="请输入不通过原因"
+              />
             </a-form-model-item>
           </a-form-model>
           <div class="pt-4 flex justify-center">
@@ -303,7 +305,15 @@ export default {
         loading: false
       },
       adminAuditTeacherModalParams: {
-        show: false
+        show: false,
+        formRules: {
+          status: [
+            { required: true, message: '请选择结果' }
+          ],
+          remark: [
+            { required: true, message: '请输入不通过原因' }
+          ]
+        }
       },
       options: {
         statusOpt: [
@@ -397,16 +407,23 @@ export default {
       this.handleDetailIdChange(item.userId)
       this.adminAuditTeacherModalParams.show = true
     },
-    handleAdminAuditTeacher() {
+    async handleAdminAuditTeacher() {
+      try {
+        await this.$refs.AdminAuditTeacherForm.validate()
+      } catch {
+        this.$message.error('提交信息不符合要求，请检查')
+        return
+      }
       this.$confirm({
         title: '提示',
+        icon: () => null,
         content: `确定提交？`,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
         onOk: async () => {
           try {
-            const res = await lingkeApi.teacherUpdate({
+            const res = await lingkeApi.adminAuditTeacher({
               userId: this.detailData.userId,
               status: this.detailData.status,
               remark: this.detailData.status === '3' ? this.detailData.remark : ''

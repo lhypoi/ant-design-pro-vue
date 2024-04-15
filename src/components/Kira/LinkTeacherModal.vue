@@ -45,7 +45,7 @@
             </div>
             <div class="pt-5">
               <a-tabs>
-                <a-tab-pane tab="简历" key="1">
+                <a-tab-pane v-if="teacher.cv.length" tab="简历" key="1">
                   <div class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="linkTeacherModalParams.pdfLoading ? 'overflow-hidden' : 'overflow-auto'">
                     <a-spin
                       v-if="linkTeacherModalParams.pdfLoading"

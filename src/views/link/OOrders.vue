@@ -96,7 +96,7 @@
         <el-table-column label="操作" :align="'center'" width="160" fixed="right">
           <template v-slot="scope">
             <div class="flex items-center justify-center gap-x-3">
-              <div class="text-blue-400 cursor-pointer" @click="$refs.LinkOrderModal.handleOpenLinkOrderModal()">编辑</div>
+              <!-- <div class="text-blue-400 cursor-pointer" @click="$refs.LinkOrderModal.handleOpenLinkOrderModal()">编辑</div> -->
               <div class="text-blue-400 cursor-pointer" @click="() => handleToDetail(scope.row)">详情</div>
             </div>
           </template>

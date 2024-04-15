@@ -568,7 +568,6 @@ export default {
       }
     },
     async handleAuditDeliver() {
-      console.log(this.$refs)
       try {
         await this.$refs.auditDeliverModalForm.validate()
       } catch {

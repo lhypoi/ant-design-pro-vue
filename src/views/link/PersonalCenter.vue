@@ -969,7 +969,7 @@ export default {
       }
       let defaultTitle = '提示'
       let defaultMessageAction = '保存'
-      let defaultContent = () => `确定${defaultMessageAction}吗?`
+      let defaultContent = () => `确定${defaultMessageAction}吗`
       if (!subFormKey) {
         switch (this.curTabKey) {
           case '3':
@@ -1038,8 +1038,8 @@ export default {
                     phoneNumber: formData.phoneNumber,
                     smsCode: formData.certificationSmsCode,
                     idNo: formData.idNo,
-                    cardFront: formData.cardFront[0]?.response && formData.cardFront[0].downloadUrl,
-                    cardBack: formData.cardBack[0]?.response && formData.cardBack[0].downloadUrl
+                    cardFront: formData.cardFront[0].downloadUrl,
+                    cardBack: formData.cardBack[0].downloadUrl
                   })
                   res = await lingkeApi.teacherRealNameAuth(params)
                   break
