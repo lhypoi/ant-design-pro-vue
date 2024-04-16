@@ -174,6 +174,11 @@ export default {
           }
         },
         {
+          key: 'statusName',
+          label: '状态',
+          width: 120
+        },
+        {
           key: 'unitDuration',
           label: '课程时长',
           width: 120,
@@ -190,25 +195,15 @@ export default {
           }
         },
         {
-          key: 'teacherId',
-          label: '委托对象ID',
-          width: 120
-        },
-        {
           key: 'teacherName',
           label: '委托对象',
           width: 120,
           formatter: this.$ellipsisColFormatter('teacherName')
         },
         {
-          key: 'statusName',
-          label: '状态',
-          width: 120
-        },
-        {
           key: 'createTime',
           label: '创建时间',
-          width: 160
+          width: 180
         }
       ]
     }

@@ -123,7 +123,7 @@ export default {
         {
           key: 'createTime',
           label: '注册时间',
-          width: 160
+          width: 180
         }
       ]
     }

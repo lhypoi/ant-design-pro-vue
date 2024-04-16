@@ -130,7 +130,7 @@ export default {
         {
           key: 'createTime',
           label: '下单时间',
-          width: 160
+          width: 180
         },
         {
           key: 'typeName',

@@ -387,7 +387,7 @@ export default {
       if (formData.lessonType === '1' && formData.unitDuration && formData.unitPrice) {
         txt = `合计：${formData.unitPrice}元, 共${formData.unitDuration}小时`
       } else if (formData.lessonType === '2' && formData.lessonNum && formData.unitPrice && formData.unitDuration) {
-        txt = `合计：共${formData.lessonNum}节课, 每节课${formData.unitPrice}元`
+        txt = `合计：共${formData.lessonNum * formData.unitPrice}元。 ${formData.lessonNum}节课, 每节课${formData.unitDuration}小时`
       }
       return txt
     }

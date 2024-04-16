@@ -186,7 +186,7 @@ export default {
         {
           key: 'createTime',
           label: '创建时间',
-          width: 160
+          width: 180
         }
       ]
     }

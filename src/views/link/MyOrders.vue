@@ -345,7 +345,7 @@ export default {
           {
             key: 'createTime',
             label: '发布时间',
-            width: 160
+            width: 180
           },
           {
             type: 'selection',
@@ -391,7 +391,7 @@ export default {
           {
             key: 'createTime',
             label: '申请时间',
-            width: 120
+            width: 180
           },
           {
             key: 'updateTime',
