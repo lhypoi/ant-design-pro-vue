@@ -71,7 +71,7 @@
               </div>
               <div v-if="detailData.status !== '1'" class="w-full sm:w-1/3 flex text-sm">
                 <div class="text-gray-400 w-20">老师</div>
-                <div v-if="detailData.teacherId" class="text-blue-400 cursor-pointer" @click="$refs.LinkTeacherModal.handleOpenLinkTeacherModal(detailData.userId)">{{ detailData.teacherName }}</div>
+                <div v-if="detailData.teacherId" class="text-blue-400 cursor-pointer" @click="$refs.LinkTeacherModal.handleOpenLinkTeacherModal(detailData.teacherId)">{{ detailData.teacherName }}</div>
                 <div v-else class="text-gray-600">-</div>
               </div>
               <div v-if="detailData.status !== '1' && detailData.status !== '2' && detailData.status !== '6'" class="w-full sm:w-2/3 flex text-sm">

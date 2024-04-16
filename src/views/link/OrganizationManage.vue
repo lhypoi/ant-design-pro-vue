@@ -60,7 +60,7 @@
               <a-tag v-if="scope.row[col.key] === '1'" color="blue" class="m-0">待审核</a-tag>
               <a-tag v-else-if="scope.row[col.key] === '2'" color="green" class="m-0">已认证</a-tag>
               <a-tag v-else-if="scope.row[col.key] === '3'" color="red" class="m-0">认证不通过</a-tag>
-              <a-tag v-else-if="!scope.row[col.key]" class="m-0">未认证</a-tag>
+              <a-tag v-else-if="scope.row[col.key] === '0'" class="m-0">未认证</a-tag>
             </div>
             <div v-else>{{ scope.row[col.key] }}</div>
           </template>

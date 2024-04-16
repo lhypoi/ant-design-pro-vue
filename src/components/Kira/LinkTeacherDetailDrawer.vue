@@ -28,134 +28,114 @@
           class="pt-6"
           v-loading="detailDataLoading"
         >
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3">基础信息</div>
-          <div class="flex flex-wrap gap-y-2">
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4">基础信息</div>
+          <div class="flex flex-wrap gap-y-4">
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">用户ID</div>
-              <div class="text-gray-950">{{ detailData.userId }}</div>
+              <div class="text-gray-950">{{ detailData.userId || '-' }}</div>
             </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="w-full sm:w-2/3 flex text-sm">
               <div class="text-gray-400 w-20">昵称</div>
-              <div class="text-gray-950">{{ detailData.nickName }}</div>
+              <div class="text-gray-950">{{ detailData.nickName || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">最高学历</div>
-              <div class="text-gray-950">{{ detailData.highEduLevelName }}</div>
+              <div class="text-gray-950">{{ detailData.highEduLevelName || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">专业</div>
-              <div class="text-gray-950">{{ detailData.major }}</div>
+              <div class="text-gray-950">{{ detailData.major || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">学校</div>
-              <div class="text-gray-950">{{ detailData.college }}</div>
+              <div class="text-gray-950">{{ detailData.college || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-28">毕业证/学生证</div>
               <div>
-                <el-image
-                  v-if="detailData.diploma[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.diploma[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.diploma[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.diploma"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="w-full sm:w-2/3 flex text-sm">
               <div class="text-gray-400 w-20">成绩单</div>
               <div>
-                <el-image
-                  v-if="detailData.transcript[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.transcript[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.transcript[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.transcript"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-24">我想做什么</div>
-              <div class="text-gray-950">{{ orderTypeDict[detailData.want] }}</div>
+              <div class="text-gray-400 w-20">我想做什么</div>
+              <div class="text-gray-950">{{ orderTypeDict[detailData.want] || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">擅长做什么</div>
-              <div class="text-gray-950">{{ detailData.advantage }}</div>
+              <div class="text-gray-400 w-20">擅长做什么</div>
+              <div class="text-gray-950 w-0 flex-auto">{{ detailData.advantage || '-' }}</div>
             </div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3 mt-6">实名信息</div>
-          <div class="flex flex-wrap gap-y-2">
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">实名信息</div>
+          <div class="flex flex-wrap gap-y-4">
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">认证状态</div>
               <div>
                 <a-tag v-if="detailData.status === '1'" color="blue" class="m-0">待审核</a-tag>
                 <a-tag v-else-if="detailData.status === '2'" color="green" class="m-0">已认证</a-tag>
                 <a-tag v-else-if="detailData.status === '3'" color="red" class="m-0">认证不通过</a-tag>
-                <a-tag v-else-if="!detailData.status" class="m-0">未认证</a-tag>
+                <a-tag v-else-if="detailData.status === '0'" class="m-0">未认证</a-tag>
               </div>
             </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="w-full sm:w-2/3 flex text-sm">
               <div class="text-gray-400 w-20">姓名</div>
-              <div class="text-gray-950">{{ detailData.realName }}</div>
+              <div class="text-gray-950">{{ detailData.realName || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-24">手机号码</div>
-              <div class="text-gray-950">{{ detailData.phoneNumber }}</div>
+              <div class="text-gray-400 w-20">手机号码</div>
+              <div class="text-gray-950">{{ detailData.phoneNumber || '-' }}</div>
+            </div>
+            <div class="w-full sm:w-2/3 flex text-sm">
+              <div class="text-gray-400 w-20">身份证号码</div>
+              <div class="text-gray-950">{{ detailData.idNo || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">身份证号码</div>
-              <div class="text-gray-950">{{ detailData.idNo }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">身份证正面</div>
+              <div class="text-gray-400 w-20">身份证正面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardFront[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardFront[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardFront[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardFront"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">身份证反面</div>
+              <div class="text-gray-400 w-20">身份证反面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardBack[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardBack[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardBack[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardBack"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3 mt-6">账号信息</div>
-          <div class="flex flex-wrap gap-y-2">
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">账号信息</div>
+          <div class="flex flex-wrap gap-y-4">
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">邮箱</div>
-              <div class="text-gray-950">{{ detailData.email }}</div>
+              <div class="text-gray-950">{{ detailData.email || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">微信</div>
-              <div class="text-gray-950">{{ detailData.wechatName }}</div>
+              <div class="text-gray-950">{{ detailData.wechatName || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">注册时间</div>
-              <div class="text-gray-950">{{ detailData.createTime }}</div>
+              <div class="text-gray-950">{{ detailData.createTime || '-' }}</div>
             </div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3 mt-6">简历</div>
-          <div class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">简历</div>
+          <div v-if="detailData.cv[0]?.downloadUrl" class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
             <a-spin
               v-if="pdfBoxParams.loading"
               class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-gray-300 flex flex-col gap-5 justify-center items-center"
@@ -165,7 +145,6 @@
             </a-spin>
             <div class="pdf-box p-3 bg-gray-500 min-h-full">
               <vue-pdf-embed
-                v-if="detailData.cv[0]?.downloadUrl"
                 ref="pdf"
                 :source="detailData.cv[0].downloadUrl"
                 @progress="handlePdfProgress"
@@ -197,46 +176,36 @@
           <a-skeleton avatar active :paragraph="{ rows: 4 }" />
         </div>
         <div v-else class="link-style-form link-style-form-sm">
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-3">实名信息</div>
-          <div class="flex flex-wrap gap-y-2">
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4">实名信息</div>
+          <div class="flex flex-wrap gap-y-4">
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">姓名</div>
-              <div class="text-gray-950">{{ detailData.realName }}</div>
+              <div class="text-gray-950">{{ detailData.realName || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-24">手机号码</div>
-              <div class="text-gray-950">{{ detailData.phoneNumber }}</div>
+              <div class="text-gray-400 w-20">手机号码</div>
+              <div class="text-gray-950">{{ detailData.phoneNumber || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">身份证号码</div>
-              <div class="text-gray-950">{{ detailData.idNo }}</div>
+              <div class="text-gray-400 w-20">身份证号码</div>
+              <div class="text-gray-950">{{ detailData.idNo || '-' }}</div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">身份证正面</div>
+              <div class="text-gray-400 w-20">身份证正面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardFront[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardFront[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardFront[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardFront"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">身份证反面</div>
+              <div class="text-gray-400 w-20">身份证反面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardBack[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardBack[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardBack[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardBack"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
           </div>
@@ -287,11 +256,13 @@ import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
+import LinkFormItemImg from '@/components/Kira/LinkFormItemImg'
 
 export default {
   name: 'LinkTeacherDetailDrawer',
   components: {
-    VuePdfEmbed
+    VuePdfEmbed,
+    LinkFormItemImg
   },
   mixins: [baseMixin],
   props: {
