@@ -49,14 +49,14 @@
           >
             查询
           </a-button>
-          <a-button
+          <!-- <a-button
             class="rounded-md"
             type="primary"
             icon="search"
             size="large"
           >
             导出Excel
-          </a-button>
+          </a-button> -->
         </div>
       </a-form-model>
     </div>
@@ -81,16 +81,17 @@
           :fixed="col.fixed"
           :width="col.width"
           :min-width="col.minWidth"
+          :formatter="col.formatter"
         >
-          <template v-if="!col.type" v-slot="scope">
-            <div v-if="col.key === 'status'">{{ `${ scope.row['statusName'] }${ scope.row['status'] === '3' ? '，' + scope.row['remark'] : '' }` }}</div>
-            <div v-else>{{ scope.row[col.key] }}</div>
+          <template v-if="!col.type && !col.formatter" v-slot="scope">
+            <div>{{ scope.row[col.key] }}</div>
           </template>
         </el-table-column>
         <el-table-column label="操作" :align="'center'" width="120" fixed="right">
           <template v-slot="scope">
             <div class="flex items-center justify-center gap-x-3">
               <div class="text-blue-400 cursor-pointer" @click="() => handleToDetail(scope.row)">详情</div>
+              <div v-if="scope.row.status === '1' || scope.row.status === '2'" class="text-red-400 cursor-pointer" @click="() => $refs.LinkOrderDetailDrawer.handleCancelTask(scope.row, '关闭')">关闭委托</div>
             </div>
           </template>
         </el-table-column>
@@ -133,70 +134,59 @@ export default {
         status: []
       },
       tableCols: [
-        {
+      {
           key: 'id',
-          label: '订单号',
+          label: '委托ID',
           width: 160
-        },
-        {
-          key: 'organizationName',
-          label: '下单人',
-          width: 160
-        },
-        {
-          key: 'organizationId',
-          label: '下单人ID',
-          width: 160
-        },
-        {
-          key: 'createTime',
-          label: '下单时间',
-          width: 160
-        },
-        {
-          key: 'typeName',
-          label: '订单类型',
-          width: 120
         },
         {
           key: 'task',
-          label: '需求描述',
-          width: 120
+          label: '委托名称',
+          width: 160,
+          formatter: this.$ellipsisColFormatter('task')
         },
         {
-          key: 'updateTime',
-          label: '交付时间/辅导时间',
-          width: 160
-        },
-        {
-          key: 'unitPrice',
-          label: '委托单价',
-          width: 120
-        },
-        {
-          key: 'duration',
-          label: '辅导时间(小时)',
-          width: 120
-        },
-        {
-          key: 'price',
-          label: '委托价格',
-          width: 120
-        },
-        {
-          key: 'teacherId',
-          label: '接单人ID',
-          width: 120
-        },
-        {
-          key: 'teacherName',
-          label: '接单人',
+          key: 'typeName',
+          label: '委托类型',
           width: 120
         },
         {
           key: 'statusName',
           label: '委托状态',
           width: 120
+        },
+        {
+          key: 'organizationName',
+          label: '委托发起方',
+          width: 160,
+          formatter: this.$ellipsisColFormatter('organizationName')
+        },
+        {
+          key: 'teacherName',
+          label: '委托接收方',
+          width: 160,
+          formatter: this.$ellipsisColFormatter('teacherName')
+        },
+        {
+          key: 'lessonType',
+          label: '课程模式',
+          width: 120,
+          formatter: (row) => {
+            return this.codeDict.order.lessonType[row.lessonType]
+          }
+        },
+        {
+          key: 'price',
+          label: '价格',
+          width: 120,
+          formatter: (row) => {
+            return '￥' + row.unitPrice * row.lessonNum
+          }
+        },
+        {
+          key: 'createTime',
+          label: '创建时间',
+          width: 160
         }
       ]
     }

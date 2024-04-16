@@ -157,7 +157,8 @@ export default {
         {
           key: 'task',
           label: '委托名称',
-          width: 160
+          width: 160,
+          formatter: this.$ellipsisColFormatter('task')
         },
         {
           key: 'typeName',
@@ -196,7 +197,8 @@ export default {
         {
           key: 'teacherName',
           label: '委托对象',
-          width: 120
+          width: 120,
+          formatter: this.$ellipsisColFormatter('teacherName')
         },
         {
           key: 'statusName',

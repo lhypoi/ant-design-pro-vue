@@ -164,4 +164,20 @@ Vue.prototype.$parseFileNamesToObjs = (names) => {
   })
 }
 
-process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')
+Vue.prototype.$ellipsisColFormatter = function(colKey) {
+  return row => {
+    const h = this.$createElement
+    return h({
+      render() {
+        return (
+          <a-tooltip>
+            <template slot="title">
+              <div>{ row[colKey] }</div>
+            </template>
+            <div class='whitespace-nowrap overflow-hidden text-ellipsis'>{ row[colKey] }</div>
+          </a-tooltip>
+        )
+      }
+    })
+  }
+}

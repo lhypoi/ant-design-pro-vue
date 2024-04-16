@@ -388,11 +388,11 @@ export default {
         }
       })
     },
-    handleCancelTask(item) {
+    handleCancelTask(item, actionName = '取消') {
       this.$confirm({
-        title: '取消委托',
+        title: `${actionName}委托`,
         icon: () => null,
-        content: `取消后将不可恢复，确定取消吗`,
+        content: `${actionName}后将不可恢复，确定${actionName}吗`,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
@@ -402,7 +402,7 @@ export default {
               id: item.id
             })
             if (res && res.code === 200 && res.data === 1) {
-              this.$message.success('取消成功')
+              this.$message.success(`${actionName}成功`)
               this.handleReload()
             } else {
               throw new Error(res.message || '失败')
