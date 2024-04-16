@@ -93,6 +93,12 @@
               <template slot="operator" slot-scope="text, record">
                 <div>{{ record.status === '1' ? detailData.teacherName : detailData.organizationName }}</div>
               </template>
+              <template slot="lessonNo" slot-scope="text, record">
+                <div>第{{ record.lessonNo }}节</div>
+              </template>
+              <template slot="status" slot-scope="text, record">
+                <div>{{ codeDict.order.deliverStatus[record.status] }}</div>
+              </template>
               <template slot="remark" slot-scope="text, record">
                 <div>{{ record.status === '1' ? '发起交付' : record.status === '2' ? `第${record.lessonNo}节课已交付` : (text || '-') }}</div>
               </template>
@@ -151,95 +157,6 @@
             </a-button>
           </div>
         </div>
-        <!-- <div
-          v-else
-          class="flex flex-col gap-5 sm:flex-row"
-          v-loading="detailDataLoading"
-        >
-          <div class="flex items-center justify-center sm:items-start">
-            <div class="w-full sm:w-36 h-36 rounded-lg overflow-hidden bg-blue-50">
-              <el-image
-                class="w-full h-full"
-                :src="require('@/assets/link/task-type-1.png')"
-              />
-            </div>
-          </div>
-          <div class="link-style-form flex flex-col sm:flex-auto">
-            <div class="flex gap-x-5">
-              <div class="flex-auto text-lg text-slate-900 font-bold break-all ">{{ detailData.task }}</div>
-              <div
-                class="text-yellow-500 text-xl whitespace-nowrap"
-              >{{ detailData.statusName }}</div>
-            </div>
-            <div class="flex flex-wrap pt-2">
-              <div
-                class="text-sm text-blue-600 pr-2 cursor-pointer"
-              >#{{ detailData.typeName }}</div>
-              <div class="text-sm text-slate-400 sm:pl-2">{{ detailData.updateTime }}</div>
-            </div>
-            <div class="pt-2 pb-4 flex">
-              <div
-                class="cursor-pointer flex items-center justify-center px-3 h-7 rounded-md text-sm bg-rose-500 text-white"
-              >价格：￥{{ `${detailData.unitPrice}/h x ${detailData.duration}h` }}</div>
-            </div>
-            <div class="text-base text-slate-800 break-all ">
-              {{ detailData.detail }}
-            </div>
-            <div v-if="detailData.fileList && detailData.fileList.length" class="pt-8">
-              <div class="text-gray-400">相关文件：</div>
-              <a-upload-dragger
-                class="dragUploader"
-                :fileList="detailData.fileList"
-                disabled
-                @preview="handleFileDownload"
-              >
-              </a-upload-dragger>
-            </div>
-            <div class="flex gap-x-6 gap-y-3 pt-8 flex-wrap whitespace-nowrap">
-              <a-button
-                class="h-10 rounded-md"
-                type="primary"
-                @click="handleCatchTask(detailData)"
-              >
-                接受委托
-              </a-button>
-              <a-button
-                class="h-10 rounded-md"
-                type="danger"
-                @click="handleRefuseTask(detailData)"
-              >
-                拒绝委托
-              </a-button>
-              <a-button
-                class="success-btn h-10 rounded-md"
-                type="primary"
-                @click="handlePayTask(detailData)"
-              >
-                支付
-              </a-button>
-              <a-button
-                class="success-btn h-10 rounded-md"
-                type="primary"
-                @click="handleFinishTask(detailData)"
-              >
-                交付确认
-              </a-button>
-              <a-button
-                class="h-10 rounded-md"
-                type="primary"
-              >
-                联系委托方
-              </a-button>
-              <a-button
-                class="h-10 rounded-md"
-                type="danger"
-                @click="handleCancelTask(detailData)"
-              >
-                撤销委托
-              </a-button>
-            </div>
-          </div>
-        </div> -->
       </div>
     </a-modal>
     <LinkTeacherModal
@@ -319,11 +236,13 @@ export default {
       deliverColumns: [
         {
           title: '操作方',
-          dataIndex: 'operator'
+          dataIndex: 'operator',
+          scopedSlots: { customRender: 'operator' }
         },
         {
           title: '交付课程',
-          dataIndex: 'lessonNo'
+          dataIndex: 'lessonNo',
+          scopedSlots: { customRender: 'lessonNo' }
         },
         {
           title: '时间',
@@ -331,11 +250,13 @@ export default {
         },
         {
           title: '交付状态',
-          dataIndex: 'statusName'
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' }
         },
         {
           title: '备注',
-          dataIndex: 'remark'
+          dataIndex: 'remark',
+          scopedSlots: { customRender: 'remark' }
         }
       ],
       auditDeliverModalParams: {
