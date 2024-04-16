@@ -79,18 +79,16 @@
             <a-form-model-item prop="college" label="学校">
               <a-input v-model="formData[curTabKey].college" placeholder="请输入毕业大学" size="large" />
             </a-form-model-item>
-            <LinkFormItemImg
-              formItemKey="diploma"
-              formItemLabel="毕业证/学生证"
-              :fileList.sync="formData[curTabKey]['diploma']"
-              :illustrativeGraphsUrl="illustrativeGraphs['diploma']"
-            />
-            <LinkFormItemImg
-              formItemKey="transcript"
-              formItemLabel="成绩单"
-              :fileList.sync="formData[curTabKey]['transcript']"
-              :illustrativeGraphsUrl="illustrativeGraphs['transcript']"
-            />
+            <a-form-model-item prop="diploma" label="毕业证/学生证">
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['diploma']"
+              />
+            </a-form-model-item>
+            <a-form-model-item prop="transcript" label="成绩单">
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['transcript']"
+              />
+            </a-form-model-item>
             <div class="text-base text-gray-950 font-bold pb-2">擅长做什么：</div>
             <a-form-model-item prop="advantage" :wrapper-col="{ offset: 3 }">
               <a-textarea
@@ -245,18 +243,18 @@
             <a-form-model-item prop="idNo" label="身份证号">
               <a-input v-model="formData[curTabKey].idNo" placeholder="请输入身份证号" size="large" :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'" />
             </a-form-model-item>
-            <LinkFormItemImg
-              formItemKey="cardFront"
-              formItemLabel="身份证正面"
-              :fileList.sync="formData[curTabKey]['cardFront']"
-              :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
-            />
-            <LinkFormItemImg
-              formItemKey="cardBack"
-              formItemLabel="身份证反面"
-              :fileList.sync="formData[curTabKey]['cardBack']"
-              :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
-            />
+            <a-form-model-item prop="cardFront" label="身份证正面">
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['cardFront']"
+                :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
+              />
+            </a-form-model-item>
+            <a-form-model-item prop="cardBack" label="身份证反面">
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['cardBack']"
+                :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
+              />
+            </a-form-model-item>
           </template>
           <template v-if="curTabKey === '4'">
             <div class="text-base text-gray-950 font-bold pb-2">
@@ -901,18 +899,18 @@ export default {
           console.log(teacherInfo)
           const formData = {
             1: {
-              nickName: teacherInfo.nickName,
+              nickName: teacherInfo.nickName || '',
               highEduLevel: teacherInfo.highEduLevel || undefined,
               major: teacherInfo.major || '',
               college: teacherInfo.college || '',
               advantage: teacherInfo.advantage || '',
               want: (teacherInfo.want || '').split(','),
-              sample: this.parseFileNamesToObjs(teacherInfo.sampleList || []),
-              diploma: this.parseFileNamesToObjs(teacherInfo.diplomaList || []),
-              transcript: this.parseFileNamesToObjs(teacherInfo.transcriptList || [])
+              sample: this.$parseFileNamesToObjs(teacherInfo.sampleList || []),
+              diploma: this.$parseFileNamesToObjs(teacherInfo.diplomaList || []),
+              transcript: this.$parseFileNamesToObjs(teacherInfo.transcriptList || [])
             },
             2: {
-              cv: this.parseFileNamesToObjs(teacherInfo.cvList || [])
+              cv: this.$parseFileNamesToObjs(teacherInfo.cvList || [])
             },
             3: {
               status: teacherInfo.status,
@@ -921,14 +919,14 @@ export default {
               phoneNumber: teacherInfo.phoneNumber || '',
               certificationSmsCode: '',
               idNo: teacherInfo.idNo || '',
-              cardFront: teacherInfo.cardFront ? this.parseFileNamesToObjs([teacherInfo.cardFront]) : [],
-              cardBack: teacherInfo.cardBack ? this.parseFileNamesToObjs([teacherInfo.cardBack]) : []
+              cardFront: teacherInfo.cardFront ? this.$parseFileNamesToObjs([teacherInfo.cardFront]) : [],
+              cardBack: teacherInfo.cardBack ? this.$parseFileNamesToObjs([teacherInfo.cardBack]) : []
             },
             4: {
               realName: '',
               idNo: '',
-              bankBranch: teacherInfo.bankBranch,
-              bankNum: teacherInfo.bankNum
+              bankBranch: teacherInfo.bankBranch || '',
+              bankNum: teacherInfo.bankNum || ''
             },
             51: {
               oldEmail: teacherInfo.email || '',
@@ -1068,6 +1066,7 @@ export default {
                 case '53':
                   Object.assign(params, {
                     email: formData.email,
+                    userId: this.userInfo.userId,
                     smsCode: formData.emailCodeForPassWord,
                     passWord: formData.newPassWord,
                     rePassWord: formData.confirmPassWord
@@ -1167,17 +1166,6 @@ export default {
         return file
       })
       this.formData[formKey][itemKey] = fileList
-    },
-    parseFileNamesToObjs(names) {
-      return names.map((name) => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: fileName + fileExtension || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)

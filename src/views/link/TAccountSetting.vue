@@ -449,17 +449,6 @@ export default {
       })
       this.formData[formKey][itemKey] = fileList
     },
-    parseFileNamesToObjs(names) {
-      return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: (fileName + fileExtension) || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
-    },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)
     },

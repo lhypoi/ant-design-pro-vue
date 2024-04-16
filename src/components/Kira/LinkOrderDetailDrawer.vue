@@ -396,7 +396,7 @@ export default {
           })
           if (res && res.code === 200) {
             const detailData = res.data
-            detailData.fileList = detailData.files ? this.parseFileNamesToObjs(detailData.files.split(',')) : []
+            detailData.fileList = detailData.files ? this.$parseFileNamesToObjs(detailData.files.split(',')) : []
             this.detailData = detailData
           } else {
             throw new Error(res.message || '加载失败')
@@ -409,17 +409,6 @@ export default {
       } else {
         this.detailData = null
       }
-    },
-    parseFileNamesToObjs(names) {
-      return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: (fileName + fileExtension) || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)
@@ -577,7 +566,7 @@ export default {
       this.$confirm({
         title: '审核交付',
         icon: () => null,
-        content: `${ this.detailData.lessonProgress === (this.detailData.lessonNum - 1) ? '确认交付后订单金额将结算到对方账户' : '确认交付后将开始下一课时' }`,
+        content: `${ this.auditDeliverModalParams.formData.status === '3' ? '审核内容将提交给教师，确认拒绝吗' : this.detailData.lessonProgress === (this.detailData.lessonNum - 1) ? '确认交付后订单金额将结算到对方账户' : '确认交付后将开始下一课时' }`,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',

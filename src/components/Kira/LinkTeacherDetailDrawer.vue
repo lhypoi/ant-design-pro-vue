@@ -369,12 +369,12 @@ export default {
             this.detailData = {
               ...detailData,
               want: (detailData.want || '').split(','),
-              sample: this.parseFileNamesToObjs(detailData.sampleList || []),
-              cv: this.parseFileNamesToObjs(detailData.cvList || []),
-              diploma: this.parseFileNamesToObjs(detailData.diplomaList || []),
-              transcript: this.parseFileNamesToObjs(detailData.transcriptList || []),
-              cardFront: detailData.cardFront ? this.parseFileNamesToObjs([detailData.cardFront]) : [],
-              cardBack: detailData.cardBack ? this.parseFileNamesToObjs([detailData.cardBack]) : []
+              sample: this.$parseFileNamesToObjs(detailData.sampleList || []),
+              cv: this.$parseFileNamesToObjs(detailData.cvList || []),
+              diploma: this.$parseFileNamesToObjs(detailData.diplomaList || []),
+              transcript: this.$parseFileNamesToObjs(detailData.transcriptList || []),
+              cardFront: detailData.cardFront ? this.$parseFileNamesToObjs([detailData.cardFront]) : [],
+              cardBack: detailData.cardBack ? this.$parseFileNamesToObjs([detailData.cardBack]) : []
             }
           } else {
             throw new Error(res.message || '加载失败')
@@ -385,17 +385,6 @@ export default {
         }
         this.detailDataLoading = false
       }
-    },
-    parseFileNamesToObjs(names) {
-      return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: (fileName + fileExtension) || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)

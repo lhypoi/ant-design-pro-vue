@@ -151,4 +151,17 @@ Vue.use(CollapseItem)
 
 Vue.use(VueClipboard)
 
+Vue.prototype.$parseFileNamesToObjs = (names) => {
+  return names.map((name) => {
+    const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
+    return {
+      uid: name,
+      name: fileName + fileExtension || name,
+      status: 'done',
+      downloadUrl: name,
+      url: name
+    }
+  })
+}
+
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')

@@ -49,7 +49,7 @@
           <template v-if="curTabKey === '2'">
             <div>
               <a-result
-                v-if="!formData[curTabKey].status"
+                v-if="formData[curTabKey].status === '0'"
                 status="warning"
                 title="待认证"
                 sub-title="为保障您的权益，请尽快完成实名认证"
@@ -77,20 +77,20 @@
               <a-input
                 v-model="formData[curTabKey].name"
                 placeholder="请输入企业全称"
-                :disabled="formData[curTabKey].status != '3'"
+                :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
               />
             </a-form-model-item>
             <a-form-model-item prop="legalPerson" label="法人姓名">
               <a-input
                 v-model="formData[curTabKey].legalPerson"
                 placeholder="请输入法人姓名"
-                :disabled="formData[curTabKey].status != '3'"
+                :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
               />
             </a-form-model-item>
             <a-form-model-item prop="legalPhoneNumber" label="法人手机号码">
-              <a-input v-model="formData[curTabKey].legalPhoneNumber" placeholder="请输入手机号码" size="large" />
+              <a-input v-model="formData[curTabKey].legalPhoneNumber" placeholder="请输入手机号码" size="large" :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'" />
             </a-form-model-item>
-            <a-form-model-item prop="legalSmsCode" label="验证码" ref="legalSmsCode">
+            <a-form-model-item v-if="!(formData[curTabKey].status === '1' || formData[curTabKey].status === '2')" prop="legalSmsCode" label="验证码" ref="legalSmsCode">
               <div class="flex flex-row gap-3">
                 <a-input
                   v-model="formData[curTabKey].legalSmsCode"
@@ -125,23 +125,26 @@
               </div>
             </a-form-model-item>
             <a-form-model-item prop="idNo" label="法人身份证号">
-              <a-input v-model="formData[curTabKey].idNo" placeholder="请输入法人身份证号" size="large" />
+              <a-input v-model="formData[curTabKey].idNo" placeholder="请输入法人身份证号" size="large" :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'" />
             </a-form-model-item>
-            <LinkFormItemImg
-              formItemKey="cardFront"
-              formItemLabel="身份证正面"
-              :fileList.sync="formData[curTabKey]['cardFront']"
-            />
-            <LinkFormItemImg
-              formItemKey="cardBack"
-              formItemLabel="身份证反面"
-              :fileList.sync="formData[curTabKey]['cardBack']"
-            />
-            <LinkFormItemImg
-              formItemKey="businessLicense"
-              formItemLabel="营业执照"
-              :fileList.sync="formData[curTabKey]['businessLicense']"
-            />
+            <a-form-model-item prop="cardFront" label="身份证正面">
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['cardFront']"
+                :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
+              />
+            </a-form-model-item>
+            <a-form-model-item prop="cardBack" label="身份证反面">
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['cardBack']"
+                :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
+              />
+            </a-form-model-item>
+            <a-form-model-item prop="businessLicense" label="营业执照">
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['businessLicense']"
+                :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
+              />
+            </a-form-model-item>
           </template>
           <template v-if="curTabKey === '3'">
             <div class="text-base text-gray-950 font-bold pb-2">
@@ -372,7 +375,7 @@
         <a-button v-if="curTabKey === '1'" type="primary" class="step-btn w-40 success-btn" @click="handleSave()">
           保存
         </a-button>
-        <a-button v-if="curTabKey === '2'" type="primary" class="step-btn w-40 success-btn" @click="handleSave()">
+        <a-button v-if="curTabKey === '2' && !(formData[curTabKey].status === '1' || formData[curTabKey].status === '2')" type="primary" class="step-btn w-40 success-btn" @click="handleSave()">
           提交审核
         </a-button>
         <a-button v-if="curTabKey === '3'" type="primary" class="step-btn w-40 success-btn" @click="handleSave()">
@@ -389,6 +392,7 @@ import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
 import LinkFormItemImg from '@/components/Kira/LinkFormItemImg'
+import storage from 'store'
 
 export default {
   name: 'PersonalCenter',
@@ -472,22 +476,22 @@ export default {
           bankBranch: '',
           bankNum: ''
         },
-        51: {
+        41: {
           oldEmail: '',
           email: '',
           emailCode: ''
         },
-        52: {
+        42: {
           openId: '',
           wechatName: ''
         },
-        53: {
+        43: {
           email: '',
           emailCodeForPassWord: '',
           newPassWord: '',
           confirmPassWord: ''
         },
-        54: {
+        44: {
           oldPhone: '',
           phone: '',
           phoneCode: ''
@@ -804,25 +808,25 @@ export default {
           const organizationInfo = res.data
           const formData = {
             1: {
-              nickName: organizationInfo.nickName
+              nickName: organizationInfo.nickName || ''
             },
             2: {
-              name: organizationInfo.name,
-              legalPerson: organizationInfo.legalPerson,
-              legalPhoneNumber: organizationInfo.legalPhoneNumber,
+              name: organizationInfo.name || '',
+              legalPerson: organizationInfo.legalPerson || '',
+              legalPhoneNumber: organizationInfo.legalPhoneNumber || '',
               legalSmsCode: '',
-              idNo: organizationInfo.idNo,
-              cardFront: organizationInfo.cardFront ? this.parseFileNamesToObjs([organizationInfo.cardFront]) : [],
-              cardBack: organizationInfo.cardBack ? this.parseFileNamesToObjs([organizationInfo.cardBack]) : [],
-              businessLicense: this.parseFileNamesToObjs(organizationInfo.businessLicenseList || []),
+              idNo: organizationInfo.idNo || '',
+              cardFront: organizationInfo.cardFront ? this.$parseFileNamesToObjs([organizationInfo.cardFront]) : [],
+              cardBack: organizationInfo.cardBack ? this.$parseFileNamesToObjs([organizationInfo.cardBack]) : [],
+              businessLicense: this.$parseFileNamesToObjs(organizationInfo.businessLicenseList || []),
               status: organizationInfo.status,
-              remark: organizationInfo.remark
+              remark: organizationInfo.remark || ''
             },
             3: {
-              legalPerson: organizationInfo.legalPerson,
-              idNo: organizationInfo.idNo,
-              bankBranch: organizationInfo.bankBranch,
-              bankNum: organizationInfo.bankNum
+              legalPerson: organizationInfo.legalPerson || '',
+              idNo: organizationInfo.idNo || '',
+              bankBranch: organizationInfo.bankBranch || '',
+              bankNum: organizationInfo.bankNum || ''
             },
             41: {
               oldEmail: organizationInfo.email || '',
@@ -883,10 +887,10 @@ export default {
       } else {
         switch (subFormKey) {
           case '41':
-          case '43':
+          case '44':
             defaultMessageAction = '绑定'
             break
-          case '44':
+          case '43':
             defaultTitle = '修改密码'
             defaultMessageAction = '修改'
             defaultContent = () => `修改密码后将重新登陆`
@@ -912,69 +916,74 @@ export default {
                 case '1':
                   Object.assign(params, {
                     nickName: formData.nickName
-                    // highEduLevel: formData.highEduLevel,
-                    // major: formData.major,
-                    // college: formData.college,
-                    // advantage: formData.advantage,
-                    // want: formData.want.join(','),
-                    // sample: formData.want.includes('3')
-                    //   ? formData.sample
-                    //       .filter((file) => file.downloadUrl)
-                    //       .map((file) => file.downloadUrl)
-                    //       .join(',')
-                    //   : '',
-                    // diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
-                    // transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
                   })
+                  res = await lingkeApi.organizationUpdate(params)
                   break
                 case '2':
                   Object.assign(params, {
-                    cv: (formData.cv[0]?.response && formData.cv[0].downloadUrl) || ''
+                    name: formData.name,
+                    legalPerson: formData.legalPerson,
+                    legalPhoneNumber: formData.legalPhoneNumber,
+                    smsCode: formData.legalSmsCode,
+                    idNo: formData.idNo,
+                    cardFront: formData.cardFront[0].downloadUrl,
+                    cardBack: formData.cardBack[0].downloadUrl,
+                    businessLicense: formData.businessLicense[0].downloadUrl
                   })
+                  res = await lingkeApi.organizationEnterpriseAuth(params)
                   break
                 case '3':
-                  Object.assign(params, {
-                    visa: formData.visa[0]?.response && formData.visa[0].downloadUrl
-                  })
-                  break
-                case '4':
                   Object.assign(params, {
                     bankBranch: formData.bankBranch,
                     bankNum: formData.bankNum
                   })
+                  res = await lingkeApi.organizationUpdate(params)
                   break
                 default:
                   break
               }
-              res = await lingkeApi.organizationUpdate(params)
             } else {
               const formData = this.formData[subFormKey]
               switch (subFormKey) {
-                case '51':
+                case '41':
                   Object.assign(params, {
-                    email: formData.email,
+                    userId: this.userInfo.userId,
+                    account: formData.email,
                     smsCode: formData.emailCode
                   })
-                  res = await lingkeApi.teacherChangeEmail(params)
+                  res = await lingkeApi.organizationChangeEmail(params)
                   break
-                case '52':
+                case '44':
+                  Object.assign(params, {
+                    userId: this.userInfo.userId,
+                    account: formData.phone,
+                    smsCode: formData.phoneCode
+                  })
+                  res = await lingkeApi.organizationChangePhoneNumber(params)
                   break
-                case '53':
+                case '43':
                   Object.assign(params, {
                     email: formData.email,
+                    userId: this.userInfo.userId,
                     smsCode: formData.emailCodeForPassWord,
                     passWord: formData.newPassWord,
                     rePassWord: formData.confirmPassWord
                   })
-                  res = await lingkeApi.teacherChangePasswd(params)
+                  res = await lingkeApi.organizationChangePasswd(params)
                   break
                 default:
                   break
               }
             }
             if (res && res.data === 1) {
-              await this.$store.dispatch('GetInfo')
               this.$message.success(defaultMessageAction + '成功')
+              if (subFormKey === '43') {
+                this.$store.dispatch('Logout').then(() => {
+                  this.$router.push({ name: storage.get('defaultLoginRoute') })
+                })
+                return
+              }
+              await this.$store.dispatch('GetInfo')
               this.initFormData()
             } else {
               throw new Error(res.message || defaultMessageAction + '失败')
@@ -1035,17 +1044,6 @@ export default {
         return file
       })
       this.formData[formKey][itemKey] = fileList
-    },
-    parseFileNamesToObjs(names) {
-      return names.map((name) => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: fileName + fileExtension || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)

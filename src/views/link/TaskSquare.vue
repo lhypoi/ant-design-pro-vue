@@ -181,6 +181,7 @@ export default {
           pageSize: this.searchParams.pageSize,
           task: this.fetchWord || undefined,
           status: '1',
+          isNoTeacher: '1',
           type: this.searchParams.type || undefined
         })
         if (res && res.code === 200) {

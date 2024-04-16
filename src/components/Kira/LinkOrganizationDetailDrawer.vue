@@ -69,43 +69,28 @@
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-28">法人身份证正面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardFront[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardFront[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardFront[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardFront"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-28">法人身份证反面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardBack[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardBack[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardBack[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardBack"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">营业执照</div>
               <div>
-                <el-image
-                  v-if="detailData.businessLicense[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.businessLicense[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.businessLicense[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.businessLicense"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
           </div>
@@ -166,43 +151,28 @@
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-28">法人身份证正面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardFront[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardFront[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardFront[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardFront"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-28">法人身份证反面</div>
               <div>
-                <el-image
-                  v-if="detailData.cardBack[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.cardBack[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.cardBack[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.cardBack"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">营业执照</div>
               <div>
-                <el-image
-                  v-if="detailData.businessLicense[0]"
-                  class="w-28 h-auto"
-                  :src="detailData.businessLicense[0].downloadUrl"
-                  :preview-src-list="[
-                    detailData.businessLicense[0].downloadUrl
-                  ]"
+                <LinkFormItemImg
+                  :fileList.sync="detailData.businessLicense"
+                  :disabled="true"
                 />
-                <div v-else>-</div>
               </div>
             </div>
           </div>
@@ -317,9 +287,9 @@ export default {
             const detailData = res.data
             this.detailData = {
               ...detailData,
-              cardFront: detailData.cardFront ? this.parseFileNamesToObjs([detailData.cardFront]) : [],
-              cardBack: detailData.cardBack ? this.parseFileNamesToObjs([detailData.cardBack]) : [],
-              businessLicense: this.parseFileNamesToObjs(detailData.businessLicenseList || [])
+              cardFront: detailData.cardFront ? this.$parseFileNamesToObjs([detailData.cardFront]) : [],
+              cardBack: detailData.cardBack ? this.$parseFileNamesToObjs([detailData.cardBack]) : [],
+              businessLicense: this.$parseFileNamesToObjs(detailData.businessLicenseList || [])
             }
           } else {
             throw new Error(res.message || '加载失败')
@@ -330,17 +300,6 @@ export default {
         }
         this.detailDataLoading = false
       }
-    },
-    parseFileNamesToObjs(names) {
-      return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: (fileName + fileExtension) || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)

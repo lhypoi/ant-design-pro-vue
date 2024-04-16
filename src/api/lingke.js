@@ -92,6 +92,14 @@ export function teacherRealNameAuth (parameter) {
   })
 }
 
+export function organizationEnterpriseAuth (parameter) {
+  return request({
+    url: url + '/organization/enterpriseAuth',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export function orderUpdate (parameter) {
   return request({
     url: url + '/order/update',
@@ -300,6 +308,22 @@ export function adminAuditTeacher (parameter) {
   })
 }
 
+export function organizationChangeEmail (parameter) {
+  return request({
+    url: url + '/organization/changeEmail',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function organizationChangePhoneNumber (parameter) {
+  return request({
+    url: url + '/organization/changePhoneNumber',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default {
   uploadUrl,
   downloadBaseUrl,
@@ -314,6 +338,7 @@ export default {
   orderGetOne,
   teacherUpdate,
   teacherRealNameAuth,
+  organizationEnterpriseAuth,
   orderUpdate,
   orderTeacherUpdate,
   orderOrganizationUpdate,
@@ -340,5 +365,7 @@ export default {
   organizationGetList,
   adminAuditOrganization,
   teacherChangeEmail,
-  adminAuditTeacher
+  adminAuditTeacher,
+  organizationChangeEmail,
+  organizationChangePhoneNumber
 }

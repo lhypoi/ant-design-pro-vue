@@ -149,16 +149,16 @@ const asyncRouterMapAll = {
           meta: { title: '任务广场', icon: 'appstore', permission: [1] }
         },
         {
-          path: '/personal-center',
-          name: 'PersonalCenter',
-          component: () => import('@/views/link/PersonalCenter'),
-          meta: { title: '个人中心', icon: 'user', permission: [1] }
-        },
-        {
           path: '/my-orders',
           name: 'MyOrders',
           component: () => import('@/views/link/MyOrders'),
           meta: { title: '我的订单', icon: 'database', permission: [1] }
+        },
+        {
+          path: '/personal-center',
+          name: 'PersonalCenter',
+          component: () => import('@/views/link/PersonalCenter'),
+          meta: { title: '个人中心', icon: 'user', permission: [1] }
         },
         {
           path: '/o-home',

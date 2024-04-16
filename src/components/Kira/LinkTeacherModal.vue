@@ -141,25 +141,14 @@ export default {
         })
         this.linkTeacherModalParams.teacherData = {
           ...teacherDataRes.data,
-          cv: this.parseFileNamesToObjs(teacherDataRes.data.cvList || []),
-          sample: this.parseFileNamesToObjs(teacherDataRes.data.sampleList || [])
+          cv: this.$parseFileNamesToObjs(teacherDataRes.data.cvList || []),
+          sample: this.$parseFileNamesToObjs(teacherDataRes.data.sampleList || [])
         }
       } catch (error) {
         this.$message.error(error.message)
         console.log(error)
       }
       this.linkTeacherModalParams.loading = false
-    },
-    parseFileNamesToObjs(names) {
-      return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: (fileName + fileExtension) || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)

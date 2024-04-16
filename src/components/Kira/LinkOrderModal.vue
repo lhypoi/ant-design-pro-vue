@@ -432,7 +432,7 @@ export default {
             id: parseInt(orderId)
           })
           formData = { ...formData, ...formDataRes.data }
-          formData.files = formDataRes.data.files ? this.parseFileNamesToObjs(formDataRes.data.files.split(',')) : []
+          formData.files = formDataRes.data.files ? this.$parseFileNamesToObjs(formDataRes.data.files.split(',')) : []
         }
         formData.lessonType = formData.lessonType || '1'
         this.linkOrderModalParams.formData = formData
@@ -441,17 +441,6 @@ export default {
         console.log(error)
       }
       this.linkOrderModalParams.loading = false
-    },
-    parseFileNamesToObjs(names) {
-      return names.map(name => {
-        const [, , fileName, , fileExtension] = name.match(/(.*?\[.*?\])?(.*)(-.*?)(\..*)$/) || []
-        return {
-          uid: name,
-          name: (fileName + fileExtension) || name,
-          status: 'done',
-          downloadUrl: name
-        }
-      })
     },
     handleFileDownload(file) {
       downloadFile(file.downloadUrl, file.name, true)
