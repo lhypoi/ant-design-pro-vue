@@ -32,6 +32,10 @@
                 <span class="text-lg hover:text-blue-400 hidden sm:inline">{{ userInfo.avatarName }}</span>
               </div>
               <a-menu slot="overlay">
+                <template v-if="userInfo.roleId === 1 || userInfo.roleId === 2">
+                  <a-menu-item key="2" @click="() => $router.push({ name: userInfo.roleId === 1 ? 'PersonalCenter' : 'OPersonalCenter' })">个人中心</a-menu-item>
+                  <a-menu-divider />
+                </template>
                 <a-menu-item key="1" @click="handleLogout">退出登录</a-menu-item>
               </a-menu>
             </a-dropdown>

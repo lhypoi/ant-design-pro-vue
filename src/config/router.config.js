@@ -152,7 +152,7 @@ const asyncRouterMapAll = {
           path: '/my-orders',
           name: 'MyOrders',
           component: () => import('@/views/link/MyOrders'),
-          meta: { title: '我的订单', icon: 'database', permission: [1] }
+          meta: { title: '我的委托', icon: 'database', permission: [1] }
         },
         {
           path: '/personal-center',
