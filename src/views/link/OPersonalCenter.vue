@@ -897,103 +897,110 @@ export default {
             break
         }
       }
-      this.$confirm({
-        title: defaultTitle,
-        content: defaultContent(),
-        icon: () => null,
-        okText: '确定',
-        okType: 'primary',
-        cancelText: '取消',
-        onOk: async () => {
-          try {
-            const params = {
-              userId: this.userInfo.userId
-            }
-            let res = null
-            if (!subFormKey) {
-              const formData = this.formData[this.curTabKey]
-              switch (this.curTabKey) {
-                case '1':
-                  Object.assign(params, {
-                    nickName: formData.nickName
-                  })
-                  res = await lingkeApi.organizationUpdate(params)
-                  break
-                case '2':
-                  Object.assign(params, {
-                    name: formData.name,
-                    legalPerson: formData.legalPerson,
-                    legalPhoneNumber: formData.legalPhoneNumber,
-                    smsCode: formData.legalSmsCode,
-                    idNo: formData.idNo,
-                    cardFront: formData.cardFront[0].downloadUrl,
-                    cardBack: formData.cardBack[0].downloadUrl,
-                    businessLicense: formData.businessLicense[0].downloadUrl
-                  })
-                  res = await lingkeApi.organizationEnterpriseAuth(params)
-                  break
-                case '3':
-                  Object.assign(params, {
-                    bankBranch: formData.bankBranch,
-                    bankNum: formData.bankNum
-                  })
-                  res = await lingkeApi.organizationUpdate(params)
-                  break
-                default:
-                  break
-              }
-            } else {
-              const formData = this.formData[subFormKey]
-              switch (subFormKey) {
-                case '41':
-                  Object.assign(params, {
-                    userId: this.userInfo.userId,
-                    account: formData.email,
-                    smsCode: formData.emailCode
-                  })
-                  res = await lingkeApi.organizationChangeEmail(params)
-                  break
-                case '44':
-                  Object.assign(params, {
-                    userId: this.userInfo.userId,
-                    account: formData.phone,
-                    smsCode: formData.phoneCode
-                  })
-                  res = await lingkeApi.organizationChangePhoneNumber(params)
-                  break
-                case '43':
-                  Object.assign(params, {
-                    email: formData.email,
-                    userId: this.userInfo.userId,
-                    smsCode: formData.emailCodeForPassWord,
-                    passWord: formData.newPassWord,
-                    rePassWord: formData.confirmPassWord
-                  })
-                  res = await lingkeApi.organizationChangePasswd(params)
-                  break
-                default:
-                  break
-              }
-            }
-            if (res && res.data === 1) {
-              this.$message.success(defaultMessageAction + '成功')
-              if (subFormKey === '43') {
-                this.$store.dispatch('Logout').then(() => {
-                  this.$router.push({ name: storage.get('defaultLoginRoute') })
-                })
-                return
-              }
-              await this.$store.dispatch('GetInfo')
-              this.initFormData()
-            } else {
-              throw new Error(res.message || defaultMessageAction + '失败')
-            }
-          } catch (error) {
-            this.$message.error(error.message)
-            console.log(error)
+      const confirmFunc = async () => {
+        try {
+          const params = {
+            userId: this.userInfo.userId
           }
+          let res = null
+          if (!subFormKey) {
+            const formData = this.formData[this.curTabKey]
+            switch (this.curTabKey) {
+              case '1':
+                Object.assign(params, {
+                  nickName: formData.nickName
+                })
+                res = await lingkeApi.organizationUpdate(params)
+                break
+              case '2':
+                Object.assign(params, {
+                  name: formData.name,
+                  legalPerson: formData.legalPerson,
+                  legalPhoneNumber: formData.legalPhoneNumber,
+                  smsCode: formData.legalSmsCode,
+                  idNo: formData.idNo,
+                  cardFront: formData.cardFront[0].downloadUrl,
+                  cardBack: formData.cardBack[0].downloadUrl,
+                  businessLicense: formData.businessLicense[0].downloadUrl
+                })
+                res = await lingkeApi.organizationEnterpriseAuth(params)
+                break
+              case '3':
+                Object.assign(params, {
+                  bankBranch: formData.bankBranch,
+                  bankNum: formData.bankNum
+                })
+                res = await lingkeApi.organizationUpdate(params)
+                break
+              default:
+                break
+            }
+          } else {
+            const formData = this.formData[subFormKey]
+            switch (subFormKey) {
+              case '41':
+                Object.assign(params, {
+                  userId: this.userInfo.userId,
+                  account: formData.email,
+                  smsCode: formData.emailCode
+                })
+                res = await lingkeApi.organizationChangeEmail(params)
+                break
+              case '44':
+                Object.assign(params, {
+                  userId: this.userInfo.userId,
+                  account: formData.phone,
+                  smsCode: formData.phoneCode
+                })
+                res = await lingkeApi.organizationChangePhoneNumber(params)
+                break
+              case '43':
+                Object.assign(params, {
+                  email: formData.email,
+                  userId: this.userInfo.userId,
+                  smsCode: formData.emailCodeForPassWord,
+                  passWord: formData.newPassWord,
+                  rePassWord: formData.confirmPassWord
+                })
+                res = await lingkeApi.organizationChangePasswd(params)
+                break
+              default:
+                break
+            }
+          }
+          if (res && res.data === 1) {
+            this.$message.success(defaultMessageAction + '成功')
+            if (subFormKey === '43') {
+              this.$store.dispatch('Logout').then(() => {
+                this.$router.push({ name: storage.get('defaultLoginRoute') })
+              })
+              return
+            }
+            await this.$store.dispatch('GetInfo')
+            this.initFormData()
+          } else {
+            throw new Error(res.message || defaultMessageAction + '失败')
+          }
+        } catch (error) {
+          this.$message.error(error.message)
+          console.log(error)
         }
-      })
+      }
+      if (this.curTabKey === '1') {
+        this.loading = true
+        await confirmFunc()
+        this.loading = false
+      } else {
+        this.$confirm({
+          title: defaultTitle,
+          content: defaultContent(),
+          icon: () => null,
+          okText: '确定',
+          okType: 'primary',
+          cancelText: '取消',
+          onOk: confirmFunc
+        })
+      }
     },
     async handleSendSmsCode(subFormKey, itemKey, sendType) {
       const isFormValid = await new Promise((resolve) => {

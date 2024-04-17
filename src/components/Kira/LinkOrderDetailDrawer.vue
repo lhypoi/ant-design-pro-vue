@@ -90,9 +90,6 @@
               :data-source="detailData.deliverList"
               size="small"
             >
-              <template slot="operator" slot-scope="text, record">
-                <div>{{ record.status === '1' ? detailData.teacherName : detailData.organizationName }}</div>
-              </template>
               <template slot="lessonNo" slot-scope="text, record">
                 <div>第{{ record.lessonNo }}节</div>
               </template>
@@ -236,8 +233,7 @@ export default {
       deliverColumns: [
         {
           title: '操作方',
-          dataIndex: 'operator',
-          scopedSlots: { customRender: 'operator' }
+          dataIndex: 'userName'
         },
         {
           title: '交付课程',

@@ -989,113 +989,120 @@ export default {
             break
         }
       }
-      this.$confirm({
-        title: defaultTitle,
-        content: defaultContent(),
-        icon: () => null,
-        okText: '确定',
-        okType: 'primary',
-        cancelText: '取消',
-        onOk: async () => {
-          try {
-            const params = {
-              userId: this.userInfo.userId
-            }
-            let res = null
-            if (!subFormKey) {
-              const formData = this.formData[this.curTabKey]
-              switch (this.curTabKey) {
-                case '1':
-                  Object.assign(params, {
-                    nickName: formData.nickName,
-                    highEduLevel: formData.highEduLevel,
-                    major: formData.major,
-                    college: formData.college,
-                    advantage: formData.advantage,
-                    want: formData.want.join(','),
-                    sample: formData.want.includes('3')
-                      ? formData.sample
-                          .filter((file) => file.downloadUrl)
-                          .map((file) => file.downloadUrl)
-                          .join(',')
-                      : '',
-                    diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
-                    transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
-                  })
-                  res = await lingkeApi.teacherUpdate(params)
-                  break
-                case '2':
-                  Object.assign(params, {
-                    cv: (formData.cv[0]?.response && formData.cv[0].downloadUrl) || ''
-                  })
-                  res = await lingkeApi.teacherUpdate(params)
-                  break
-                case '3':
-                  Object.assign(params, {
-                    realName: formData.realName,
-                    phoneNumber: formData.phoneNumber,
-                    smsCode: formData.certificationSmsCode,
-                    idNo: formData.idNo,
-                    cardFront: formData.cardFront[0].downloadUrl,
-                    cardBack: formData.cardBack[0].downloadUrl
-                  })
-                  res = await lingkeApi.teacherRealNameAuth(params)
-                  break
-                case '4':
-                  Object.assign(params, {
-                    bankBranch: formData.bankBranch,
-                    bankNum: formData.bankNum
-                  })
-                  res = await lingkeApi.teacherUpdate(params)
-                  break
-                default:
-                  break
-              }
-            } else {
-              const formData = this.formData[subFormKey]
-              switch (subFormKey) {
-                case '51':
-                  Object.assign(params, {
-                    email: formData.email,
-                    smsCode: formData.emailCode
-                  })
-                  res = await lingkeApi.teacherChangeEmail(params)
-                  break
-                case '52':
-                  break
-                case '53':
-                  Object.assign(params, {
-                    email: formData.email,
-                    userId: this.userInfo.userId,
-                    smsCode: formData.emailCodeForPassWord,
-                    passWord: formData.newPassWord,
-                    rePassWord: formData.confirmPassWord
-                  })
-                  res = await lingkeApi.teacherChangePasswd(params)
-                  break
-                default:
-                  break
-              }
-            }
-            if (res && res.data === 1) {
-              this.$message.success(defaultMessageAction + '成功')
-              if (subFormKey === '53') {
-                this.$store.dispatch('Logout').then(() => {
-                  this.$router.push({ name: storage.get('defaultLoginRoute') })
-                })
-                return
-              }
-              await this.$store.dispatch('GetInfo')
-              this.initFormData()
-            } else {
-              throw new Error(res.message || defaultMessageAction + '失败')
-            }
-          } catch (error) {
-            this.$message.error(error.message)
-            console.log(error)
+      const confirmFunc = async () => {
+        try {
+          const params = {
+            userId: this.userInfo.userId
           }
+          let res = null
+          if (!subFormKey) {
+            const formData = this.formData[this.curTabKey]
+            switch (this.curTabKey) {
+              case '1':
+                Object.assign(params, {
+                  nickName: formData.nickName,
+                  highEduLevel: formData.highEduLevel,
+                  major: formData.major,
+                  college: formData.college,
+                  advantage: formData.advantage,
+                  want: formData.want.join(','),
+                  sample: formData.want.includes('3')
+                    ? formData.sample
+                        .filter((file) => file.downloadUrl)
+                        .map((file) => file.downloadUrl)
+                        .join(',')
+                    : '',
+                  diploma: formData.diploma[0]?.response && formData.diploma[0].downloadUrl,
+                  transcript: formData.transcript[0]?.response && formData.transcript[0].downloadUrl
+                })
+                res = await lingkeApi.teacherUpdate(params)
+                break
+              case '2':
+                Object.assign(params, {
+                  cv: (formData.cv[0]?.downloadUrl) || ''
+                })
+                res = await lingkeApi.teacherUpdate(params)
+                break
+              case '3':
+                Object.assign(params, {
+                  realName: formData.realName,
+                  phoneNumber: formData.phoneNumber,
+                  smsCode: formData.certificationSmsCode,
+                  idNo: formData.idNo,
+                  cardFront: formData.cardFront[0].downloadUrl,
+                  cardBack: formData.cardBack[0].downloadUrl
+                })
+                res = await lingkeApi.teacherRealNameAuth(params)
+                break
+              case '4':
+                Object.assign(params, {
+                  bankBranch: formData.bankBranch,
+                  bankNum: formData.bankNum
+                })
+                res = await lingkeApi.teacherUpdate(params)
+                break
+              default:
+                break
+            }
+          } else {
+            const formData = this.formData[subFormKey]
+            switch (subFormKey) {
+              case '51':
+                Object.assign(params, {
+                  email: formData.email,
+                  smsCode: formData.emailCode
+                })
+                res = await lingkeApi.teacherChangeEmail(params)
+                break
+              case '52':
+                break
+              case '53':
+                Object.assign(params, {
+                  email: formData.email,
+                  userId: this.userInfo.userId,
+                  smsCode: formData.emailCodeForPassWord,
+                  passWord: formData.newPassWord,
+                  rePassWord: formData.confirmPassWord
+                })
+                res = await lingkeApi.teacherChangePasswd(params)
+                break
+              default:
+                break
+            }
+          }
+          if (res && res.data === 1) {
+            this.$message.success(defaultMessageAction + '成功')
+            if (subFormKey === '53') {
+              this.$store.dispatch('Logout').then(() => {
+                this.$router.push({ name: storage.get('defaultLoginRoute') })
+              })
+              return
+            }
+            await this.$store.dispatch('GetInfo')
+            this.initFormData()
+          } else {
+            throw new Error(res.message || defaultMessageAction + '失败')
+          }
+        } catch (error) {
+          this.$message.error(error.message)
+          console.log(error)
         }
-      })
+      }
+      if (this.curTabKey === '1' || this.curTabKey === '2') {
+        this.loading = true
+        await confirmFunc()
+        this.loading = false
+      } else {
+        this.$confirm({
+          title: defaultTitle,
+          content: defaultContent(),
+          icon: () => null,
+          okText: '确定',
+          okType: 'primary',
+          cancelText: '取消',
+          onOk: confirmFunc
+        })
+      }
     },
     handleDelCv() {
       this.$confirm({

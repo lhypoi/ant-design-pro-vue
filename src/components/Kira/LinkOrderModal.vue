@@ -102,6 +102,7 @@
                 placeholder="请输入"
                 size="large"
                 class="w-full"
+                :min="1"
                 :formatter="value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\￥\s?|(,*)/g, '')"
                 allowClear
