@@ -61,6 +61,7 @@
           v-for="item in dataList"
           :key="item.id"
           class="flex flex-col gap-1 sm:gap-3 sm:flex-row bg-white rounded-lg shadow-sm p-3 cursor-pointer hover:ring-2 min-h-[90px]"
+          @click="() => handleToDetail(item)"
         >
           <div class="flex-auto flex items-center justify-center gap-3">
             <div class="w-12 h-12 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
@@ -88,7 +89,6 @@
           >
             <div
               class="cursor-pointer flex items-center justify-center px-3 h-8 rounded-md text-sm bg-[#409EFF] text-white hover:opacity-80"
-              @click.stop="() => handleToDetail(item)"
             >
               查看详情
             </div>

@@ -105,24 +105,21 @@
                 class="flex justify-between"
               />
             </a-form-model-item>
-            <a-form-model-item v-if="formData[curTabKey].want.includes('3')" prop="sample" label="文书sample">
-              <a-upload-dragger
-                class="dragUploader"
-                :multiple="true"
-                name="fileList"
-                :action="lingkeApi.uploadUrl"
-                :fileList="formData[curTabKey].sample"
-                @change="(info) => handleFileChange(info, curTabKey, 'sample', -5)"
-                @preview="handleFileDownload"
-              >
-                <div class="rounded-md bg-sky-50 flex flex-col items-center pt-14 pb-10">
-                  <a-icon type="cloud-upload" class="text-4xl text-gray-400" />
-                  <div class="pt-4 text-slate-950 text-lg font-bold">
-                    请上传留学文书sample，支持上传多个，<span class="text-red-400">至多五個</span>
-                  </div>
-                  <div class="pt-2 text-sm text-gray-400">可导入pdf / docx / doc 格式，最大10MB</div>
-                </div>
-              </a-upload-dragger>
+            <a-form-model-item v-if="formData[curTabKey].want.includes('3')" prop="sample">
+              <span slot="label">
+                文书sample
+                <a-tooltip>
+                  <template slot="title">
+                    支持 gif / jpeg / jpg / png / svg
+                    <br>最多可上传五个
+                  </template>
+                  <a-icon type="question-circle" class="text-blue-400 cursor-pointer" />
+                </a-tooltip>
+              </span>
+              <LinkFormItemImg
+                :fileList.sync="formData[curTabKey]['sample']"
+                :single="-5"
+              />
             </a-form-model-item>
           </template>
           <template v-if="curTabKey === '2'">

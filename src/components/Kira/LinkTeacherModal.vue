@@ -65,16 +65,11 @@
                   </div>
                 </a-tab-pane>
                 <a-tab-pane v-if="teacher.sample.length" tab="文书sample" key="2">
-                  <div class="link-style-form">
-                    <a-upload-dragger
-                      class="dragUploader"
-                      disabled
-                      :fileList="teacher.sample"
-                      @preview="handleFileDownload"
-                    >
-                      <div class="h-0">
-                      </div>
-                    </a-upload-dragger>
+                  <div>
+                    <LinkFormItemImg
+                      :fileList.sync="teacher.sample"
+                      :disabled="true"
+                    />
                   </div>
                 </a-tab-pane>
               </a-tabs>
@@ -93,11 +88,13 @@ import { CUR_APP } from '@/store/mutation-types'
 import lingkeApi from '@/api/lingke'
 import { downloadFile } from '@/utils//util.js'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
+import LinkFormItemImg from '@/components/Kira/LinkFormItemImg'
 
 export default {
   name: 'LinkTeacherModal',
   components: {
-    VuePdfEmbed
+    VuePdfEmbed,
+    LinkFormItemImg
   },
   mixins: [baseMixin],
   props: {

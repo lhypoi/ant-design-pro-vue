@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div class="flex">
     <a-upload
       :action="lingkeApi.uploadUrl"
       :multiple="true"
       name="fileList"
+      accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
       list-type="picture-card"
       :fileList="fileList"
       :disabled="disabled"

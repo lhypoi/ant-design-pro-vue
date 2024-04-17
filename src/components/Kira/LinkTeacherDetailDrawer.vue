@@ -151,14 +151,13 @@
               />
             </div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-0 mt-6">文书sample</div>
-          <a-upload
-            :action="lingkeApi.uploadUrl"
-            :disabled="true"
-            :fileList="detailData.sample"
-            @preview="handleFileDownload"
-          >
-          </a-upload>
+          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">文书sample</div>
+          <div>
+            <LinkFormItemImg
+              :fileList.sync="detailData.sample"
+              :disabled="true"
+            />
+          </div>
         </div>
       </div>
     </a-drawer>

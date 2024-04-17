@@ -45,7 +45,8 @@
         <div
           v-for="teacher in dataList"
           :key="teacher.userId"
-          class="flex flex-col bg-white rounded-lg p-3 drop-shadow-sm hover:ring-2"
+          class="flex flex-col bg-white rounded-lg p-3 drop-shadow-sm cursor-pointer hover:ring-2"
+          @click="$refs.LinkTeacherModal.handleOpenLinkTeacherModal(teacher.userId)"
         >
           <div class="flex flex-row">
             <div class="w-24 h-24 rounded bg-blue-400 text-white flex justify-center items-center text-3xl leading-none">
@@ -54,7 +55,7 @@
             <div class="flex-auto w-0 overflow-hidden pl-4 flex flex-col gap-y-2 text-base">
               <div class="flex gap-x-4 justify-between">
                 <div class="font-bold text-ellipsis whitespace-nowrap overflow-hidden">{{ teacher.nickName }}</div>
-                <div class="text-sm text-blue-400 cursor-pointer whitespace-nowrap" @click="$refs.LinkTeacherModal.handleOpenLinkTeacherModal(teacher.userId)">去看他 ></div>
+                <div class="text-sm text-blue-400 cursor-pointer whitespace-nowrap">去看他 ></div>
               </div>
               <div class="flex flex-col gap-1 leading-none">
                 <div class="text-ellipsis whitespace-nowrap overflow-hidden"><i class="el-icon-school text-blue-400"></i> {{ teacher.college }} {{ teacher.highEduLevelName }}</div>
