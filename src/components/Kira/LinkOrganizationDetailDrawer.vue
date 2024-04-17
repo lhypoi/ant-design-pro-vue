@@ -1,121 +1,103 @@
 <template>
-  <div class="w-0 h-0 overflow-hidden absolute">
-    <a-drawer
-      v-if="!!detailId"
-      placement="right"
-      :closable="false"
-      :visible="true"
-      :get-container="() => $parent.$el"
-      :wrap-style="{ position: 'absolute' }"
-      width="100%"
-    >
-      <div>
-        <div class="pb-2">
-          <a-icon
-            type="left-circle"
-            theme="filled"
-            class="cursor-pointer text-blue-600 hover:text-blue-400 text-3xl"
-            @click="handleBack"
-          />
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col bg-white rounded-lg shadow-sm p-6 my-6">
+    <div>
+      <div class="text-xl font-bold text-slate-900">企业详情</div>
+      <div class="text-sm text-slate-400">Organization details</div>
+      <div v-if="!detailData" class="pt-8">
+        <a-skeleton avatar active :paragraph="{ rows: 4 }" />
+      </div>
+      <div
+        v-else
+        class="pt-6"
+        v-loading="detailDataLoading"
+      >
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4">基础信息</div>
+        <div class="flex flex-wrap gap-y-4">
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">企业ID</div>
+            <div class="text-gray-950">{{ detailData.userId || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">简称</div>
+            <div class="text-gray-950">{{ detailData.nickName || '-' }}</div>
+          </div>
         </div>
-        <div class="text-xl font-bold text-slate-900">企业详情</div>
-        <div class="text-sm text-slate-400">Organization details</div>
-        <div v-if="!detailData" class="pt-8">
-          <a-skeleton avatar active :paragraph="{ rows: 4 }" />
-        </div>
-        <div
-          v-else
-          class="pt-6"
-          v-loading="detailDataLoading"
-        >
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4">基础信息</div>
-          <div class="flex flex-wrap gap-y-4">
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">企业ID</div>
-              <div class="text-gray-950">{{ detailData.userId || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">简称</div>
-              <div class="text-gray-950">{{ detailData.nickName || '-' }}</div>
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">企业认证</div>
+        <div class="flex flex-wrap gap-y-4">
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">认证状态</div>
+            <div>
+              <a-tag v-if="detailData.status === '1'" color="blue" class="m-0">待审核</a-tag>
+              <a-tag v-else-if="detailData.status === '2'" color="green" class="m-0">已认证</a-tag>
+              <a-tag v-else-if="detailData.status === '3'" color="red" class="m-0">认证不通过</a-tag>
+              <a-tag v-else-if="detailData.status === '0'" class="m-0">未认证</a-tag>
             </div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">企业认证</div>
-          <div class="flex flex-wrap gap-y-4">
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">认证状态</div>
-              <div>
-                <a-tag v-if="detailData.status === '1'" color="blue" class="m-0">待审核</a-tag>
-                <a-tag v-else-if="detailData.status === '2'" color="green" class="m-0">已认证</a-tag>
-                <a-tag v-else-if="detailData.status === '3'" color="red" class="m-0">认证不通过</a-tag>
-                <a-tag v-else-if="detailData.status === '0'" class="m-0">未认证</a-tag>
-              </div>
-            </div>
-            <div class="w-full sm:w-2/3 flex text-sm">
-              <div class="text-gray-400 w-20">企业全称</div>
-              <div class="text-gray-950">{{ detailData.name || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">法人姓名</div>
-              <div class="text-gray-950">{{ detailData.legalPerson || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">法人手机号码</div>
-              <div class="text-gray-950">{{ detailData.legalPhoneNumber || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">法人身份证号码</div>
-              <div class="text-gray-950">{{ detailData.idNo || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">法人身份证正面</div>
-              <div>
-                <LinkFormItemImg
-                  :fileList.sync="detailData.cardFront"
-                  :disabled="true"
-                />
-              </div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">法人身份证反面</div>
-              <div>
-                <LinkFormItemImg
-                  :fileList.sync="detailData.cardBack"
-                  :disabled="true"
-                />
-              </div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">营业执照</div>
-              <div>
-                <LinkFormItemImg
-                  :fileList.sync="detailData.businessLicense"
-                  :disabled="true"
-                />
-              </div>
+          <div class="w-full sm:w-2/3 flex text-sm">
+            <div class="text-gray-400 w-20">企业全称</div>
+            <div class="text-gray-950">{{ detailData.name || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-28">法人姓名</div>
+            <div class="text-gray-950">{{ detailData.legalPerson || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-28">法人手机号码</div>
+            <div class="text-gray-950">{{ detailData.legalPhoneNumber || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-28">法人身份证号码</div>
+            <div class="text-gray-950">{{ detailData.idNo || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-28">法人身份证正面</div>
+            <div>
+              <LinkFormItemImg
+                :fileList.sync="detailData.cardFront"
+                :disabled="true"
+              />
             </div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">账号信息</div>
-          <div class="flex flex-wrap gap-y-4">
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">邮箱</div>
-              <div class="text-gray-950">{{ detailData.email || '-' }}</div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-28">法人身份证反面</div>
+            <div>
+              <LinkFormItemImg
+                :fileList.sync="detailData.cardBack"
+                :disabled="true"
+              />
             </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">手机号码</div>
-              <div class="text-gray-950">{{ detailData.legalPhoneNumber || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-28">营业执照</div>
+            <div>
+              <LinkFormItemImg
+                :fileList.sync="detailData.businessLicense"
+                :disabled="true"
+              />
             </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">微信</div>
-              <div class="text-gray-950">{{ detailData.wechatName || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">注册时间</div>
-              <div class="text-gray-950">{{ detailData.createTime || '-' }}</div>
-            </div>
+          </div>
+        </div>
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">账号信息</div>
+        <div class="flex flex-wrap gap-y-4">
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">邮箱</div>
+            <div class="text-gray-950">{{ detailData.email || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">手机号码</div>
+            <div class="text-gray-950">{{ detailData.legalPhoneNumber || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">微信</div>
+            <div class="text-gray-950">{{ detailData.wechatName || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">注册时间</div>
+            <div class="text-gray-950">{{ detailData.createTime || '-' }}</div>
           </div>
         </div>
       </div>
-    </a-drawer>
+    </div>
     <a-modal
       v-if="adminAuditOrganizationModalParams.show"
       :title="'企业认证审核'"

@@ -1,166 +1,148 @@
 <template>
-  <div class="w-0 h-0 overflow-hidden absolute">
-    <a-drawer
-      v-if="!!detailId"
-      placement="right"
-      :closable="false"
-      :visible="true"
-      :get-container="() => $parent.$el"
-      :wrap-style="{ position: 'absolute' }"
-      width="100%"
-    >
-      <div>
-        <div class="pb-2">
-          <a-icon
-            type="left-circle"
-            theme="filled"
-            class="cursor-pointer text-blue-600 hover:text-blue-400 text-3xl"
-            @click="handleBack"
-          />
-        </div>
-        <div class="text-xl font-bold text-slate-900">老师详情</div>
-        <div class="text-sm text-slate-400">Teacher details</div>
-        <div v-if="!detailData" class="pt-8">
-          <a-skeleton avatar active :paragraph="{ rows: 4 }" />
-        </div>
-        <div
-          v-else
-          class="pt-6"
-          v-loading="detailDataLoading"
-        >
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4">基础信息</div>
-          <div class="flex flex-wrap gap-y-4">
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">用户ID</div>
-              <div class="text-gray-950">{{ detailData.userId || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-2/3 flex text-sm">
-              <div class="text-gray-400 w-20">昵称</div>
-              <div class="text-gray-950">{{ detailData.nickName || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">最高学历</div>
-              <div class="text-gray-950">{{ detailData.highEduLevelName || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">专业</div>
-              <div class="text-gray-950">{{ detailData.major || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">学校</div>
-              <div class="text-gray-950">{{ detailData.college || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-28">毕业证/学生证</div>
-              <div>
-                <LinkFormItemImg
-                  :fileList.sync="detailData.diploma"
-                  :disabled="true"
-                />
-              </div>
-            </div>
-            <div class="w-full sm:w-2/3 flex text-sm">
-              <div class="text-gray-400 w-20">成绩单</div>
-              <div>
-                <LinkFormItemImg
-                  :fileList.sync="detailData.transcript"
-                  :disabled="true"
-                />
-              </div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">我想做什么</div>
-              <div class="text-gray-950">{{ orderTypeDict[detailData.want] || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">擅长做什么</div>
-              <div class="text-gray-950 w-0 flex-auto">{{ detailData.advantage || '-' }}</div>
-            </div>
+  <div class="w-full mx-auto max-w-[1200px] relative flex-auto flex flex-col bg-white rounded-lg shadow-sm p-6 my-6">
+    <div>
+      <div class="text-xl font-bold text-slate-900">老师详情</div>
+      <div class="text-sm text-slate-400">Teacher details</div>
+      <div v-if="!detailData" class="pt-8">
+        <a-skeleton avatar active :paragraph="{ rows: 4 }" />
+      </div>
+      <div
+        v-else
+        class="pt-6"
+        v-loading="detailDataLoading"
+      >
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4">基础信息</div>
+        <div class="flex flex-wrap gap-y-4">
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">用户ID</div>
+            <div class="text-gray-950">{{ detailData.userId || '-' }}</div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">实名信息</div>
-          <div class="flex flex-wrap gap-y-4">
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">认证状态</div>
-              <div>
-                <a-tag v-if="detailData.status === '1'" color="blue" class="m-0">待审核</a-tag>
-                <a-tag v-else-if="detailData.status === '2'" color="green" class="m-0">已认证</a-tag>
-                <a-tag v-else-if="detailData.status === '3'" color="red" class="m-0">认证不通过</a-tag>
-                <a-tag v-else-if="detailData.status === '0'" class="m-0">未认证</a-tag>
-              </div>
-            </div>
-            <div class="w-full sm:w-2/3 flex text-sm">
-              <div class="text-gray-400 w-20">姓名</div>
-              <div class="text-gray-950">{{ detailData.realName || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">手机号码</div>
-              <div class="text-gray-950">{{ detailData.phoneNumber || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-2/3 flex text-sm">
-              <div class="text-gray-400 w-20">身份证号码</div>
-              <div class="text-gray-950">{{ detailData.idNo || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">身份证正面</div>
-              <div>
-                <LinkFormItemImg
-                  :fileList.sync="detailData.cardFront"
-                  :disabled="true"
-                />
-              </div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">身份证反面</div>
-              <div>
-                <LinkFormItemImg
-                  :fileList.sync="detailData.cardBack"
-                  :disabled="true"
-                />
-              </div>
-            </div>
+          <div class="w-full sm:w-2/3 flex text-sm">
+            <div class="text-gray-400 w-20">昵称</div>
+            <div class="text-gray-950">{{ detailData.nickName || '-' }}</div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">账号信息</div>
-          <div class="flex flex-wrap gap-y-4">
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">邮箱</div>
-              <div class="text-gray-950">{{ detailData.email || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">微信</div>
-              <div class="text-gray-950">{{ detailData.wechatName || '-' }}</div>
-            </div>
-            <div class="w-full sm:w-1/3 flex text-sm">
-              <div class="text-gray-400 w-20">注册时间</div>
-              <div class="text-gray-950">{{ detailData.createTime || '-' }}</div>
-            </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">最高学历</div>
+            <div class="text-gray-950">{{ detailData.highEduLevelName || '-' }}</div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">简历</div>
-          <div v-if="detailData.cv[0]?.downloadUrl" class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
-            <a-spin
-              v-if="pdfBoxParams.loading"
-              class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-gray-300 flex flex-col gap-5 justify-center items-center"
-              tip="加载中......"
-            >
-              <a-icon slot="indicator" type="loading" class="text-4xl" spin />
-            </a-spin>
-            <div class="pdf-box p-3 bg-gray-500 min-h-full">
-              <vue-pdf-embed
-                ref="pdf"
-                :source="detailData.cv[0].downloadUrl"
-                @progress="handlePdfProgress"
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">专业</div>
+            <div class="text-gray-950">{{ detailData.major || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">学校</div>
+            <div class="text-gray-950">{{ detailData.college || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-28">毕业证/学生证</div>
+            <div>
+              <LinkFormItemImg
+                :fileList.sync="detailData.diploma"
+                :disabled="true"
               />
             </div>
           </div>
-          <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">文书sample</div>
-          <div>
-            <LinkFormItemImg
-              :fileList.sync="detailData.sample"
-              :disabled="true"
+          <div class="w-full sm:w-2/3 flex text-sm">
+            <div class="text-gray-400 w-20">成绩单</div>
+            <div>
+              <LinkFormItemImg
+                :fileList.sync="detailData.transcript"
+                :disabled="true"
+              />
+            </div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">我想做什么</div>
+            <div class="text-gray-950">{{ orderTypeDict[detailData.want] || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">擅长做什么</div>
+            <div class="text-gray-950 w-0 flex-auto">{{ detailData.advantage || '-' }}</div>
+          </div>
+        </div>
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">实名信息</div>
+        <div class="flex flex-wrap gap-y-4">
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">认证状态</div>
+            <div>
+              <a-tag v-if="detailData.status === '1'" color="blue" class="m-0">待审核</a-tag>
+              <a-tag v-else-if="detailData.status === '2'" color="green" class="m-0">已认证</a-tag>
+              <a-tag v-else-if="detailData.status === '3'" color="red" class="m-0">认证不通过</a-tag>
+              <a-tag v-else-if="detailData.status === '0'" class="m-0">未认证</a-tag>
+            </div>
+          </div>
+          <div class="w-full sm:w-2/3 flex text-sm">
+            <div class="text-gray-400 w-20">姓名</div>
+            <div class="text-gray-950">{{ detailData.realName || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">手机号码</div>
+            <div class="text-gray-950">{{ detailData.phoneNumber || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-2/3 flex text-sm">
+            <div class="text-gray-400 w-20">身份证号码</div>
+            <div class="text-gray-950">{{ detailData.idNo || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">身份证正面</div>
+            <div>
+              <LinkFormItemImg
+                :fileList.sync="detailData.cardFront"
+                :disabled="true"
+              />
+            </div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">身份证反面</div>
+            <div>
+              <LinkFormItemImg
+                :fileList.sync="detailData.cardBack"
+                :disabled="true"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">账号信息</div>
+        <div class="flex flex-wrap gap-y-4">
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">邮箱</div>
+            <div class="text-gray-950">{{ detailData.email || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">微信</div>
+            <div class="text-gray-950">{{ detailData.wechatName || '-' }}</div>
+          </div>
+          <div class="w-full sm:w-1/3 flex text-sm">
+            <div class="text-gray-400 w-20">注册时间</div>
+            <div class="text-gray-950">{{ detailData.createTime || '-' }}</div>
+          </div>
+        </div>
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">简历</div>
+        <div v-if="detailData.cv[0]?.downloadUrl" class="relative h-[70vh] pr-1 -mr-1 mb-5" :class="pdfBoxParams.loading ? 'overflow-hidden' : 'overflow-auto'">
+          <a-spin
+            v-if="pdfBoxParams.loading"
+            class="absolute z-10 left-0 right-0 top-0 bottom-0 bg-gray-300 flex flex-col gap-5 justify-center items-center"
+            tip="加载中......"
+          >
+            <a-icon slot="indicator" type="loading" class="text-4xl" spin />
+          </a-spin>
+          <div class="pdf-box p-3 bg-gray-500 min-h-full">
+            <vue-pdf-embed
+              ref="pdf"
+              :source="detailData.cv[0].downloadUrl"
+              @progress="handlePdfProgress"
             />
           </div>
         </div>
+        <div class="font-bold border-l-2 border-solid border-blue-400 pl-1 leading-none mb-4 mt-6">文书sample</div>
+        <div>
+          <LinkFormItemImg
+            :fileList.sync="detailData.sample"
+            :disabled="true"
+          />
+        </div>
       </div>
-    </a-drawer>
+    </div>
     <a-modal
       v-if="adminAuditTeacherModalParams.show"
       :title="'老师实名审核'"

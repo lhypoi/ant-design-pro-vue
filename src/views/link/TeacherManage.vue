@@ -34,8 +34,7 @@
       </a-form-model>
     </div>
     <div
-      class="flex-auto flex flex-col"
-      :class="detailId ? 'h-0' : 'h-[60vh] sm:h-[600px]'"
+      class="flex-auto flex flex-col h-[60vh] sm:h-[600px]"
     >
       <k-table
         ref="organizationListTable"
@@ -76,6 +75,7 @@
       </k-table>
     </div>
     <LinkTeacherDetailDrawer
+      v-show="false"
       ref="LinkTeacherDetailDrawer"
       @reload="handleOrganizationOrderSearch"
     />
@@ -134,10 +134,7 @@ export default {
     ]),
     ...mapGetters('asyncConfig', {
       codeDict: 'codeDict'
-    }),
-    detailId() {
-      return this.$route.query.orderId
-    }
+    })
   },
   async mounted() {
   },
@@ -170,7 +167,8 @@ export default {
       return tableData
     },
     handleToDetail(row) {
-      this.$router.push({ name: this.$route.name, query: { userId: row.userId } })
+      const routeUrl = this.$router.resolve({ name: 'TeacherDetail', query: { userId: row.userId } })
+      window.open(routeUrl.href, '_blank')
     },
     handleOrganizationOrderSearch() {
       this.$refs.organizationListTable.refresh()

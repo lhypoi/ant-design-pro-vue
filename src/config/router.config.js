@@ -185,10 +185,24 @@ const asyncRouterMapAll = {
           meta: { title: '企业管理', icon: 'appstore', permission: [3] }
         },
         {
+          path: '/organization-detail',
+          name: 'OrganizationDetail',
+          component: () => import('@/components/Kira/LinkOrganizationDetailDrawer'),
+          meta: { title: '企业详情', icon: 'database', permission: [3] },
+          hidden: true
+        },
+        {
           path: '/teacher-manage',
           name: 'TeacherManage',
           component: () => import('@/views/link/TeacherManage'),
           meta: { title: '老师管理', icon: 'database', permission: [3] }
+        },
+        {
+          path: '/teacher-detail',
+          name: 'TeacherDetail',
+          component: () => import('@/components/Kira/LinkTeacherDetailDrawer'),
+          meta: { title: '老师详情', icon: 'database', permission: [3] },
+          hidden: true
         },
         {
           path: '/order-manage',
