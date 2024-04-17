@@ -137,7 +137,7 @@
     <!-- canWithdrawModal -->
     <a-modal
       v-if="canWithdrawModalParams.show"
-      title="提现( 测试，返回全列表 )"
+      title="提现"
       :visible="true"
       :footer="null"
       :maskClosable="false"
@@ -396,7 +396,7 @@ export default {
           {
             key: 'updateTime',
             label: '到账时间',
-            width: 120
+            width: 180
           },
           {
             key: 'statusName',
@@ -525,8 +525,9 @@ export default {
       try {
         const res = await lingkeApi.orderTeacherOrderList({
           pageIndex: 1,
-          pageSize: 9999,
-          status: ''
+          pageSize: 99999,
+          status: '5',
+          wdStatus: '0,3,4'
         })
         if (res && res.code === 200) {
           this.canWithdrawModalParams.rows = res.data.list

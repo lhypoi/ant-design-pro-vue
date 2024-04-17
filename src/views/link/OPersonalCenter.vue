@@ -77,6 +77,7 @@
               <a-input
                 v-model="formData[curTabKey].name"
                 placeholder="请输入企业全称"
+                size="large"
                 :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
               />
             </a-form-model-item>
@@ -84,6 +85,7 @@
               <a-input
                 v-model="formData[curTabKey].legalPerson"
                 placeholder="请输入法人姓名"
+                size="large"
                 :disabled="formData[curTabKey].status === '1' || formData[curTabKey].status === '2'"
               />
             </a-form-model-item>
