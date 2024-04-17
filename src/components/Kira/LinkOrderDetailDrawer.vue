@@ -102,7 +102,7 @@
             </a-table>
           </div>
           <div class="mt-4 flex justify-end gap-4 items-center">
-            <div v-if="(detailData.status === '1' || detailData.status === '2' || detailData.status === '3' || detailData.status === '4') && userInfo.roleId === 2" class="cursor-pointer text-blue-400 leading-none">
+            <div class="cursor-pointer text-blue-400 leading-none">
               <a-icon type="message" class="text-2xl" />
             </div>
             <a-button
