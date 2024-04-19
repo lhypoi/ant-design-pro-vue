@@ -91,7 +91,7 @@
           <template v-slot="scope">
             <div class="flex items-center justify-center gap-x-3">
               <div class="text-blue-400 cursor-pointer" @click="() => handleToDetail(scope.row)">详情</div>
-              <div v-if="scope.row.status === '1' || scope.row.status === '2'" class="text-red-400 cursor-pointer" @click="() => $refs.LinkOrderDetailDrawer.handleCancelTask(scope.row, '关闭')">关闭委托</div>
+              <div v-if="scope.row.status === '1' || scope.row.status === '2'" class="text-red-400 cursor-pointer" @click="() => $refs.LinkOrderDetailDrawer.handleCloseTask(scope.row)">关闭委托</div>
             </div>
           </template>
         </el-table-column>

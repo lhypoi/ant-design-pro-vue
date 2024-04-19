@@ -33,7 +33,9 @@
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">状态</div>
-              <div class="text-blue-400">{{ detailData.statusName }}</div>
+              <div>
+                <component :is="$orderStatusRender(detailData.status)" />
+              </div>
             </div>
             <div class="w-full sm:w-1/3 flex text-sm">
               <div class="text-gray-400 w-20">价格</div>
@@ -127,6 +129,14 @@
               @click="() => handlePayTask(detailData)"
             >
               付 款
+            </a-button>
+            <a-button
+              v-if="detailData.status === '2' && userInfo.roleId === 2"
+              class="rounded-md"
+              type="danger"
+              @click="() => handleRefuseTask2(detailData)"
+            >
+              拒绝委托
             </a-button>
             <a-button
               v-if="(detailData.status === '1' || detailData.status === '2') && userInfo.roleId === 2"
@@ -384,11 +394,65 @@ export default {
         }
       })
     },
-    handleCancelTask(item, actionName = '取消') {
+    handleRefuseTask2(item) {
       this.$confirm({
-        title: `${actionName}委托`,
+        title: '拒绝委托',
         icon: () => null,
-        content: `${actionName}后将不可恢复，确定${actionName}吗`,
+        content: `确认拒绝委托吗`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await lingkeApi.orderOrganizationUpdate({
+              id: item.id,
+              status: '7'
+            })
+            if (res && res.code === 200 && res.data === 1) {
+              this.$message.success('拒绝成功')
+              this.handleReload()
+            } else {
+              throw new Error(res.message || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleCancelTask(item) {
+      this.$confirm({
+        title: `取消委托`,
+        icon: () => null,
+        content: `取消后将不可恢复，确定取消吗`,
+        okText: '确定',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            const res = await lingkeApi.orderOrganizationUpdate({
+              id: item.id,
+              status: '8'
+            })
+            if (res && res.code === 200 && res.data === 1) {
+              this.$message.success(`取消成功`)
+              this.handleReload()
+            } else {
+              throw new Error(res.message || '失败')
+            }
+          } catch (error) {
+            this.$message.error(error.message)
+            console.log(error)
+          }
+        }
+      })
+    },
+    handleCloseTask(item) {
+      this.$confirm({
+        title: `关闭委托`,
+        icon: () => null,
+        content: `关闭后将不可恢复，确定关闭吗`,
         okText: '确定',
         okType: 'primary',
         cancelText: '取消',
@@ -398,7 +462,7 @@ export default {
               id: item.id
             })
             if (res && res.code === 200 && res.data === 1) {
-              this.$message.success(`${actionName}成功`)
+              this.$message.success(`关闭成功`)
               this.handleReload()
             } else {
               throw new Error(res.message || '失败')

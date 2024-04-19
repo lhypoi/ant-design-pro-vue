@@ -138,7 +138,7 @@ Vue.use(PermissionHelper)
 Vue.use(VueCropper)
 
 // element ui
-Vue.prototype.$ELEMENT = { zIndex: 10000 }
+Vue.prototype.$ELEMENT = { zIndex: 2000 }
 Vue.use(Image)
 Vue.use(Loading.directive)
 Vue.use(ETable)
@@ -179,5 +179,25 @@ Vue.prototype.$ellipsisColFormatter = function(colKey) {
         )
       }
     })
+  }
+}
+
+Vue.prototype.$orderStatusRender = function(status) {
+  return {
+    render() {
+      const codeDict = this.$store.getters['asyncConfig/codeDict']
+      const statusDict = codeDict.order.status
+      const extraTip = (status === '99') ? (
+        <a-tooltip title={ statusDict[status] }>
+          <div class='cursor-pointer text-gray-400'><a-icon type="info-circle" /></div>
+        </a-tooltip>
+      ) : null
+      return (
+          <div class='flex items-center gap-1'>
+            <div class='text-blue-400'>{ statusDict[status] }</div>
+            { extraTip }
+          </div>
+      )
+    }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="fixed top-0 left-0 w-full h-16 bg-white z-50 shadow-md"
+      class="fixed top-0 left-0 w-full h-16 bg-white z-[3000] shadow-md"
     >
       <div
         class="m-auto w-full h-full max-w-[1400px] flex justify-between items-center px-4"
@@ -33,10 +33,10 @@
               </div>
               <a-menu slot="overlay">
                 <template v-if="userInfo.roleId === 1 || userInfo.roleId === 2">
-                  <a-menu-item key="2" @click="() => $router.push({ name: userInfo.roleId === 1 ? 'PersonalCenter' : 'OPersonalCenter' })">个人中心</a-menu-item>
+                  <a-menu-item key="2" @click="() => $router.push({ name: userInfo.roleId === 1 ? 'PersonalCenter' : 'OPersonalCenter' })"><div class="text-center">个人中心</div></a-menu-item>
                   <a-menu-divider />
                 </template>
-                <a-menu-item key="1" @click="handleLogout">退出登录</a-menu-item>
+                <a-menu-item key="1" @click="handleLogout"><div class="text-center">退出登录</div></a-menu-item>
               </a-menu>
             </a-dropdown>
           </div>
