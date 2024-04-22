@@ -21,7 +21,7 @@ const allowList = [
   'Home',
   'HomeSearch',
   'Imputation',
-  'DownloadRecord',
+  // 'DownloadRecord',
   'Info',
   'Register',
   'PublicEmailDomains',

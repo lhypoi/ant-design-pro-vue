@@ -12,6 +12,9 @@
       <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
+      <span slot="createTime" slot-scope="text">
+        {{ text | timeFormat }}
+      </span>
     </s-table>
   </div>
 </template>
@@ -19,6 +22,7 @@
 <script>
 import { STable } from '@/components'
 import { getDownloadRecord } from '@/api/cauAuth'
+import moment from 'moment'
 
 export default {
   name: 'DownloadRecord',
@@ -35,15 +39,6 @@ export default {
           scopedSlots: { customRender: 'serial' }
         },
         {
-          title: 'Key',
-          dataIndex: 'key'
-        },
-        {
-          title: 'Download Time',
-          dataIndex: 'createTime',
-          width: 160
-        },
-        {
           title: 'Bucket Name',
           dataIndex: 'bucketName'
         },
@@ -52,9 +47,15 @@ export default {
           dataIndex: 'regionName'
         },
         {
-          title: 'Download Link',
-          dataIndex: 'downloadUrl',
+          title: 'File Name',
+          dataIndex: 'fileName',
           width: 250
+        },
+        {
+          title: 'Download Time',
+          dataIndex: 'createTime',
+          width: 160,
+          scopedSlots: { customRender: 'createTime' }
         },
         {
           title: 'Email',
@@ -64,6 +65,11 @@ export default {
     }
   },
   computed: {
+  },
+  filters: {
+    timeFormat (value) {
+      return value ? moment(new Date(parseInt(value))).format('YYYY-MM-DD HH:mm:ss') : '/'
+    }
   },
   async mounted() {
   },
@@ -76,13 +82,9 @@ export default {
         totalCount: 0
       }
       try {
-        const searchData = {}
         const res = await getDownloadRecord({
-          searchData: searchData,
-          pageData: {
-            currentPage: params.pageNo,
-            pageSize: params.pageSize
-          }
+          currentPage: params.pageNo,
+          pageSize: params.pageSize
         })
         if (res && res.header && res.header.resCode === '0000') {
           tableData.data = [
