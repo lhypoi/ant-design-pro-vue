@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['"Alibaba PuHuiTi 2.0 55 Regular"', ...defaultTheme.fontFamily.sans]
+        'sans': ['"Alibaba PuHuiTi 2.0"', ...defaultTheme.fontFamily.sans]
       },
       colors: {
         blue: {
