@@ -61,7 +61,7 @@
           <a-button :loading="fileAnalysising"> <a-icon v-if="!fileAnalysising" type="upload" /> {{ fileAnalysising ? 'MD5 calculating' : 'Uploading Files' }} </a-button>
         </a-upload>
       </a-form-model-item>
-      <a-form-model-item ref="email" label="Email" prop="email">
+      <a-form-model-item v-if="!hasLogin" ref="email" label="Email" prop="email">
         <a-input v-model="formData.email" placeholder="Please input" size="large" />
       </a-form-model-item>
       <a-form-model-item ref="agree1" prop="agree1" :wrapper-col="formColConfig.noLabelRow">
