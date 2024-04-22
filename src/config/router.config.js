@@ -128,6 +128,13 @@ const asyncRouterMapAll = {
           component: () => import('@/views/znd/Profile'),
           meta: { title: 'Profile' },
           hidden: true
+        },
+        // znd/download-record
+        {
+          path: '/download-record',
+          name: 'DownloadRecord',
+          component: () => import('@/views/znd/DownloadRecord'),
+          hidden: true
         }
       ]
     }

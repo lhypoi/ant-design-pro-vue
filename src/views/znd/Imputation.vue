@@ -1,8 +1,8 @@
 <template>
   <div class="Imputation flex-auto flex flex-col bg-white rounded-3xl p-8 pt-16">
-    <div class="text-4xl pb-3 mb-10 mx-24 text-center font-bold text-black border-b border-solid border-gray-200">
+    <div class="text-4xl pb-4 mb-10 mx-24 text-center font-bold text-black border-b border-solid border-gray-200">
       Genotype Imputation
-      <div class="flex flex-row justify-end">
+      <div v-if="hasLogin" class="flex flex-row justify-end">
         <router-link class="text-sm pt-4 text-blue-400 font-normal" :to="{ name: 'Profile' }">
           <a-button type="primary" class="success-btn" icon="file-sync" size="large">
             My Profile
@@ -61,6 +61,9 @@
           <a-button :loading="fileAnalysising"> <a-icon v-if="!fileAnalysising" type="upload" /> {{ fileAnalysising ? 'MD5 calculating' : 'Uploading Files' }} </a-button>
         </a-upload>
       </a-form-model-item>
+      <a-form-model-item ref="email" label="Email" prop="email">
+        <a-input v-model="formData.email" placeholder="Please input" size="large" />
+      </a-form-model-item>
       <a-form-model-item ref="agree1" prop="agree1" :wrapper-col="formColConfig.noLabelRow">
         <a-checkbox v-model="formData.agree1" size="large" class="text-sm">
           I accept the <router-link class="text-blue-400" :to="{ name: 'License' }">mbiobank license.</router-link>
@@ -81,7 +84,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { createTask } from '@/api/createTask'
 import SparkMD5 from 'spark-md5'
 
@@ -96,6 +99,7 @@ export default {
         quality_control: 'true',
         md5_incoming: '',
         fileList: [],
+        email: '',
         agree1: false,
         agree2: false
       },
@@ -121,6 +125,21 @@ export default {
               try {
                 if (value.length === 0) {
                   callback(new Error('Please upload file'))
+                }
+              } catch (error) {
+                console.log(error)
+                callback(error)
+              }
+              callback()
+            }
+          }
+        ],
+        email: [
+          {
+            validator: (rule, value, callback) => {
+              try {
+                if (!this.hasLogin && !value.trim()) {
+                  callback(new Error('Please input'))
                 }
               } catch (error) {
                 console.log(error)
@@ -168,6 +187,7 @@ export default {
   computed: {
     ...mapState({
     }),
+    ...mapGetters(['hasLogin']),
     formColConfig() {
       const label = { span: 6 }
       const wrapper = { span: 12 }
@@ -248,13 +268,16 @@ export default {
             formData.append('quality_control', this.formData.quality_control)
             formData.append('md5_incoming', this.formData.md5_incoming)
             formData.append('file', this.formData.fileList[0])
+            formData.append('email', this.formData.email)
             const res = await createTask(formData)
             if (res && res.header && res.header.resCode === '0000') {
               this.$success({
-                title: 'Your file has been successfully submitted and your task is running. Once this task complete, we will send an e-mail to inform you and you can download the result in your profile.',
-                okText: 'To Profile',
+                title: 'Your file has been successfully submitted and your task is running. Once this task complete, we will send an e-mail to inform you' + (this.hasLogin ? ' and you can download the result in your profile.' : '.'),
+                okText: this.hasLogin ? 'To Profile' : 'OK',
                 onOk: () => {
-                  this.$router.push({ name: 'Profile' })
+                  if (this.hasLogin) {
+                    this.$router.push({ name: 'Profile' })
+                  }
                 }
               })
             } else {

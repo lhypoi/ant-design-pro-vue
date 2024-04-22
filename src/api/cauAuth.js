@@ -130,12 +130,26 @@ export function querySNPData (parameter) {
 
 export function searchMainData (parameter) {
   return request({
-    url,
+    url: '/mainSearch',
     method: 'post',
     data: {
       body: parameter,
       header: {
         serviceCode: 'searchMainData',
+        reqTime: (new Date()).toISOString()
+      }
+    }
+  })
+}
+
+export function getDownloadRecord (parameter) {
+  return request({
+    url,
+    method: 'post',
+    data: {
+      body: parameter,
+      header: {
+        serviceCode: 'getDownloadRecord',
         reqTime: (new Date()).toISOString()
       }
     }

@@ -366,15 +366,11 @@ export default {
       return Math.round(Math.random() * 500)
     },
     handleSearch() {
-      if (!this.hasLogin) {
-        this.$router.push({ name: 'Login' })
-      } else {
-        this.$refs.homeForm.validate(async valid => {
-          if (valid) {
-            this.$router.push({ name: 'HomeSearch', query: { ...this.formData } })
-          }
-        })
-      }
+      this.$refs.homeForm.validate(async valid => {
+        if (valid) {
+          this.$router.push({ name: 'HomeSearch', query: { ...this.formData } })
+        }
+      })
     }
   }
 }
