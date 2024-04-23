@@ -66,7 +66,7 @@
       </a-form-model-item>
       <a-form-model-item ref="agree1" prop="agree1" :wrapper-col="formColConfig.noLabelRow">
         <a-checkbox v-model="formData.agree1" size="large" class="text-sm">
-          I accept the <router-link class="text-blue-400" :to="{ name: 'License' }">mbiobank license.</router-link>
+          I accept the <router-link class="text-blue-400" :to="{ name: 'License' }">1KCIGP license.</router-link>
         </a-checkbox>
       </a-form-model-item>
       <a-form-model-item ref="agree2" prop="agree2" :wrapper-col="formColConfig.noLabelRow">
