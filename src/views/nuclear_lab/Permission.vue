@@ -124,7 +124,7 @@
                 allowClear
               />
             </a-form-model-item>
-            <a-form-model-item v-if="!userModalParams.userId" key="password" prop="password" label="密码">
+            <a-form-model-item key="password" prop="password" label="密码">
               <a-input-password
                 v-model="userModalParams.formData.password"
                 placeholder="请输入"
