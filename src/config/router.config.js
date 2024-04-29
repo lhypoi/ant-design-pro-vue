@@ -83,6 +83,14 @@ const asyncRouterMapAll = {
           component: () => import('@/views/znd/Download'),
           meta: { title: 'DOWNLOAD', icon: 'cloud-download' }
         },
+        // znd/download
+        {
+          path: '/download-admin',
+          name: 'DownloadAdmin',
+          component: () => import('@/views/znd/Download'),
+          meta: { title: 'DOWNLOAD', icon: 'cloud-download' },
+          hidden: true
+        },
         // znd/imputation
         {
           path: '/imputation',

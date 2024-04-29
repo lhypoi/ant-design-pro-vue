@@ -27,6 +27,7 @@ const allowList = [
   'PublicEmailDomains',
   'License',
   // 'Download',
+  'DownloadAdmin',
   'Login',
   'HelpBSP',
   'HelpImputation',

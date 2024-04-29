@@ -94,6 +94,9 @@ export default {
     }
   },
   computed: {
+    isAdmin() {
+      return this.$route.name === 'DownloadAdmin'
+    }
   },
   async mounted() {
   },
@@ -107,7 +110,7 @@ export default {
           bucketName: this.upperLevel.bucketName,
           region: this.upperLevel.region,
           folder: this.upperLevel.name
-        }) : await getBucketFileList({})
+        }, { isAdmin: this.isAdmin }) : await getBucketFileList({}, { isAdmin: this.isAdmin })
         if (res && res.header && res.header.resCode === '0000') {
           tableData.data = [
             ...res.body.folderList,
@@ -155,7 +158,7 @@ export default {
           bucketName: row.bucketName,
           region: row.region,
           filePath: row.name
-        })
+        }, { isAdmin: this.isAdmin })
         if (res && res.header && res.header.resCode === '0000') {
           downloadFile(res.body, row.name)
         } else {

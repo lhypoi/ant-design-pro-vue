@@ -16,9 +16,9 @@ export function getUserInfo (parameter) {
   })
 }
 
-export function getBucketFileList (parameter) {
+export function getBucketFileList (parameter, { isAdmin } = {}) {
   return request({
-    url,
+    url: isAdmin ? '/downloadApiWithoutAuth' : url,
     method: 'post',
     data: {
       body: parameter,
@@ -30,9 +30,9 @@ export function getBucketFileList (parameter) {
   })
 }
 
-export function getFolderBucketFileList (parameter) {
+export function getFolderBucketFileList (parameter, { isAdmin } = {}) {
   return request({
-    url,
+    url: isAdmin ? '/downloadApiWithoutAuth' : url,
     method: 'post',
     data: {
       body: parameter,
@@ -44,9 +44,9 @@ export function getFolderBucketFileList (parameter) {
   })
 }
 
-export function getDownloadUrl (parameter) {
+export function getDownloadUrl (parameter, { isAdmin } = {}) {
   return request({
-    url,
+    url: isAdmin ? '/downloadApiWithoutAuth' : url,
     method: 'post',
     data: {
       body: parameter,
