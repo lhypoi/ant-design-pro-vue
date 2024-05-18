@@ -1,10 +1,7 @@
 import { APP_NAME, CUR_APP } from '@/store/mutation-types'
 
 const appTitleAll = {
-  [APP_NAME.ZND]: '1KCIGP',
-  [APP_NAME.LINK_DEV]: '领克数云',
-  [APP_NAME.NUCLEAR_LAB]: '核与辐射工作场所管理系统',
-  [APP_NAME.REPAYMENT_PLAN]: '还款计划'
+  [APP_NAME.NUCLEAR_LAB]: '核与辐射工作场所管理系统'
 }
 
 /**

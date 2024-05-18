@@ -107,7 +107,7 @@
 <script>
 import { mapState } from 'vuex'
 import { CUR_APP } from '@/store/mutation-types'
-import { sendSmsCode } from '@/api/lingke'
+import { sendSmsCode } from '@/api/nuclearLab'
 import { resetRouter } from '@/router/index'
 
 export default {

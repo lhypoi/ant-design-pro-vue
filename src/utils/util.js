@@ -104,8 +104,6 @@ function isFileExtensionWillPre(filename = '') {
 }
 
 const downloadWaitTip = {
-  [APP_NAME.ZND]: 'The download has been successfully initiated, please wait for a few moments. Upon completion, the browser will pop up a save window.',
-  [APP_NAME.LINK_DEV]: '文件下载中，请稍后点击保存...',
   [APP_NAME.NUCLEAR_LAB]: '文件下载中，请稍后点击保存...'
 }
 
