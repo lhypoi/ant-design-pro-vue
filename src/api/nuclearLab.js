@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
-const url = 'https://api.ukshuxi.com/nrl/api/v1'
-// const url = '/nrl/api/v1'
+// const url = 'http://159.75.76.28/nrl/api/v1'
+const url = '/nrl/api/v1'
 export const uploadUrl = url + '/file/upload'
 export const downloadBaseUrl = url + '/base/download'
 export const tempFileBaseUrl = url + '/temp'

@@ -165,7 +165,7 @@ const vueConfig = {
         changeOrigin: true
       },
       '/nrl/api': {
-        target: 'https://api.ukshuxi.com',
+        target: 'http://159.75.76.28',
         ws: false,
         changeOrigin: true
       }
