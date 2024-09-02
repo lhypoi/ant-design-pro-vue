@@ -1,7 +1,7 @@
 <template>
   <global-footer class="footer custom-render">
     <template v-slot:links>
-      <span class="text-center">备案号：京ICP备2023016911号-2</span>
+      <a class="text-center" href="https://beian.miit.gov.cn" target="_blank">备案号：京ICP备2023016911号-2</a>
       <span class="text-center mx-10">@1KCIGP</span>
     </template>
     <!-- <template v-slot:copyright>
