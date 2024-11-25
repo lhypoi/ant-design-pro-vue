@@ -125,6 +125,7 @@
           <div class="flex flex-col pb-6">
             <div class="text-2xl font-bold pb-2">The latest news</div>
             <ul style="list-style-type: circle;">
+              <li>2024-11 Publication: "Du, H., Zhou, L., Liu, Z., Zhuo, Y., Zhang, M., Huang, Q., ... & Liu, J. F. (2024). The 1000 Chinese Indigenous Pig Genomes Project provides insights into the genomic architecture of pigs. Nature Communications, 15(1), 1-18."</li>
               <li>2023-08 BSP function of 1KCIGP has been public available.</li>
               <li>2023-08 1KCIGP PHASE1 data has been released.</li>
             </ul>
@@ -154,12 +155,12 @@ export default {
         { name: 'Xinjiang', value: '0' }, { name: 'Jiangsu', value: '5' },
         { name: 'Zhejiang', value: '3' }, { name: 'Jiangxi', value: '3' },
         { name: 'Hubei', value: '3' }, { name: 'Guangxi', value: '2' },
-        { name: 'Gansu', value: '0' }, { name: 'Shanxi', value: '1' },
+        { name: 'Gansu', value: '1' }, { name: 'Shanxi', value: '1' },
         { name: 'Inner Mongolia', value: '0' }, { name: 'Shaanxi', value: '2' },
         { name: 'Jilin', value: '0' }, { name: 'Fujian', value: '2' },
         { name: 'Guizhou', value: '2' }, { name: 'Guangdong', value: '4' },
-        { name: 'Qinghai', value: '0' }, { name: 'Tibet', value: '0' },
-        { name: 'Sichuan', value: '2' }, { name: 'Ningxia', value: '0' },
+        { name: 'Qinghai', value: '0' }, { name: 'Tibet', value: '1' },
+        { name: 'Sichuan', value: '3' }, { name: 'Ningxia', value: '0' },
         { name: 'Hainan', value: '2' }, { name: 'Taiwan', value: '0' },
         { name: 'Hongkong', value: '0' }, { name: 'Macao', value: '0' }
       ],
