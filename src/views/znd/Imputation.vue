@@ -56,7 +56,7 @@
           </a-select-option>
         </a-select>
       </a-form-model-item>
-      <a-form-model-item ref="fileList" label="Input VCF Files" prop="fileList">
+      <a-form-model-item ref="fileList" label="Input BCF Files" prop="fileList">
         <a-upload :file-list="formData.fileList" :remove="handleFileRemove" :before-upload="beforeUpload">
           <a-button :loading="fileAnalysising"> <a-icon v-if="!fileAnalysising" type="upload" /> {{ fileAnalysising ? 'MD5 calculating' : 'Uploading Files' }} </a-button>
         </a-upload>
